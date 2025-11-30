@@ -19,11 +19,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     placeholder: "*****",
                 },
             },
-            async authorize(credentials, request) {
+            authorize: async (credentials, request) => {
                 try {
                     await connectDB();
                     const { email, password } = credentials as { email: string, password: string };
-                    const user = await User.findOne({ email }) as IUser;
+                    const user = await User.findOne({ email });
                     if (!user) {
                         throw new Error("User not found");
                     }
@@ -38,5 +38,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
         })
     ],
-
+    callbacks: {
+        jwt: ({ token, user }) => {
+            if (user) {
+                token.id = user.id as string;
+                token.name = user.name as string;
+                token.email = user.email as string;
+                token.role = user.role as string;
+            }
+            return token;
+        },
+        session: ({ session, token }) => {
+            if (session.user) {
+                session.user.id = token.id as string;
+                session.user.name = token.name as string;
+                session.user.email = token.email as string;
+                session.user.role = token.role as string;
+            }
+            return session;
+        }
+    },
+    pages: {
+        signIn: "/login",
+        error: "/login"
+    },
+    session: {
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+    },
+    secret: process.env.NEXTAUTH_SECRET,
 }) 
