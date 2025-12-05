@@ -1,10 +1,15 @@
-import React from 'react'
 import RegisterForm from '../components/RegisterForm'
+import { useRouter } from 'next/navigation';
+
 
 const Register = () => {
+  const router = useRouter();
+  const handleBackStep = () => {
+    router.push('/');
+  }
   return (
     <>
-      <RegisterForm />
+      <RegisterForm backStep={handleBackStep} />
     </>
   )
 }

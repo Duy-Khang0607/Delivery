@@ -9,7 +9,7 @@ const Page = () => {
 
   return (
     <>
-      {step === 'welcome' ? <Wellcome nextStep={setStep} /> : <RegisterForm />}
+      {step === 'welcome' ? <Wellcome nextStep={setStep} /> : <RegisterForm backStep={setStep} />}
     </>
   )
 }

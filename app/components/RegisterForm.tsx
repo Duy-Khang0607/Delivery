@@ -1,9 +1,17 @@
 'use client'
-import { Leaf, Mail, Lock, User, Eye } from 'lucide-react'
+import { Leaf, Mail, Lock, User, Eye, ArrowBigLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useState } from 'react';
+import Image from 'next/image';
+import googleImage from '@/app/assets/google.jpg'
+import Link from 'next/link';
+import axios from 'axios';
 
-const RegisterForm = () => {
+interface backType {
+    backStep: (step: string) => void;
+}
+
+const RegisterForm = ({ backStep }: backType) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -11,32 +19,36 @@ const RegisterForm = () => {
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
     }
-    const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(name, email, password);
+        try {
+            const response = await axios.post('/api/auth/register', { name, email, password });
+            console.log({response: response.data});
+        } catch (error: any) {
+            console.log({error: error.response.data});
+        }
     }
+    const handleBackStep = () => {
+        backStep('welcome');
+    }
+
+
+
     return (
-        <div className="w-full min-h-screen flex flex-col items-center justify-center text-center">
+        <div className="w-full min-h-screen flex flex-col items-center justify-center text-center relative">
+            <div className='cursor-pointer absolute top-5 left-5 flex flex-row items-center gap-2' onClick={handleBackStep}>
+                <ArrowBigLeft className='w-5 h-5 md:w-7 md:h-7 text-gray-500  text-green-600' />
+                <span className='text-green-600 font-bold text-sm md:text-lg'>Back</span>
+            </div>
             {/* Title */}
             <motion.div
-                initial={{ opacity: 0, y: 100 }}
-                animate={{
-                    opacity: 1,
-                    y: -20,
-                }}
-                transition={{ duration: 1, delay: 0.3 }}
                 className='flex items-center gap-3'
             >
                 <h1 className='text-4xl md:text-5xl text-center text-green-700 font-extrabold'>Create Account</h1>
             </motion.div>
             {/* Decsription */}
             <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{
-                    opacity: 1,
-                    y: -10,
-                }}
-                transition={{ duration: 1, delay: 0.9 }}
+
                 className='flex items-center gap-3'
             >
                 <p className='text-gray-700 text-lg md:text-xl max-w-lg mt-2'>Join Delivery today.</p>
@@ -44,8 +56,13 @@ const RegisterForm = () => {
             </motion.div>
             {/* Form */}
             <motion.form
-                className='flex flex-col items-center gap-6 w-full max-w-md p-4 bg-white rounded-lg shadow-md'
+                className='flex flex-col items-center gap-6 w-full max-w-md p-4 rounded-lg'
                 onSubmit={handleRegister}
+                initial={{ opacity: 0 }}
+                animate={{
+                    opacity: 1,
+                }}
+                transition={{ duration: 1, delay: 0.3 }}
             >
                 <div className='relative w-full flex flex-col gap-3'>
                     <User className='w-5 h-5 text-gray-500 absolute top-3.5 left-2.5' />
@@ -62,9 +79,25 @@ const RegisterForm = () => {
                 </div>
 
                 {/* Button Register */}
-                <motion.button type='submit' className={`${name.length > 0 && email.length > 0 && password.length > 0 ? 'bg-green-600' : 'bg-gray-500'} text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all duration-300 cursor-pointer mt-2`}>
+                <motion.button type='submit' className={`${name.length > 0 && email.length > 0 && password.length > 0 ? 'bg-green-600' : 'bg-gray-500'} text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all duration-300 cursor-pointer mt-2 w-full`}>
                     Register
                 </motion.button>
+                {/* OR */}
+                <div className='flex items-center gap-1 text-gray-400 w-full'>
+                    <span className='flex-1 h-px bg-gray-300'></span>
+                    OR
+                    <span className='flex-1 h-px bg-gray-300'></span>
+                </div>
+                {/* Google */}
+                <motion.button type='submit' className={`bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition-all duration-300 cursor-pointer mt-2 w-full flex items-center gap-2 justify-center`}>
+                    <Image src={googleImage} alt='Google' width={20} height={20} />
+                    <span className='text-gray-700 font-bold text-sm md:text-base'>Continue with Google</span>
+                </motion.button>
+                {/* Already have an account? */}
+                <div className='flex items-center gap-1 text-gray-400 w-full justify-center'>
+                    <span className='text-black text-sm md:text-[14px]'>Already have an account ?</span>
+                    <Link href='/signin' className='text-green-600 font-bold text-sm md:text-[14px] hover:text-green-700 transition-all duration-300'>Sign in</Link>
+                </div>
             </motion.form>
 
         </div>
