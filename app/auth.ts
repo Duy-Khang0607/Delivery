@@ -23,6 +23,7 @@ import Credentials from "next-auth/providers/credentials"
 import connectDB from "./lib/db";
 import bcrypt from "bcryptjs";
 import User from "./models/user.model";
+import Google from "next-auth/providers/google";
 
 // Cấu hình NextAuth với các hàm handlers, signIn, signOut, auth
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -34,44 +35,56 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials: {
                 email: {
                     type: "email",
-                    label: "Email",
-                    placeholder: "johndoe@gmail.com",
+                    label: "Email"
                 },
                 password: {
                     type: "password",
                     label: "Password",
-                    placeholder: "*****",
                 },
             },
             // authorize: Hàm xác thực user khi đăng nhập
             // - Được gọi khi user submit form login
-            // - Return user object nếu đăng nhập thành công, null hoặc throw error nếu thất bại
-            authorize: async (credentials, request) => {
+            // - Return user object nếu đăng nhập thành công, null nếu thất bại
+            authorize: async (credentials) => {
                 try {
                     // 1. Kết nối database
                     await connectDB();
-                    
+
                     // 2. Lấy email và password từ form
                     const { email, password } = credentials as { email: string, password: string };
-                    
+
                     // 3. Tìm user trong database theo email
                     const user = await User.findOne({ email });
                     if (!user) {
-                        throw new Error("User not found");
+                        console.log("❌ User not found:", email);
+                        return null; // Return null thay vì throw error
                     }
-                    
+
                     // 4. So sánh password với password đã hash trong database
                     const isPasswordCorrect = await bcrypt.compare(password, user.password);
                     if (!isPasswordCorrect) {
-                        throw new Error("Incorrect password");
+                        console.log("❌ Incorrect password for:", email);
+                        return null; // Return null thay vì throw error
                     }
-                    
+
                     // 5. Return user nếu đăng nhập thành công
-                    return user;
+                    console.log("✅ Login success:", email);
+                    return {
+                        id: user._id.toString(),
+                        name: user.name,
+                        email: user.email,
+                        role: user.role,
+                    };
                 } catch (error) {
-                    throw new Error("Internal server error");
+                    // Chỉ log lỗi hệ thống thực sự (DB error, etc.)
+                    console.error("❌ Auth error:", error);
+                    return null;
                 }
             }
+        }),
+        Google({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         })
     ],
     // CALLBACKS: Các hàm được gọi tự động tại các thời điểm khác nhau trong quá trình authentication
@@ -90,7 +103,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
             return token;
         },
-        
+
         // session callback: Được gọi KHI LẤY SESSION từ client
         // - Chạy mỗi khi gọi useSession() hoặc getSession()
         // - Mục đích: Đưa data từ JWT token vào session object
@@ -110,13 +123,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         signIn: "/login",  // Redirect đến trang /login khi cần đăng nhập
         error: "/login"    // Redirect đến trang /login khi có lỗi xảy ra
     },
-    
+
     // SESSION: Cấu hình session
     session: {
         strategy: "jwt",  // Sử dụng JWT thay vì database sessions (nhẹ hơn, không cần query DB)
         maxAge: 30 * 24 * 60 * 60, // Thời gian sống của session: 30 ngày (tính bằng giây)
     },
-    
+
     // SECRET: Key bí mật để mã hóa JWT token (BẮT BUỘC phải có trong .env)
     secret: process.env.NEXTAUTH_SECRET,
 }) 
