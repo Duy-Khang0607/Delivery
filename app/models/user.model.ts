@@ -4,10 +4,11 @@ import mongoose from "mongoose";
 export interface IUser {
     _id: mongoose.Types.ObjectId;
     name: string;
-    password: string;
+    password?: string;
     email: string;
     mobile?: number;
     role?: "user" | "admin" | 'delivery';
+    image?: string;
 }
 
 
@@ -18,7 +19,7 @@ const userSchema = new mongoose.Schema<IUser>({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
     },
     email: {
         type: String,
@@ -33,6 +34,9 @@ const userSchema = new mongoose.Schema<IUser>({
         type: String,
         default: 'user',
         enum: ['user', 'admin', 'delivery'],
+    },
+    image: {
+        type: String,
     },
 }, {
     timestamps: true,

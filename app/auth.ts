@@ -89,6 +89,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     // CALLBACKS: Các hàm được gọi tự động tại các thời điểm khác nhau trong quá trình authentication
     callbacks: {
+        // Signin
+        async signIn({ user, account }) {
+            console.log({ user, account });
+            if (account?.provider == 'google') {
+                // Connect DB
+                await connectDB();
+                // find email in database
+                let dbUser = await User.findOne({ email: user.email });
+                if (!dbUser) {
+                    // create user
+                    dbUser = await User.create({ email: user.email, name: user.name, image: user.image });
+                }
+
+                user.id = dbUser._id.toString();
+                user.role = dbUser.role;
+            }
+            return true;
+
+        },
+
         // jwt callback: Được gọi KHI TẠO hoặc CẬP NHẬT JWT token
         // - Chạy ngay sau khi user đăng nhập thành công (authorize return user)
         // - Mục đích: Thêm thông tin custom vào JWT token (id, role, ...)
