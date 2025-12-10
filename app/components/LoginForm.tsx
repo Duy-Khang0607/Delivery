@@ -6,6 +6,7 @@ import Image from 'next/image';
 import googleImage from '@/app/assets/google.jpg'
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 
 const LoginForm = () => {
@@ -13,6 +14,7 @@ const LoginForm = () => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const { data, status } = useSession();
     console.log({ data, status })
@@ -26,7 +28,9 @@ const LoginForm = () => {
         try {
             setLoading(true);
             const response = await signIn('credentials', { email, password, redirect: false });
-            console.log({ response });
+            router.push('/');
+            console.log({response})
+            
         } catch (error: any) {
             console.log({ error: error.response.data });
         } finally {
@@ -82,7 +86,7 @@ const LoginForm = () => {
                     <span className='flex-1 h-px bg-gray-300'></span>
                 </div>
                 {/* Google */}
-                <motion.button type='button' className={`bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition-all duration-300 cursor-pointer mt-2 w-full flex items-center gap-2 justify-center`} onClick={(e) => { e.preventDefault(); signIn('google'); }}>
+                <motion.button type='button' className={`bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition-all duration-300 cursor-pointer mt-2 w-full flex items-center gap-2 justify-center`} onClick={(e) => { e.preventDefault(); signIn('google',{callbackUrl: '/'}); }}>
                     <Image src={googleImage} alt='Google' width={20} height={20} />
                     <span className='text-gray-700 font-bold text-sm md:text-base'>Continue with Google</span>
                 </motion.button>
