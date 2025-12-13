@@ -29,8 +29,8 @@ const LoginForm = () => {
             setLoading(true);
             const response = await signIn('credentials', { email, password, redirect: false });
             router.push('/');
-            console.log({response})
-            
+            console.log({ response })
+
         } catch (error: any) {
             console.log({ error: error.response.data });
         } finally {
@@ -43,13 +43,22 @@ const LoginForm = () => {
 
             {/* Title */}
             <motion.div
+                initial={{ opacity: 0 }}
+                animate={{
+                    opacity: 1,
+                }}
+                transition={{ duration: 1, delay: 0.3 }}
                 className='flex items-center gap-3'
             >
                 <h1 className='text-4xl md:text-5xl text-center text-green-700 font-extrabold'>Login</h1>
             </motion.div>
             {/* Decsription */}
             <motion.div
-
+                initial={{ opacity: 0 }}
+                animate={{
+                    opacity: 1,
+                }}
+                transition={{ duration: 1, delay: 0.3 }}
                 className='flex items-center gap-2'
             >
                 <p className='text-gray-700 text-lg md:text-md max-w-lg mt-2'>Login to your account.</p>
@@ -86,7 +95,7 @@ const LoginForm = () => {
                     <span className='flex-1 h-px bg-gray-300'></span>
                 </div>
                 {/* Google */}
-                <motion.button type='button' className={`bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition-all duration-300 cursor-pointer mt-2 w-full flex items-center gap-2 justify-center`} onClick={(e) => { e.preventDefault(); signIn('google',{callbackUrl: '/'}); }}>
+                <motion.button type='button' className={`bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition-all duration-300 cursor-pointer mt-2 w-full flex items-center gap-2 justify-center`} onClick={(e) => { e.preventDefault(); signIn('google', { callbackUrl: '/' }); }}>
                     <Image src={googleImage} alt='Google' width={20} height={20} />
                     <span className='text-gray-700 font-bold text-sm md:text-base'>Continue with Google</span>
                 </motion.button>

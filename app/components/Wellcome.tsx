@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import { ArrowRight, ShoppingBasket, Truck } from 'lucide-react'
-import React, { useState } from 'react'
 
 interface nextType {
     nextStep: (step: string) => void;
@@ -13,7 +12,7 @@ const Wellcome = ({ nextStep }: nextType) => {
         nextStep('register');
     }
     return (
-        <div className='flex flex-col items-center justify-center gap-2 min-h-screen py-6 text-center'>
+        <div className='flex flex-col items-center justify-center gap-2 min-h-screen py-6 text-center bg-linear-to-b from-green-50'>
             {/* Title */}
             <motion.div
                 initial={{ opacity: 0, y: 100 }}

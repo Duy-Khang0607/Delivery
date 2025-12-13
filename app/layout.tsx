@@ -24,9 +24,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className="bg-linear-to-b from-green-100 to-white w-full min-h-screen"
+        className="bg-linear-to-b from-green-50 to-white w-full min-h-screen"
       >
         <Provider>
           {children}
