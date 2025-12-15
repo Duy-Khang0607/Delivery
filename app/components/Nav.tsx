@@ -3,7 +3,7 @@ import { LogOut, Package, Search, ShoppingCart, User } from 'lucide-react'
 import { IUser } from '../models/user.model'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { signOut } from 'next-auth/react'
 import { useDebouncedCallback } from 'use-debounce'
@@ -11,11 +11,29 @@ import { useDebouncedCallback } from 'use-debounce'
 const Nav = ({ user }: { user: IUser }) => {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [search, setSearch] = useState('')
+  const profileDropDown = useRef<HTMLButtonElement>(null)
 
-  const handleSearch = useDebouncedCallback((value: string) => {
-    setSearch(value)
-    console.log({ search })
+  // Debounce chỉ cho logic tìm kiếm (API call, filter, etc)
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    console.log({ search: value })
+    // Thêm logic tìm kiếm ở đây (gọi API, filter data, etc)
   }, 500)
+
+  const handleInputChange = (value: string) => {
+    setSearch(value) // Cập nhật ngay để hiển thị trên input
+    debouncedSearch(value) // Debounce cho logic tìm kiếm
+  }
+
+  // Tắt dropdown Profile khi click ngoài
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showUserMenu && profileDropDown.current && !profileDropDown.current.contains(event.target as Node)) {
+        setShowUserMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showUserMenu])
 
   return (
     <section className='max-w-[90%] mx-auto h-16 shadow-md flex items-center justify-between px-4 text-white mt-4 rounded-md bg-green-500 fixed top-0 left-0 right-0 z-99'>
@@ -27,7 +45,7 @@ const Nav = ({ user }: { user: IUser }) => {
       {/* Search */}
       <form className='hidden md:flex items-center rounded-md w-1/2 bg-white max-w-lg shadow-md'>
         <Search className='w-5 h-5 ml-2 text-black ml-2' />
-        <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => handleSearch(e.target.value)} />
+        <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => handleInputChange(e.target.value)} />
       </form>
 
       {/* Cart && User */}
@@ -62,7 +80,7 @@ const Nav = ({ user }: { user: IUser }) => {
                 <span className='text-black text-sm'>My Orders</span>
               </button>
               <hr className='border-gray-200' />
-              <button className='flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md w-full hover:bg-red-200 transition-all duration-300 cursor-pointer mt-1.5' onClick={() => signOut({ callbackUrl: '/login' })}>
+              <button ref={profileDropDown} className='flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md w-full hover:bg-red-200 transition-all duration-300 cursor-pointer mt-1.5' onClick={() => signOut({ callbackUrl: '/login' })}>
                 <LogOut className='w-5 h-5 text-red-500' />
                 <span className='text-black text-sm'>Logout</span>
               </button>
