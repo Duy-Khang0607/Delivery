@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
       {
         hostname: 'lh3.googleusercontent.com',
       },
+      {
+        hostname: 'media.istockphoto.com',
+      },
+      {
+        hostname: 'images.unsplash.com',
+      }
     ],
   },
 };
