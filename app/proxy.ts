@@ -18,7 +18,23 @@ export async function proxy(request: NextRequest) {
         loginUrl.searchParams.set('callbackUrl', request.url)
         return NextResponse.redirect(loginUrl)
     }
-    
+
+
+    // Kiểm tra nếu role không phải là User
+    if (token?.role !== 'user' && pathname.startsWith('/user')) {
+        return NextResponse.redirect(new URL('/unauthorized', request.url))
+    }
+
+    // Kiểm tra nếu role không phải là Admin
+    if (token?.role !== 'admin' && pathname.startsWith('/admin')) {
+        return NextResponse.redirect(new URL('/unauthorized', request.url))
+    }
+
+    // Kiểm tra nếu role không phải là Delivery
+    if (token?.role !== 'delivery' && pathname.startsWith('/delivery')) {
+        return NextResponse.redirect(new URL('/unauthorized', request.url))
+    }
+
     return NextResponse.next()
 }
 

@@ -1,14 +1,17 @@
 'use client'
 import { ArrowRight, Loader2, Truck, User, UserCog } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { redirect } from 'next/navigation';
+import {  useRouter } from 'next/navigation';
 import { useState } from 'react';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 const EditRoleModile = () => {
     const [selectedRole, setSelectedRole] = useState<string | null>(null);
     const [mobile, setMobile] = useState<string>('');
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
+    const { update } = useSession();
     const roles = [{
         id: 'admin',
         name: 'Admin',
@@ -33,8 +36,10 @@ const EditRoleModile = () => {
                 role: selectedRole,
                 mobile
             });
-            console.log({ response:response.data });
-            redirect('/');
+            console.log({response});
+            console.log({selectedRole});
+            // await update({role: selectedRole});
+            // router.push('/');
         } catch (error) {
             console.log(error);
         } finally {

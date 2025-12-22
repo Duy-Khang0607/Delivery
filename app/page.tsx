@@ -29,8 +29,7 @@ const Home = async () => {
   return (
     <>
       <Nav user={JsonUser} />
-      {/* {JsonUser?.role === 'user' ? <UserDashboard/> : JsonUser?.role === 'admin' ? <AdminDashboard/> : <DeliveryBoy/>} */}
-      <UserDashboard />
+      {JsonUser?.role === 'user' ? <UserDashboard/> : JsonUser?.role === 'admin' ? <AdminDashboard/> : <DeliveryBoy/>}
     </>
   )
 }
