@@ -106,7 +106,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 user.role = dbUser.role;
             }
             return true;
-
         },
 
         // jwt callback: Được gọi KHI TẠO hoặc CẬP NHẬT JWT token

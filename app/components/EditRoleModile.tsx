@@ -12,6 +12,7 @@ const EditRoleModile = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { update } = useSession();
+
     const roles = [{
         id: 'admin',
         name: 'Admin',
@@ -36,16 +37,15 @@ const EditRoleModile = () => {
                 role: selectedRole,
                 mobile
             });
-            console.log({response});
+            console.log({response: response.data});
             console.log({selectedRole});
-            // await update({role: selectedRole});
-            // router.push('/');
+            await update({role: selectedRole});
+            router.push('/');
         } catch (error) {
             console.log(error);
         } finally {
             setLoading(false);
         }
-
     }
 
 
