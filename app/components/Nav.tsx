@@ -1,5 +1,5 @@
 'use client'
-import { CircleX, ClosedCaption, LogOut, Package, Search, ShoppingCart, User } from 'lucide-react'
+import { CircleX, ClosedCaption, ClosedCaptionIcon, ListOrdered, LogOut, Menu, Package, Plus, Search, ShoppingCart, User, View, X } from 'lucide-react'
 import { IUser } from '../models/user.model'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -15,6 +15,7 @@ const Nav = ({ user }: { user: IUser }) => {
   const [search, setSearch] = useState('')
   const profileDropDown = useRef<HTMLButtonElement>(null)
   const searchMobileRef = useRef<HTMLFormElement>(null)
+  const [sideBar, setSideBar] = useState(false)
 
   // Debounce chỉ cho logic tìm kiếm (API call, filter, etc)
   const debouncedSearch = useDebouncedCallback((value: string) => {
@@ -59,28 +60,59 @@ const Nav = ({ user }: { user: IUser }) => {
       </div>
 
       {/* Search */}
-      <form className='hidden md:flex items-center rounded-md w-1/2 bg-white max-w-lg shadow-md'>
-        <Search className='w-5 h-5 ml-2 text-black ml-2' />
-        <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => handleInputChange(e.target.value)} />
-      </form>
+      {user?.role === 'user' && <>
+        <form className='hidden md:flex items-center rounded-md w-1/2 bg-white max-w-lg shadow-md'>
+          <Search className='w-5 h-5 ml-2 text-black ml-2' />
+          <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => handleInputChange(e.target.value)} />
+        </form>
+      </>}
 
       {/* Cart && User */}
       <div className='flex flex-row items-center gap-3'>
 
         {/* Icon search mobile */}
-        <div className='relative bg-white rounded-full p-2 cursor-pointer md:hidden' onClick={() => setShowSearchMobile((prev) => !prev)}>
-          <Search className='w-5 h-5 text-green-500' />
-        </div>
+        {user?.role === 'user' && <>
+          <div className='relative bg-white rounded-full p-2 cursor-pointer md:hidden' onClick={() => setShowSearchMobile((prev) => !prev)}>
+            <Search className='w-5 h-5 text-green-500' />
+          </div>
+        </>}
 
         {/* Cart Icon */}
-        <Link href='' className='relative bg-white rounded-full p-2'>
-          <ShoppingCart className='w-5 h-5 text-green-500' />
-          <span className='absolute -top-1.5 -right-2 text-white font-bold text-sm flex items-center justify-center w-5 h-5 bg-red-500 rounded-full'>1</span>
-        </Link>
+        {user?.role === 'user' && <>
+          <Link href='' className='relative bg-white rounded-full p-2'>
+            <ShoppingCart className='w-5 h-5 text-green-500' />
+            <span className='absolute -top-1.5 -right-2 text-white font-bold text-sm flex items-center justify-center w-5 h-5 bg-red-500 rounded-full'>1</span>
+          </Link>
+        </>}
+
+        {/* Icon menu admin mobile  */}
+        <div className='relative bg-white rounded-full p-2 md:hidden' onClick={() => setSideBar(prev => !prev)}>
+          <Menu className='w-5 h-5 text-green-500' />
+        </div>
+
+        {/* Menu admin  */}
+        <div className='hidden md:flex flex-row gap-4 items-center'>
+          {/* Add Category */}
+          <Link href='admin/add-grocery' className='flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all duration-300'>
+            <Plus className='w-5 h-5 text-green-500' />
+            Add category
+          </Link>
+          {/* View Category */}
+          <Link href='' className='flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all duration-300'>
+            <View className='w-5 h-5 text-green-500' />
+            View category
+          </Link>
+          {/* Manager Orders */}
+          <Link href='' className='flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all duration-300'>
+            <ListOrdered className='w-5 h-5 text-green-500' />
+            Manager Orders
+          </Link>
+        </div>
+
 
         {/* User Image */}
         <div className='relative'>
-          <Image src={user?.image || ''} alt='User' width={36} height={36} className='w-9 h-9 rounded-full cursor-pointer' onClick={() => setShowUserMenu(!showUserMenu)} />
+          <Image src={user?.image || ''} alt='User' width={36} height={36} className='w-9 h-9 rounded-full cursor-pointer' onClick={() => setShowUserMenu(prev => !prev)} />
         </div>
 
         {/* Dropdown Profile */}
@@ -102,10 +134,12 @@ const Nav = ({ user }: { user: IUser }) => {
                   <span className='text-green-400 text-xs w-auto font-bold'>{user?.role?.toUpperCase()}</span>
                 </div>
               </Link>
-              <button className='flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
-                <Package className='w-5 h-5 text-green-500' />
-                <span className='text-black text-sm'>My Orders</span>
-              </button>
+              {user?.role === 'user' && <>
+                <button className='flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
+                  <Package className='w-5 h-5 text-green-500' />
+                  <span className='text-black text-sm'>My Orders</span>
+                </button>
+              </>}
               <hr className='border-gray-200' />
               <button ref={profileDropDown} className='flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md w-full hover:bg-red-200 transition-all duration-300 cursor-pointer mt-1.5' onClick={() => signOut({ callbackUrl: '/login' })}>
                 <LogOut className='w-5 h-5 text-red-500' />
@@ -137,7 +171,61 @@ const Nav = ({ user }: { user: IUser }) => {
           )}
         </AnimatePresence>
       </div>
-    </section>
+
+      {/* Sidebar admin */}
+      {sideBar && <>
+        <AnimatePresence>
+          <motion.div initial={{ x: -100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -100, opacity: 0 }} transition={{ type: "spring", stiffness: 100, damping: 14 }}
+            className='fixed top-0 left-0 text-white h-full w-[50%] mx-auto shadow-xl shadow-black px-4 py-2 z-9999 bg-linear-to-b from-green-800/90 via-green-700/80 to-green-900-90 backdrop-blur-sm flex flex-col'
+          >
+            {/* Admin Panal */}
+            <div className='flex flex-row justify-between items-center'>
+              <h1 className='font-extrabold'>Admin Panel</h1>
+              <X className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-200 transition-all' onClick={() => setSideBar(false)} />
+            </div>
+
+            {/* Profile */}
+            <div className='flex flex-row bg-black/10 rounded-lg hover:bg-white/20 items-center gap-2 p-2 mt-5 shadow-md shadow-white/50 border-white border-1 '>
+              <Image src={user?.image || ''} alt='User' width={32} height={32} className='w-8 h-8 rounded-full cursor-pointer' />
+              <div className='flex flex-col gap-1'>
+                <span className='text-white font-bold text-sm'>{user?.name.toUpperCase()}</span>
+                <span className='text-green-400 text-xs w-auto font-bold tracking-wide'>{user?.role?.toUpperCase()}</span>
+              </div>
+            </div>
+
+            {/* Items */}
+            <div className='flex flex-col gap-3 mt-4'>
+              {/* Add */}
+              <Link href='admin/add-grocery' className='flex flex-row bg-black/10 rounded-lg hover:bg-white/20 items-center p-2 text-sm gap-2'>
+                <Plus className='text-white w-5 h-5' />
+                Add category
+              </Link>
+
+              {/* View */}
+              <Link href={''} className='flex flex-row bg-black/10 rounded-lg hover:bg-white/20 items-center p-2 text-sm gap-2'>
+                <View className='text-white w-5 h-5' />
+                View category
+              </Link>
+
+              {/* Manager */}
+              <Link href={''} className='flex flex-row bg-black/10 rounded-lg hover:bg-white/20 items-center p-2 text-sm gap-2'>
+                <ListOrdered className='text-white w-5 h-5' />
+                Manager Orders
+              </Link>
+
+              {/* Border */}
+              <div className='my-2 border-t border-white/50'></div>
+
+            </div>
+
+            {/* Logout */}
+            <div onClick={() => signOut({ callbackUrl: '/login' })} className="flex bg-red-200/50 px-2 py-1 mt-auto text-red-400 font-semibold hover:bg-red-500/20 rounded-lg transition-all">
+              Logout
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </>}
+    </section >
   )
 }
 
