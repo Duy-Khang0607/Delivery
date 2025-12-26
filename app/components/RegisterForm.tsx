@@ -21,12 +21,11 @@ const RegisterForm = ({ backStep }: backType) => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { data, status } = useSession();
-    console.log({ data, status })
-
 
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
     }
+
     const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
@@ -40,6 +39,7 @@ const RegisterForm = ({ backStep }: backType) => {
             setLoading(false);
         }
     }
+
     const handleBackStep = () => {
         backStep('welcome');
     }
