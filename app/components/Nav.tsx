@@ -9,7 +9,6 @@ import { signOut } from 'next-auth/react'
 import { useDebouncedCallback } from 'use-debounce'
 
 const Nav = ({ user }: { user: IUser }) => {
-  console.log({ user })
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showSearchMobile, setShowSearchMobile] = useState(false)
   const [search, setSearch] = useState('')
@@ -61,8 +60,8 @@ const Nav = ({ user }: { user: IUser }) => {
 
       {/* Search */}
       {user?.role === 'user' && <>
-        <form className='hidden md:flex items-center rounded-md w-1/2 bg-white max-w-lg shadow-md'>
-          <Search className='w-5 h-5 ml-2 text-black ml-2' />
+        <form className='hidden md:flex items-center rounded-md w-1/2 md:w-1/3 bg-white max-w-lg shadow-md'>
+          <Search className='w-5 h-5 ml-2 text-black' />
           <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => handleInputChange(e.target.value)} />
         </form>
       </>}
@@ -91,21 +90,21 @@ const Nav = ({ user }: { user: IUser }) => {
         </div>
 
         {/* Menu admin  */}
-        <div className='hidden md:flex flex-row gap-4 items-center'>
+        <div className='hidden md:flex flex-row gap-4 items-center w-full'>
           {/* Add Category */}
-          <Link href='admin/add-grocery' className='flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all duration-300'>
+          <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
             <Plus className='w-5 h-5 text-green-500' />
             Add category
           </Link>
           {/* View Category */}
-          <Link href='' className='flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all duration-300'>
+          <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
             <View className='w-5 h-5 text-green-500' />
             View category
           </Link>
           {/* Manager Orders */}
-          <Link href='' className='flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all duration-300'>
+          <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
             <ListOrdered className='w-5 h-5 text-green-500' />
-            Manager Orders
+            Manager orders
           </Link>
         </div>
 
@@ -127,7 +126,7 @@ const Nav = ({ user }: { user: IUser }) => {
               className='absolute top-16 right-10 w-48 bg-white rounded-2xl shadow-md p-4'
             >
               {/* Profile */}
-              <Link href='/profile' className='flex items-center gap-2.5 p-2 hover:bg-gray-100 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
+              <Link href='/profile' className='flex items-center gap-2.5 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
                 <Image src={user?.image || ''} alt='User' width={32} height={32} className='w-8 h-8 rounded-full cursor-pointer' />
                 <div className='flex flex-col gap-1'>
                   <span className='text-black font-bold text-sm'>{user?.name.toUpperCase()}</span>
@@ -135,13 +134,13 @@ const Nav = ({ user }: { user: IUser }) => {
                 </div>
               </Link>
               {user?.role === 'user' && <>
-                <button className='flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
+                <button className='flex items-center gap-2 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
                   <Package className='w-5 h-5 text-green-500' />
                   <span className='text-black text-sm'>My Orders</span>
                 </button>
               </>}
               <hr className='border-gray-200' />
-              <button ref={profileDropDown} className='flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md w-full hover:bg-red-200 transition-all duration-300 cursor-pointer mt-1.5' onClick={() => signOut({ callbackUrl: '/login' })}>
+              <button ref={profileDropDown} className='flex items-center gap-2 p-2 rounded-md w-full hover:bg-red-200 transition-all duration-300 cursor-pointer mt-1.5' onClick={() => signOut({ callbackUrl: '/login' })}>
                 <LogOut className='w-5 h-5 text-red-500' />
                 <span className='text-black text-sm'>Logout</span>
               </button>

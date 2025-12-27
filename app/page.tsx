@@ -13,7 +13,6 @@ const Home = async () => {
   const session = await auth();
   const user = await User?.findById(session?.user?.id);
 
-  console.log({ session })
   if (!user) {
     redirect('/login');
   }
@@ -21,11 +20,9 @@ const Home = async () => {
   // parse json
   const JsonUser = JSON.parse(JSON.stringify(user));
 
-  console.log({ JsonUser })
 
   const inComplete = !JsonUser?.mobile || !JsonUser?.role || (!JsonUser?.mobile && JsonUser?.role == 'user')
 
-  console.log({ inComplete })
   if (inComplete) {
     return <EditRoleModile />
   }
@@ -34,7 +31,7 @@ const Home = async () => {
   return (
     <>
       <Nav user={JsonUser} />
-      {JsonUser?.role === 'user' ? <UserDashboard/> : JsonUser?.role === 'admin' ? <AdminDashboard/> : <DeliveryBoy/>}
+      {JsonUser?.role === 'user' ? <UserDashboard /> : JsonUser?.role === 'admin' ? <AdminDashboard /> : <DeliveryBoy />}
     </>
   )
 }

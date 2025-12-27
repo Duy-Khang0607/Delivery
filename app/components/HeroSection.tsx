@@ -82,7 +82,7 @@ const HeroSection = () => {
             {/* Dots */}
             <div className='absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2'>
                 {slides.map((_, index) => (
-                    <button className={` h-3 rounded-full transition-all duration-300 ${current === index ? 'bg-green-400 w-5' : 'bg-white/50 w-3'}`} onClick={() => setCurrent(index)}></button>
+                    <button key={index} className={` h-3 rounded-full transition-all duration-300 ${current === index ? 'bg-green-400 w-5' : 'bg-white/50 w-3'}`} onClick={() => setCurrent(index)}></button>
                 ))}
             </div>
         </div>
