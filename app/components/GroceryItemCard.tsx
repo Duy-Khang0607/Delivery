@@ -15,7 +15,8 @@ const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <motion.div className='h-auto bg-white shadow-xl rounded-lg flex flex-col justify-center transition-all duration-300 border-gray-100 border overflow-hidden cursor-pointer gap-2 min-w-[300px] md:min-w-[200px]'
+    // <motion.div className='h-auto bg-white shadow-xl rounded-lg flex flex-col justify-center transition-all duration-300 border-gray-100 border overflow-hidden cursor-pointer gap-2 w-full'
+    <motion.div className='bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col md:min-w-[150px]'
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
@@ -29,7 +30,7 @@ const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
       {/* Title && Button */}
       <div className='p-3'>
         {/* Category */}
-        <p className='text-[12px] tracking-wide text-gray-400'>{groceries?.category}</p>
+        <p className='text-[12px] tracking-wide text-gray-400 md:h-9'>{groceries?.category}</p>
 
         {/* Name */}
         <h1 className='h-10 w-auto font-semibold text-md'>{groceries?.name}</h1>
@@ -47,7 +48,7 @@ const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
           <ShoppingCart className='w-5 h-5' />
           Add to cart
         </motion.button>
-        
+
       </div>
 
       {/* Popup image */}
