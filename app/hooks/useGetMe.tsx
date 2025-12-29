@@ -4,21 +4,22 @@ import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setUserData } from '../redux/userSlice'
 import { AppDispatch } from '../redux/store'
+import { useToast } from '@/app/components/Toast'
 
 const useGetMe = () => {
     const dispatch = useDispatch<AppDispatch>()
 
+    const { showToast } = useToast();
 
     const fetchGetMe = async () => {
         try {
             const user = await axios.get('/api/me');
             dispatch(setUserData(user?.data?.user))
-            console.log({ user })
         } catch (error) {
             console.log({ error })
+            showToast('Internal server error', "error");
         }
     }
-
 
     useEffect(() => {
         fetchGetMe()

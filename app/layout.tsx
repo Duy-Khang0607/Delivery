@@ -33,8 +33,9 @@ export default function RootLayout({
       >
         <Provider>
           <ToastProvider>
+            {/* Redux toolkit */}
             <StoreProvider>
-              {/* Get info user */}
+              {/* Get initial info user */}
               <InitUser />
               {children}
             </StoreProvider>

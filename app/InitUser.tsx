@@ -2,8 +2,6 @@
 
 import useGetMe from "./hooks/useGetMe"
 
-
-
 const InitUser = () => {
     useGetMe();
     return null
