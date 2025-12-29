@@ -17,7 +17,7 @@ const useGetMe = () => {
             dispatch(setUserData(user?.data?.user))
         } catch (error) {
             console.log({ error })
-            showToast('Internal server error', "error");
+            showToast('Get infomation user failed !', "error");
         }
     }
 

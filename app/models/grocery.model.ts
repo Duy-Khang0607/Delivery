@@ -6,7 +6,7 @@ export interface IGrocery {
     category: string,
     price: number,
     unit?: string,
-    quantity?: number,
+    quantity: number,
     image: string[],
     createdAt: Date,
     updatedAt: Date,

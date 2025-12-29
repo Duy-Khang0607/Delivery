@@ -2,9 +2,12 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { IGrocery } from '../models/grocery.model'
 import Image from 'next/image'
-import { ShoppingCart } from 'lucide-react'
+import { CircleMinus, CirclePlus, ShoppingCart } from 'lucide-react'
 import { useState } from 'react'
 import PopupImage from '../HOC/PopupImage'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../redux/store'
+import { addToCart, decreaseQuantity, increaseQuantity } from '../redux/cartSlice'
 
 interface GroceryItemCardProps {
   groceries: IGrocery
@@ -13,6 +16,18 @@ interface GroceryItemCardProps {
 
 const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
   const [open, setOpen] = useState(false);
+
+  const dispatch = useDispatch<AppDispatch>()
+
+  // State redux - Cart
+  const { cartData } = useSelector((state: RootState) => state.cart)
+
+  // Find item -> khi click "Add to cart"
+  const cartItem = cartData?.find(item => item?._id === groceries?._id)
+
+  console.log({ cartItem })
+
+
 
   return (
     // <motion.div className='h-auto bg-white shadow-xl rounded-lg flex flex-col justify-center transition-all duration-300 border-gray-100 border overflow-hidden cursor-pointer gap-2 w-full'
@@ -43,11 +58,23 @@ const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
           </span>
         </div>
 
-        {/* Button */}
-        <motion.button whileTap={{ scale: 0.96 }} className='w-full bg-green-600 text-white rounded-2xl hover:bg-green-400 cursor-pointer flex flex-row justify-center items-center gap-2 py-1.5 mt-3'>
-          <ShoppingCart className='w-5 h-5' />
-          Add to cart
-        </motion.button>
+        {/* Button Add to Cart */}
+        {cartItem ? (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
+            className='w-full bg-gray-200 rounded-2xl cursor-pointer gap-2 py-1.5 mt-3 border border-green-500 text-green-500'>
+            <div className='flex flex-row items-center justify-center gap-2'>
+              <CircleMinus onClick={() => dispatch(decreaseQuantity(groceries?._id))} className='w-5 h-5 hover:text-green-700' />
+              <span>{cartItem?.quantity}</span>
+              <CirclePlus onClick={() => dispatch(increaseQuantity(groceries?._id))} className='w-5 h-5 hover:text-green-700' />
+            </div>
+          </motion.div>
+        ) : (
+          <motion.button onClick={() => dispatch(addToCart({ ...groceries, quantity: 1 }))} whileTap={{ scale: 0.96 }} className='w-full bg-green-600 text-white rounded-2xl hover:bg-green-400 cursor-pointer flex flex-row justify-center items-center gap-2 py-1.5 mt-3'>
+            <ShoppingCart className='w-5 h-5' />
+            Add to cart
+          </motion.button>
+        )}
+
 
       </div>
 

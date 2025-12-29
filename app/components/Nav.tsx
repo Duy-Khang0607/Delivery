@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { signOut } from 'next-auth/react'
 import { useDebouncedCallback } from 'use-debounce'
+import { useSelector } from 'react-redux'
+import { RootState } from '../redux/store'
 
 const Nav = ({ user }: { user: IUser }) => {
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -15,6 +17,9 @@ const Nav = ({ user }: { user: IUser }) => {
   const profileDropDown = useRef<HTMLButtonElement>(null)
   const searchMobileRef = useRef<HTMLFormElement>(null)
   const [sideBar, setSideBar] = useState(false)
+
+  // State redux - Cart
+  const {cartData} = useSelector((state:RootState) => state.cart)
 
   // Debounce chỉ cho logic tìm kiếm (API call, filter, etc)
   const debouncedSearch = useDebouncedCallback((value: string) => {
@@ -80,7 +85,7 @@ const Nav = ({ user }: { user: IUser }) => {
         {user?.role === 'user' && <>
           <Link href='' className='relative bg-white rounded-full p-2'>
             <ShoppingCart className='w-5 h-5 text-green-500' />
-            <span className='absolute -top-1.5 -right-2 text-white font-bold text-sm flex items-center justify-center w-5 h-5 bg-red-500 rounded-full'>1</span>
+            <span className='absolute -top-1.5 -right-2 text-white font-bold text-sm flex items-center justify-center w-5 h-5 bg-red-500 rounded-full'>{cartData?.length}</span>
           </Link>
         </>}
 

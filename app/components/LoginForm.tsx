@@ -17,7 +17,6 @@ const LoginForm = () => {
     const router = useRouter();
 
     const { data, status } = useSession();
-    console.log({ data, status })
 
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
@@ -102,7 +101,7 @@ const LoginForm = () => {
                 {/* Don't have an account? */}
                 <div className='flex items-center gap-1 text-gray-400 w-full justify-center'>
                     <span className='text-black text-sm md:text-[14px]'>Don't have an account ?</span>
-                    <Link href='/' className='text-green-600 font-bold text-sm md:text-[14px] hover:text-green-700 transition-all duration-300'>Register</Link>
+                    <Link href='/register' className='text-green-600 font-bold text-sm md:text-[14px] hover:text-green-700 transition-all duration-300'>Register</Link>
                 </div>
             </motion.form>
         </div>
