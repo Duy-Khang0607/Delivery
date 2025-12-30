@@ -25,12 +25,8 @@ const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
   // Find item -> khi click "Add to cart"
   const cartItem = cartData?.find(item => item?._id === groceries?._id)
 
-  console.log({ cartItem })
-
-
 
   return (
-    // <motion.div className='h-auto bg-white shadow-xl rounded-lg flex flex-col justify-center transition-all duration-300 border-gray-100 border overflow-hidden cursor-pointer gap-2 w-full'
     <motion.div className='bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col md:min-w-[150px]'
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -74,8 +70,6 @@ const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
             Add to cart
           </motion.button>
         )}
-
-
       </div>
 
       {/* Popup image */}

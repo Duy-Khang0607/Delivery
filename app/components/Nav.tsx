@@ -19,7 +19,7 @@ const Nav = ({ user }: { user: IUser }) => {
   const [sideBar, setSideBar] = useState(false)
 
   // State redux - Cart
-  const {cartData} = useSelector((state:RootState) => state.cart)
+  const { cartData } = useSelector((state: RootState) => state.cart)
 
   // Debounce chỉ cho logic tìm kiếm (API call, filter, etc)
   const debouncedSearch = useDebouncedCallback((value: string) => {
@@ -83,7 +83,7 @@ const Nav = ({ user }: { user: IUser }) => {
 
         {/* Cart Icon */}
         {user?.role === 'user' && <>
-          <Link href='' className='relative bg-white rounded-full p-2'>
+          <Link href='/user/cart' className='relative bg-white rounded-full p-2'>
             <ShoppingCart className='w-5 h-5 text-green-500' />
             <span className='absolute -top-1.5 -right-2 text-white font-bold text-sm flex items-center justify-center w-5 h-5 bg-red-500 rounded-full'>{cartData?.length}</span>
           </Link>
@@ -113,10 +113,9 @@ const Nav = ({ user }: { user: IUser }) => {
           </Link>
         </div>
 
-
         {/* User Image */}
-        <div className='relative'>
-          <Image src={user?.image || ''} alt='User' width={36} height={36} className='w-9 h-9 rounded-full cursor-pointer' onClick={() => setShowUserMenu(prev => !prev)} />
+        <div className='relative min-w-[30px]'>
+          <Image src={user?.image || ''} alt='User' width={32} height={32} className='w-8 h-8 rounded-full cursor-pointer' onClick={() => setShowUserMenu(prev => !prev)} />
         </div>
 
         {/* Dropdown Profile */}

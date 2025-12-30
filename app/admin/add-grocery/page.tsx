@@ -1,5 +1,5 @@
 'use client'
-import { ArrowLeft, BadgePlus, User, Lock, Upload, Loader2 } from 'lucide-react'
+import { ArrowLeft, BadgePlus, Upload, Loader2 } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
 import { ChangeEvent, FormEvent, useState } from 'react'
@@ -7,6 +7,7 @@ import Image from 'next/image'
 import axios from 'axios'
 import { useToast } from '@/app/components/Toast'
 import PopupImage from '@/app/HOC/PopupImage'
+import { useRouter } from 'next/navigation'
 
 const categories = [
   "Fresh Food",
@@ -72,6 +73,7 @@ const AddGrocery = () => {
   const disableAdd = name?.length > 0 && category?.length > 0 && unit?.length > 0 && price?.length > 0;
   const [open, setOpen] = useState(false);
   const { showToast } = useToast();
+  const router = useRouter()
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
@@ -115,21 +117,21 @@ const AddGrocery = () => {
   }
 
   return (
-    <section className='bg-linear-to-b from-green-50 to-white w-full min-h-screen py-16 px-4 relative flex flex-col items-center justify-center'>
+    // <section className='bg-linear-to-b from-green-50 to-white w-full min-h-screen py-16 px-4 relative flex flex-col items-center justify-center'>
+    <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen mt-8 mb-24 relative'>
       {/* <- and Back to home */}
-      <Link href='/' className='bg-white shadow-2xl w-auto rounded-xl text-green-700 text-center absolute top-6 left-6 flex flex-row gap-2 p-1.5 hover:bg-green-200 cursor-pointer transition-all duration-200 items-center'>
+      <motion.button onClick={() => router.push('/')} whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.06 }} className='bg-white shadow-2xl w-auto rounded-xl text-green-700 text-center absolute -top-2 left-0 flex flex-row gap-2 p-1.5 hover:bg-green-200 cursor-pointer transition-all duration-200 items-center'>
         <ArrowLeft className='w-5 h-5' />
         <span className='hidden md:flex font-semibold tracking-wide'>Back to home</span>
-      </Link>
+      </motion.button>
 
       {/* Add Grocery */}
       <motion.div
-        // onSubmit={ }
         initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
         }}
-        transition={{ duration: 1, delay: 0.2 }} className='max-w-2xl h-full overflow-hidden rounded-2xl bg-white shadow-2xl px-3 py-5 border-green-200'>
+        transition={{ duration: 1, delay: 0.2 }} className='w-full md:max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl px-3 py-5 border-green-200 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-fit'>
 
         {/* Tittle */}
         <div className='flex flex-col items-center text-center gap-3 mb-8'>
@@ -142,6 +144,7 @@ const AddGrocery = () => {
 
         {/* Form */}
         <form className='flex flex-col gap-3' >
+          
           {/* Grocry name */}
           <div className='relative w-full flex flex-col gap-2'>
             <label className='text-base font-semibold'>Grocery Name <span className='text-red-500'>*</span></label>
@@ -175,7 +178,7 @@ const AddGrocery = () => {
           {/* Price */}
           <div className='relative w-full flex flex-col gap-2'>
             <label className='text-base font-semibold'>Price <span className='text-red-500'>*</span></label>
-            <input required type="number" placeholder='0' className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={price} onChange={(e) => setPrice(e.target.value)} />
+            <input required type="number" placeholder='$' className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={price} onChange={(e) => setPrice(e.target.value)} />
           </div>
 
           {/* Button upload image */}
