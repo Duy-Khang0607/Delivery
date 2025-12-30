@@ -117,118 +117,124 @@ const AddGrocery = () => {
   }
 
   return (
-    // <section className='bg-linear-to-b from-green-50 to-white w-full min-h-screen py-16 px-4 relative flex flex-col items-center justify-center'>
-    <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen mt-8 mb-24 relative'>
+    <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto py-10 relative'>
       {/* <- and Back to home */}
-      <motion.button onClick={() => router.push('/')} whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.06 }} className='bg-white shadow-2xl w-auto rounded-xl text-green-700 text-center absolute -top-2 left-0 flex flex-row gap-2 p-1.5 hover:bg-green-200 cursor-pointer transition-all duration-200 items-center'>
+      <motion.button
+        onClick={() => router.push('/user/cart')}
+        whileTap={{ scale: 0.97 }}
+        whileHover={{ scale: 1.06 }}
+        className='absolute left-0 top-2 flex items-center gap-2 text-green-700 hover:text-green-800 font-semibold cursor-pointer bg-white shadow-lg p-2 rounded-xl'>
         <ArrowLeft className='w-5 h-5' />
         <span className='hidden md:flex font-semibold tracking-wide'>Back to home</span>
       </motion.button>
 
-      {/* Add Grocery */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: 1,
-        }}
-        transition={{ duration: 1, delay: 0.2 }} className='w-full md:max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl px-3 py-5 border-green-200 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-fit'>
+      <div className='flex justify-center items-center min-h-screen'>
+        {/* Add Grocery */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
+          }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className='w-full md:max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl px-3 py-5 border border-green-200 h-fit'>
 
-        {/* Tittle */}
-        <div className='flex flex-col items-center text-center gap-3 mb-8'>
-          <div className='flex flex-row items-center gap-2 tracking-wide text-xl font-semibold'>
-            <BadgePlus className='w-5 h-5 text-green-700' />
-            Add Grocery
-          </div>
-          <p className='text-sm max-w-sm md:max-w-xl'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis id quasi, aspernatur harum quibusdam pariatur ducimus atque culpa cum veniam? Repellat, cupiditate! Maiores autem corrupti quo animi illo, dolorum laborum.</p>
-        </div>
-
-        {/* Form */}
-        <form className='flex flex-col gap-3' >
-          
-          {/* Grocry name */}
-          <div className='relative w-full flex flex-col gap-2'>
-            <label className='text-base font-semibold'>Grocery Name <span className='text-red-500'>*</span></label>
-            <input required type="email" placeholder='Grocery name' className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={name} onChange={(e) => setName(e.target.value)} />
-          </div>
-
-          {/* Category - Unit */}
-          <div className='relative w-full flex flex-row gap-3 items-center justify-between'>
-            {/* Category */}
-            <div className='w-full flex flex-col gap-2'>
-              <label className='text-base font-semibold'>Category <span className='text-red-500'>*</span></label>
-              <select required className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={category} onChange={(e) => setCategory(e.target.value)} >
-                <option value=''>Select category</option>
-                {categories?.map(item => (
-                  <option value={item}>{item}</option>
-                ))}
-              </select>
+          {/* Tittle */}
+          <div className='flex flex-col items-center text-center gap-3 mb-8'>
+            <div className='flex flex-row items-center gap-2 tracking-wide text-xl font-semibold'>
+              <BadgePlus className='w-5 h-5 text-green-700' />
+              Add Grocery
             </div>
-            {/* Unit */}
-            <div className='w-full flex flex-col gap-2'>
-              <label className='text-base font-semibold'>Unit <span className='text-red-500'>*</span></label>
-              <select required className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={unit} onChange={(e) => setUnit(e.target.value)} >
-                <option value=''>Select units</option>
-                {units?.map(item => (
-                  <option value={item}>{item}</option>
-                ))}
-              </select>
+            <p className='text-sm max-w-sm md:max-w-xl'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis id quasi, aspernatur harum quibusdam pariatur ducimus atque culpa cum veniam? Repellat, cupiditate! Maiores autem corrupti quo animi illo, dolorum laborum.</p>
+          </div>
+
+          {/* Form */}
+          <form className='flex flex-col gap-3' >
+
+            {/* Grocry name */}
+            <div className='relative w-full flex flex-col gap-2'>
+              <label className='text-base font-semibold'>Grocery Name <span className='text-red-500'>*</span></label>
+              <input required type="email" placeholder='Grocery name' className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={name} onChange={(e) => setName(e.target.value)} />
             </div>
-          </div>
 
-          {/* Price */}
-          <div className='relative w-full flex flex-col gap-2'>
-            <label className='text-base font-semibold'>Price <span className='text-red-500'>*</span></label>
-            <input required type="number" placeholder='$' className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={price} onChange={(e) => setPrice(e.target.value)} />
-          </div>
+            {/* Category - Unit */}
+            <div className='relative w-full flex flex-row gap-3 items-center justify-between'>
+              {/* Category */}
+              <div className='w-full flex flex-col gap-2'>
+                <label className='text-base font-semibold'>Category <span className='text-red-500'>*</span></label>
+                <select required className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={category} onChange={(e) => setCategory(e.target.value)} >
+                  <option value=''>Select category</option>
+                  {categories?.map(item => (
+                    <option value={item}>{item}</option>
+                  ))}
+                </select>
+              </div>
+              {/* Unit */}
+              <div className='w-full flex flex-col gap-2'>
+                <label className='text-base font-semibold'>Unit <span className='text-red-500'>*</span></label>
+                <select required className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={unit} onChange={(e) => setUnit(e.target.value)} >
+                  <option value=''>Select units</option>
+                  {units?.map(item => (
+                    <option value={item}>{item}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-          {/* Button upload image */}
-          <div className='relative w-full md:max-w-[160px] flex flex-row gap-3 text-green-700 items-center'>
-            <Upload className='w-5 h-5 absolute top-3.5 left-2.5' />
-            <label
-              htmlFor="file-upload"
-              className="w-[160px] shrink-0 flex-none p-3 h-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300 cursor-pointer" onClick={(e) => e.stopPropagation()}
-            >
-              Upload image
-            </label>
-            <input
-              type="file"
-              id="file-upload"
-              className="hidden"
-              onChange={handleFileChange}
-              accept='image/*'
-            />
-            {preview ? (
-              loadingImage ? (
-                <div className='w-full'>
-                  <Loader2 className='w-20 h-10 animate-spin' />
-                </div>
-              ) : (
-                <Image
-                  onClick={() => setOpen(true)}
-                  src={preview}
-                  width={100}
-                  height={100}
-                  alt="Image upload"
-                  className="object-cover bg-white border-gray-300 border shadow-2xl rounded-2xl cursor-pointer hover:border-gray-500 transition-all duration-200"
-                />
-              )
-            ) : null}
+            {/* Price */}
+            <div className='relative w-full flex flex-col gap-2'>
+              <label className='text-base font-semibold'>Price <span className='text-red-500'>*</span></label>
+              <input required type="number" placeholder='$' className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={price} onChange={(e) => setPrice(e.target.value)} />
+            </div>
 
-            {/* Popup image */}
-            <AnimatePresence>
-              {open && preview && (
-                <PopupImage image={preview} setOpen={setOpen} />
-              )}
-            </AnimatePresence>
-          </div>
+            {/* Button upload image */}
+            <div className='relative w-full md:max-w-[160px] flex flex-row gap-3 text-green-700 items-center'>
+              <Upload className='w-5 h-5 absolute top-3.5 left-2.5' />
+              <label
+                htmlFor="file-upload"
+                className="w-[160px] shrink-0 flex-none p-3 h-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300 cursor-pointer" onClick={(e) => e.stopPropagation()}
+              >
+                Upload image
+              </label>
+              <input
+                type="file"
+                id="file-upload"
+                className="hidden"
+                onChange={handleFileChange}
+                accept='image/*'
+              />
+              {preview ? (
+                loadingImage ? (
+                  <div className='w-full'>
+                    <Loader2 className='w-20 h-10 animate-spin' />
+                  </div>
+                ) : (
+                  <Image
+                    onClick={() => setOpen(true)}
+                    src={preview}
+                    width={100}
+                    height={100}
+                    alt="Image upload"
+                    className="object-cover bg-white border-gray-300 border shadow-2xl rounded-2xl cursor-pointer hover:border-gray-500 transition-all duration-200"
+                  />
+                )
+              ) : null}
 
-          {/* Button Add grocery */}
-          <motion.button disabled={!disableAdd || loading} onClick={handleSubmit} type="submit" className={`${disableAdd ? 'bg-green-500 hover:bg-green-400' : 'bg-gray-300'} rounded-md mt-5  cursor-pointer transition-all text-center p-2 text-white flex justify-center`}>{loading ? <Loader2 className='w-5 h-5 animate-spin' /> : 'Add Grocery'}</motion.button>
+              {/* Popup image */}
+              <AnimatePresence>
+                {open && preview && (
+                  <PopupImage image={preview} setOpen={setOpen} />
+                )}
+              </AnimatePresence>
+            </div>
 
-        </form>
-      </motion.div>
+            {/* Button Add grocery */}
+            <motion.button disabled={!disableAdd || loading} onClick={handleSubmit} type="submit" className={`${disableAdd ? 'bg-green-500 hover:bg-green-400' : 'bg-gray-300'} rounded-md mt-5  cursor-pointer transition-all text-center p-2 text-white flex justify-center`}>{loading ? <Loader2 className='w-5 h-5 animate-spin' /> : 'Add Grocery'}</motion.button>
 
-    </section>
+          </form>
+        </motion.div>
+      </div>
+
+    </section >
   )
 }
 
