@@ -163,8 +163,8 @@ const AddGrocery = () => {
                 <label className='text-base font-semibold'>Category <span className='text-red-500'>*</span></label>
                 <select required className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={category} onChange={(e) => setCategory(e.target.value)} >
                   <option value=''>Select category</option>
-                  {categories?.map(item => (
-                    <option value={item}>{item}</option>
+                  {categories?.map((item, index) => (
+                    <option key={index} value={item}>{item}</option>
                   ))}
                 </select>
               </div>

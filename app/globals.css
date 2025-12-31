@@ -9,3 +9,34 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
+/* Leaflet Map Custom Styles */
+.leaflet-container {
+    font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+}
+
+.leaflet-popup-content {
+    margin: 0;
+}
+
+/* GeoSearch Control Styles */
+.geosearch {
+    font-family: inherit;
+}
+
+.geosearch .geosearch__input {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 2px solid #22c55e;
+    font-size: 14px;
+}
+
+.geosearch .geosearch__input:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
