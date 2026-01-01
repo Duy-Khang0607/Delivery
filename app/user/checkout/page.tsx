@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Calculator, LocationEdit, MapPinHouse, Phone, Search, Send, StickyNote, User } from 'lucide-react'
+import { ArrowLeft, Calculator, Loader2, LocateFixed, LocationEdit, MapPin, MapPinHouse, Phone, Search, Send, StickyNote, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useSelector } from 'react-redux'
@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 // Dynamic import để tránh lỗi SSR với leaflet
-const VietnamMap = dynamic(() => import('@/app/components/VietnamMap'), {
+const MapViewComponent = dynamic(() => import('@/app/components/MapView'), {
     ssr: false,
     loading: () => (
         <div className="w-full h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
@@ -18,12 +18,18 @@ const VietnamMap = dynamic(() => import('@/app/components/VietnamMap'), {
     ),
 })
 
+
+
 const Checkout = () => {
     const router = useRouter()
 
     const { userData } = useSelector((state: RootState) => state.user)
 
     const [position, setPosition] = useState<[number, number] | null>(null)
+
+    const [searchMap, setSearchMap] = useState<string>("")
+
+    const [isSearchLoading, setSearchLoading] = useState(false)
 
     const [info, setInfo] = useState({
         name: "",
@@ -34,13 +40,52 @@ const Checkout = () => {
         fullAddress: ""
     })
 
-    const handleLocationSelect = (lat: number, lng: number, address?: string) => {
-        console.log({ lat, lng, address })
-        // setPosition([lat,lng])
-        setInfo(prev => ({
-            ...prev,
-            fullAddress: address || ""
-        }))
+    const handleSearchMap = async (e: React.FormEvent<HTMLFormElement>) => {
+        e?.preventDefault()
+        setSearchLoading(true)
+        try {
+            const { OpenStreetMapProvider } = await import("leaflet-geosearch")
+
+            const provider = new OpenStreetMapProvider({
+                params: {
+                    countrycodes: 'vn', // Limit search to Vietnam
+                    addressdetails: 1,
+                },
+            })
+            const results = await provider.search({ query: searchMap })
+            if (results?.length > 0) {
+                setPosition([results[0]?.y, results[0]?.x])
+                setSearchLoading(false)
+            }
+
+            console.log({ results })
+
+        } catch (error) {
+            console.log({ error })
+        } finally {
+            setSearchLoading(false)
+        }
+    }
+
+    const handleCurrentLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const { latitude, longitude } = pos?.coords
+                    setPosition([latitude, longitude])
+                },
+                (error) => {
+                    console.error("Error getting location:", {
+                        code: error.code,
+                        message: error.message,
+                    });
+                }, {
+                // enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 10000,
+            }
+            )
+        }
     }
 
 
@@ -64,13 +109,19 @@ const Checkout = () => {
                     setPosition([latitude, longitude])
                 },
                 (error) => {
-                    console.error('Error getting location:', error)
-                }
+                    console.error("Error getting location:", {
+                        code: error.code,
+                        message: error.message,
+                    });
+                }, {
+                // enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 10000,
+            }
             )
         }
     }, [])
 
-    console.log({ position })
 
     // Gọi API khi position có giá trị
     useEffect(() => {
@@ -87,6 +138,7 @@ const Checkout = () => {
                         },
                     }
                 )
+                console.log({ res: res?.data?.address })
                 setInfo(prev => ({
                     ...prev,
                     city: res?.data?.address?.city,
@@ -95,6 +147,7 @@ const Checkout = () => {
                     fullAddress: res?.data?.display_name
                 }))
             } catch (error: any) {
+                console.log({ error })
                 console.log({ error: error?.response?.data || error?.message || error })
             }
         }
@@ -209,30 +262,35 @@ const Checkout = () => {
                     </div>
 
                     {/* Search && Button search */}
-                    <div className='w-full flex flex-row items-center gap-2'>
-                        <form className='hidden md:flex items-center rounded-md bg-white max-w-lg shadow-md border border-gray-300 w-full'>
-                            <Search className='w-5 h-5 ml-2 text-black' />
-                            <input type="text" id="search" placeholder='Search for a your address' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none  focus:ring-green-500' />
-                        </form>
-                        <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 0.95 }}
-                            className='bg-green-700 p-2 rounded-md text-white text-center w-full transition-all duration-300 cursor-pointer hover:bg-green-600 flex-1 shadow-md shadow-green-700'
-                        >
-                            Search
-                        </motion.button>
-                    </div>
+                    <form onSubmit={handleSearchMap} className='hidden md:flex md:flex-row items-center rounded-md bg-white max-w-lg shadow-md border border-gray-300 w-full relative'>
+                        <div className='flex flex-row items-center gap-2 w-full h-auto'>
+                            <div className='flex flex-row items-center gap-2 w-full h-auto'>
+                                <Search className='w-5 h-5 ml-2 text-black' />
+                                <input value={searchMap} onChange={(e) => setSearchMap(e?.target?.value)} type="text" id="search" placeholder='Search for a your address' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none focus:ring-green-500 pr-20' />
+                            </div>
+                            <div className='absolute top-0 right-0 h-full'>
+                                <motion.button type='submit'
+                                    className={`p-2 rounded-r-md text-white text-center w-full transition-all duration-300 cursor-pointer  h-full hover:scale-105 ${searchMap.length > 0 ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-500 hover:bg-gray-400'}`}
+                                >
+                                    {isSearchLoading ? <Loader2 className='w-10 h-5 animate-spin' /> : 'Search'}
+                                </motion.button>
+                            </div>
+                        </div>
+                    </form>
 
                     {/* Map */}
-                    <div className="w-full mt-3">
+                    <div className="w-full mt-3 h-[400px] relative border border-gray-300 rounded-md shadow-xl">
                         {position && (
-                            <VietnamMap
-                                onLocationSelect={handleLocationSelect}
-                                height="400px"
-                                showSearch={true}
-                                showCurrentLocation={true}
-                                position={position}
-                            />
+                            <MapViewComponent position={position} setPosition={setPosition} />
                         )}
 
+                        {/* Current location */}
+                        <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 0.95 }}
+                            onClick={handleCurrentLocation}
+                            className='absolute bottom-3 right-3 bg-green-700 p-2 rounded-full text-white text-center w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-green-600 shadow-md shadow-green-700 z-10'
+                        >
+                            <LocateFixed className='w-5 h-5' />
+                        </motion.button>
                     </div>
                 </motion.div>
 
