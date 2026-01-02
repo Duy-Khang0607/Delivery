@@ -1,22 +1,38 @@
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+"use client"
+
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import L, { LatLngExpression } from 'leaflet'
-import { useEffect } from 'react'
-import "leaflet/dist/leaflet.css";
+import { useEffect, useState, useMemo } from 'react'
+import 'leaflet/dist/leaflet.css'
 
 
-const MapView = ({ position, setPosition }: { position: [number, number] | null, setPosition: (position: [number, number]) => void }) => {
+const MapView = ({ position, setPosition, setSearchMap }:
+    {
+        position: [number, number] | null,
+        setPosition: (position: [number, number]) => void
+        setSearchMap: (map: string) => void;
+    },
+) => {
+    const [mounted, setMounted] = useState(false);
 
-    if (!position) return null
+    useEffect(() => {
+        setMounted(true);
 
-    const markerIcon = new L.Icon({
-        iconUrl: 'https://cdn-icons-png.flaticon.com/128/684/684908.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    }, []);
+
+    // Icon map
+    const markerIcon = useMemo(() => new L.Icon({
+        iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
         iconSize: [40, 40],
         iconAnchor: [15, 46],
         popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    })
+        shadowSize: [41, 41],
+    }), []);
 
+    if (!mounted || !position) return null;
+
+    // Định vị icon map
     const DraggableMarker: React.FC<{ position: [number, number] | null }> = ({ position }) => {
         if (!position) return null
 
@@ -43,9 +59,33 @@ const MapView = ({ position, setPosition }: { position: [number, number] | null,
         )
     }
 
-    return (
+    // Xử lý click trên map
+    const MapClickHandler: React.FC<{ position: [number, number] | null }> = ({ position }) => {
+        if (!position) return null
+
+        const map = useMap()
+
+        useEffect(() => {
+            if (position) {
+                map.setView(position as LatLngExpression, 13, { animate: true })
+            }
+        }, [map, position])
+
+        useMapEvents({
+            click: (e: L.LeafletMouseEvent) => {
+                const { lat, lng } = (e as L.LeafletMouseEvent)?.latlng
+                setPosition([lat, lng])
+                setSearchMap('')
+            }
+        })
+
+        return null
+    }
+
+    return mounted && (
         <MapContainer
-            key="map" center={position as LatLngExpression}
+            key="map"
+            center={position as LatLngExpression}
             zoom={13}
             scrollWheelZoom={true}
             zoomControl={true}
@@ -58,6 +98,7 @@ const MapView = ({ position, setPosition }: { position: [number, number] | null,
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <DraggableMarker position={position} />
+            <MapClickHandler position={position} />
         </MapContainer>
     )
 }

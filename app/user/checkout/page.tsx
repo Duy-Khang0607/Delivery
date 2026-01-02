@@ -1,12 +1,13 @@
 'use client'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Calculator, Loader2, LocateFixed, LocationEdit, MapPin, MapPinHouse, Phone, Search, Send, StickyNote, User } from 'lucide-react'
+import { ArrowLeft, Calculator, CreditCard, DollarSign, Loader2, LocateFixed, LocationEdit, Lock, MapPin, MapPinHouse, Phone, Search, Send, StickyNote, Truck, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/app/redux/store'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import Link from 'next/link'
 
 // Dynamic import để tránh lỗi SSR với leaflet
 const MapViewComponent = dynamic(() => import('@/app/components/MapView'), {
@@ -17,7 +18,6 @@ const MapViewComponent = dynamic(() => import('@/app/components/MapView'), {
         </div>
     ),
 })
-
 
 
 const Checkout = () => {
@@ -40,9 +40,13 @@ const Checkout = () => {
         fullAddress: ""
     })
 
+    const [paymentMethod, setPaymentMethod] = useState<string>('')
+
+    const { cartData, subTotal, deliveryFee, finalTotal } = useSelector((state: RootState) => state.cart)
+
+    // Tìm kiếm địa chỉ trên map
     const handleSearchMap = async (e: React.FormEvent<HTMLFormElement>) => {
         e?.preventDefault()
-        setSearchLoading(true)
         try {
             const { OpenStreetMapProvider } = await import("leaflet-geosearch")
 
@@ -54,19 +58,17 @@ const Checkout = () => {
             })
             const results = await provider.search({ query: searchMap })
             if (results?.length > 0) {
-                setPosition([results[0]?.y, results[0]?.x])
-                setSearchLoading(false)
+                setPosition([results[0]?.y, results[0]?.x] as [number, number])
             }
 
             console.log({ results })
 
         } catch (error) {
             console.log({ error })
-        } finally {
-            setSearchLoading(false)
         }
     }
 
+    // Lấy vị trí hiện tại
     const handleCurrentLocation = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -88,8 +90,84 @@ const Checkout = () => {
         }
     }
 
+    // Paymend Cod 
+    const handleCod = async () => {
+        if (!position) return
 
-    // Cập nhật info khi userData được load
+        try {
+            const res = await axios.post('/api/auth/user/order', {
+                userId: userData?._id,
+                items: cartData?.map((item) => ({
+                    grocery: item?._id,
+                    name: item?.name,
+                    price: item?.price,
+                    unit: item?.unit,
+                    image: item?.image,
+                    quantity: item?.quantity,
+                })),
+                paymentMethod,
+                totalAmount: finalTotal,
+                address: {
+                    fullName: info?.name,
+                    mobile: info?.mobile,
+                    city: info?.city,
+                    state: info?.state,
+                    pincode: info?.pinCode,
+                    fullAddress: info?.fullAddress,
+                    latitude: position[0],
+                    longitude: position[1]
+                }
+            });
+            if(res?.data?.success) router.push('/user/order-success')
+            console.log({ res })
+
+        } catch (error) {
+            console.error({ error })
+        }
+    }
+
+    // Payment Online
+    const handleOnline = () => {
+
+    }
+
+    // Gọi API khi position có giá trị hoặc thay đổi giá trị
+    useEffect(() => {
+        const fetchAddress = async () => {
+            if (!position) return
+
+            setSearchLoading(true)
+            try {
+                // Nominatim yêu cầu User-Agent header để tránh bị block
+                const res = await axios.get(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position[0]}&lon=${position[1]}&zoom=18&addressdetails=1`,
+                    {
+                        headers: {
+                            'User-Agent': 'DeliveryApp/1.0', // Bắt buộc phải có User-Agent
+                        },
+                    }
+                )
+                console.log({ res: res?.data?.address })
+                setInfo(prev => ({
+                    ...prev,
+                    city: res?.data?.address?.city,
+                    state: res?.data?.address?.suburb,
+                    pinCode: res?.data?.address?.postcode,
+                    fullAddress: res?.data?.display_name
+                }))
+                setSearchLoading(false)
+            } catch (error: any) {
+                console.log({ error })
+                console.log({ error: error?.response?.data || error?.message || error })
+                setSearchLoading(false)
+            } finally {
+                setSearchLoading(false)
+            }
+        }
+        fetchAddress()
+    }, [position])
+
+    // Cập nhật info user làn đầu và khi userData thay đổi
     useEffect(() => {
         if (userData) {
             setInfo(prev => ({
@@ -100,7 +178,7 @@ const Checkout = () => {
         }
     }, [userData])
 
-    // Lấy vị trí hiện tại
+    // Lấy vị trí hiện tại lần đầu load trang
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -121,39 +199,6 @@ const Checkout = () => {
             )
         }
     }, [])
-
-
-    // Gọi API khi position có giá trị
-    useEffect(() => {
-        const fetchAddress = async () => {
-            if (!position) return
-
-            try {
-                // Nominatim yêu cầu User-Agent header để tránh bị block
-                const res = await axios.get(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position[0]}&lon=${position[1]}&zoom=18&addressdetails=1`,
-                    {
-                        headers: {
-                            'User-Agent': 'DeliveryApp/1.0', // Bắt buộc phải có User-Agent
-                        },
-                    }
-                )
-                console.log({ res: res?.data?.address })
-                setInfo(prev => ({
-                    ...prev,
-                    city: res?.data?.address?.city,
-                    state: res?.data?.address?.suburb,
-                    pinCode: res?.data?.address?.postcode,
-                    fullAddress: res?.data?.display_name
-                }))
-            } catch (error: any) {
-                console.log({ error })
-                console.log({ error: error?.response?.data || error?.message || error })
-            }
-        }
-        fetchAddress()
-    }, [position])
-
 
     return (
         // <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen mt-8 mb-24 relative'>
@@ -181,7 +226,7 @@ const Checkout = () => {
 
             {/* Delivery, Address && Payment method */}
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 w-full'>
-                {/* Delivery */}
+                {/* Delivery address */}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -198,9 +243,10 @@ const Checkout = () => {
                     <div className='relative w-full flex flex-col gap-3'>
                         <User className='w-5 h-5 absolute top-3.5 left-2.5 text-green-700' />
                         <input
+                            disabled={userData?.name ? true : false}
                             value={info?.name || ""}
                             onChange={(e) => setInfo({ ...info, name: e?.target?.value })} type="text" placeholder='Your user'
-                            className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300' />
+                            className={`w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300 ${userData?.name ? 'bg-gray-200 cursor-not-allowed' : ''}`} />
                     </div>
 
                     {/* SDT*/}
@@ -208,10 +254,11 @@ const Checkout = () => {
                         <Phone className='w-5 h-5 absolute top-3.5 left-2.5 text-green-700' />
                         <input
                             value={info?.mobile || ""}
+                            disabled={userData?.mobile ? true : false}
                             onChange={(e) => setInfo({ ...info, mobile: e?.target?.value })}
                             type="number"
                             placeholder='Your phone'
-                            className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300'
+                            className={`w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300 ${userData?.name ? 'bg-gray-200 cursor-not-allowed' : ''}`}
                         />
                     </div>
 
@@ -219,12 +266,15 @@ const Checkout = () => {
                     <div className='relative w-full flex flex-col gap-3'>
                         <LocationEdit className='w-5 h-5 absolute top-3.5 left-2.5 text-green-700' />
                         <input
-                            value={info?.fullAddress || ""}
+                            value={isSearchLoading ? "" : info?.fullAddress || ""}
                             onChange={(e) => setInfo({ ...info, fullAddress: e?.target?.value })}
                             type="text"
-                            placeholder='Your address'
+                            placeholder={isSearchLoading ? "" : "Your address"}
                             className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300'
                         />
+                        {isSearchLoading && (
+                            <Loader2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-green-700" />
+                        )}
                     </div>
 
                     {/* Detail address && Post code */}
@@ -232,45 +282,54 @@ const Checkout = () => {
                         <div className='relative w-full flex flex-col gap-3'>
                             <Calculator className='w-5 h-5 absolute top-3.5 left-2.5 text-green-700' />
                             <input
-                                value={info?.city || ""}
+                                value={isSearchLoading ? "" : info?.city || ""}
                                 onChange={(e) => setInfo({ ...info, city: e?.target?.value })}
                                 type="text"
-                                placeholder='Your district'
+                                placeholder={isSearchLoading ? "" : "Your district"}
                                 className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300'
                             />
+                            {isSearchLoading && (
+                                <Loader2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-green-700" />
+                            )}
                         </div>
                         <div className='relative w-full flex flex-col gap-3'>
                             <StickyNote className='w-5 h-5 absolute top-3.5 left-2.5 text-green-700' />
                             <input
-                                value={info?.state || ""}
+                                value={isSearchLoading ? "" : info?.state || ""}
                                 onChange={(e) => setInfo({ ...info, state: e?.target?.value })}
                                 type="text"
-                                placeholder='Your ward'
+                                placeholder={isSearchLoading ? "" : "Your ward"}
                                 className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300'
                             />
+                            {isSearchLoading && (
+                                <Loader2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-green-700" />
+                            )}
                         </div>
                         <div className='relative w-full flex flex-col gap-3'>
                             <Send className='w-5 h-5 absolute top-3.5 left-2.5 text-green-700' />
                             <input
-                                value={info?.pinCode || ""}
+                                value={isSearchLoading ? "" : info?.pinCode || ""}
                                 onChange={(e) => setInfo({ ...info, pinCode: e?.target?.value })}
                                 type="number"
-                                placeholder='Your postcode'
+                                placeholder={isSearchLoading ? "" : "Your postcode"}
                                 className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pl-10 transition-all duration-300'
                             />
+                            {isSearchLoading && (
+                                <Loader2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-green-700" />
+                            )}
                         </div>
                     </div>
 
                     {/* Search && Button search */}
-                    <form onSubmit={handleSearchMap} className='hidden md:flex md:flex-row items-center rounded-md bg-white max-w-lg shadow-md border border-gray-300 w-full relative'>
-                        <div className='flex flex-row items-center gap-2 w-full h-auto'>
+                    <form onSubmit={handleSearchMap} className='flex flex-row items-center rounded-md bg-white shadow-md border border-gray-300 relative w-full'>
+                        <div className='flex flex-row items-center gap-2 w-full h-full'>
                             <div className='flex flex-row items-center gap-2 w-full h-auto'>
                                 <Search className='w-5 h-5 ml-2 text-black' />
                                 <input value={searchMap} onChange={(e) => setSearchMap(e?.target?.value)} type="text" id="search" placeholder='Search for a your address' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none focus:ring-green-500 pr-20' />
                             </div>
                             <div className='absolute top-0 right-0 h-full'>
-                                <motion.button type='submit'
-                                    className={`p-2 rounded-r-md text-white text-center w-full transition-all duration-300 cursor-pointer  h-full hover:scale-105 ${searchMap.length > 0 ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-500 hover:bg-gray-400'}`}
+                                <motion.button disabled={searchMap?.length === 0} type='submit'
+                                    className={`p-2 rounded-r-md text-white text-center w-full transition-all duration-300 cursor-pointer h-full hover:scale-105 ${searchMap.length > 0 ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-500 hover:bg-gray-400'}`}
                                 >
                                     {isSearchLoading ? <Loader2 className='w-10 h-5 animate-spin' /> : 'Search'}
                                 </motion.button>
@@ -281,7 +340,7 @@ const Checkout = () => {
                     {/* Map */}
                     <div className="w-full mt-3 h-[400px] relative border border-gray-300 rounded-md shadow-xl">
                         {position && (
-                            <MapViewComponent position={position} setPosition={setPosition} />
+                            <MapViewComponent position={position} setPosition={setPosition} setSearchMap={setSearchMap} />
                         )}
 
                         {/* Current location */}
@@ -301,12 +360,66 @@ const Checkout = () => {
                     transition={{ duration: 0.4 }}
                     className='w-full p-3 bg-white shadow-2xl rounded-2xl flex flex-col justify-between items-center h-fit gap-3'
                 >
-                    <h2>Payment method</h2>
+                    {/* Title */}
+                    <div className='flex flex-row items-center gap-3'>
+                        <DollarSign className='text-green-700' />
+                        <h2 className='text-lg font-semibold'>Payment method</h2>
+                    </div>
+
+                    {/* Payment method */}
+                    <div className='flex flex-col gap-3 justify-between w-full'>
+                        {/* Online */}
+                        <div onClick={() => setPaymentMethod('online')} className={`w-full border border-gray-300 rounded-md p-2 flex flex-row items-center gap-2 hover:bg-green-200 transition-all duration-200 hover:border-green-600 cursor-pointer ${paymentMethod === 'online' ? 'bg-green-200' : 'bg-white'}`}>
+                            <CreditCard className='w-5 h-5 text-green-700' />
+                            <span className='text-base text-black'>Pay Online (stripe)</span>
+                        </div>
+
+                        {/* Delivery */}
+                        <div onClick={() => setPaymentMethod('cod')} className={`w-full border border-gray-300 rounded-md p-2 flex flex-row items-center gap-2 hover:bg-green-200 transition-all duration-200 hover:border-green-600 cursor-pointer ${paymentMethod === 'cod' ? 'bg-green-200' : 'bg-white'}`}>
+                            <Truck className='w-5 h-5 text-green-700' />
+                            <span className='text-base text-black'>Cash on Delivery</span>
+                        </div>
+
+                        {/* Border top */}
+                        <div className='w-full h-1 bg-gray-400 rounded'></div>
+
+                        <div className='flex flex-row items-center justify-between'>
+                            <p className='text-gray-400 text-sm font-semibold'>Subtotal</p>
+                            <p className='text-green-700 font-semibold text-base'>${subTotal}</p>
+                        </div>
+
+                        {/* Delivery Fee */}
+                        <div className='flex flex-row items-center justify-between'>
+                            <p className='text-gray-400 text-sm font-semibold'>Delivery Fee</p>
+                            <p className='text-green-700 font-semibold text-base'>${deliveryFee}</p>
+                        </div>
+
+                        {/* Border bottom */}
+                        <div className='w-full h-1 bg-gray-400 rounded'></div>
+
+                        {/* Final Total */}
+                        <div className='flex flex-row items-center justify-between mt-4'>
+                            <p className='text-black text-xl font-bold'>Final Total</p>
+                            <p className='text-green-700 font-extrabold text-md'>${finalTotal}</p>
+                        </div>
+
+                        <motion.button
+                            whileTap={{ scale: 0.93 }}
+                            className={`w-full p-2 text-center ${paymentMethod !== '' ? 'bg-green-600 hover:bg-green-500 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'} text-white rounded-2xl mt-4  transition-all duration-300 font-medium`}
+                            onClick={() => {
+                                if (paymentMethod == 'cod') {
+                                    handleCod()
+                                } else {
+                                    handleOnline()
+                                }
+                            }}
+                        >
+                            {paymentMethod === 'cod' ? 'Place order' : paymentMethod === 'online' ? 'Pay & Place order' : 'Please payment option !'}
+                        </motion.button>
+
+                    </div>
                 </motion.div>
-
             </div>
-
-
         </section>
     )
 }
