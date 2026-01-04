@@ -131,10 +131,18 @@ const Cart = () => {
                     </div>
 
                     {/* Proceed checkout */}
-                    <Link href='/user/checkout'
-                        className='w-full p-2 text-center bg-green-600 text-white rounded-2xl mt-4 cursor-pointer hover:bg-green-500 transition-all duration-300 font-medium'>
-                        Proceed to Checkout
-                    </Link>
+                    {cartData?.length > 0 ? (
+                        <Link href='/user/checkout'
+                            className={`w-full p-2 text-center text-white rounded-2xl mt-4 transition-all duration-300 font-medium bg-green-600 hover:bg-green-500 cursor-pointer`}>
+                            Proceed to Checkout
+                        </Link>
+                    ) : (
+                        <div
+                            className={`w-full p-2 text-center text-white rounded-2xl mt-4 transition-all duration-300 font-medium bg-gray-400 cursor-not-allowed`}>
+                            Proceed to Checkout
+                        </div>
+                    )}
+
                 </motion.div>
             </div>
 

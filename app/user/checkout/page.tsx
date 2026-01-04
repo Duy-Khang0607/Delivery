@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/app/redux/store'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import Link from 'next/link'
 
 // Dynamic import để tránh lỗi SSR với leaflet
 const MapViewComponent = dynamic(() => import('@/app/components/MapView'), {
@@ -118,7 +117,7 @@ const Checkout = () => {
                     longitude: position[1]
                 }
             });
-            if(res?.data?.success) router.push('/user/order-success')
+            if (res?.data?.success) router.push('/user/order-success')
             console.log({ res })
 
         } catch (error) {
@@ -127,8 +126,40 @@ const Checkout = () => {
     }
 
     // Payment Online
-    const handleOnline = () => {
+    const handleOnline = async () => {
+        if (!position) return
 
+        try {
+            const res = await axios.post('/api/auth/user/payment ', {
+                userId: userData?._id,
+                items: cartData?.map((item) => ({
+                    grocery: item?._id,
+                    name: item?.name,
+                    price: item?.price,
+                    unit: item?.unit,
+                    image: item?.image,
+                    quantity: item?.quantity,
+                })),
+                paymentMethod,
+                totalAmount: finalTotal,
+                address: {
+                    fullName: info?.name,
+                    mobile: info?.mobile,
+                    city: info?.city,
+                    state: info?.state,
+                    pincode: info?.pinCode,
+                    fullAddress: info?.fullAddress,
+                    latitude: position[0],
+                    longitude: position[1]
+                }
+            });
+            console.log({ res })
+            console.log({ paymentMethod })
+            window.location.href = res?.data.url
+
+        } catch (error) {
+            console.error({ error })
+        }
     }
 
     // Gọi API khi position có giá trị hoặc thay đổi giá trị
@@ -201,7 +232,6 @@ const Checkout = () => {
     }, [])
 
     return (
-        // <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen mt-8 mb-24 relative'>
         <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto py-10 relative'>
             {/* Back to cart */}
             <motion.button
@@ -419,6 +449,7 @@ const Checkout = () => {
 
                     </div>
                 </motion.div>
+
             </div>
         </section>
     )

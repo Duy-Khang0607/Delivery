@@ -120,7 +120,7 @@ const AddGrocery = () => {
     <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto py-10 relative'>
       {/* <- and Back to home */}
       <motion.button
-        onClick={() => router.push('/user/cart')}
+        onClick={() => router.push('/')}
         whileTap={{ scale: 0.97 }}
         whileHover={{ scale: 1.06 }}
         className='absolute left-0 top-2 flex items-center gap-2 text-green-700 hover:text-green-800 font-semibold cursor-pointer bg-white shadow-lg p-2 rounded-xl'>
@@ -173,8 +173,8 @@ const AddGrocery = () => {
                 <label className='text-base font-semibold'>Unit <span className='text-red-500'>*</span></label>
                 <select required className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={unit} onChange={(e) => setUnit(e.target.value)} >
                   <option value=''>Select units</option>
-                  {units?.map(item => (
-                    <option value={item}>{item}</option>
+                  {units?.map((item, index) => (
+                    <option key={index} value={item}>{item}</option>
                   ))}
                 </select>
               </div>
