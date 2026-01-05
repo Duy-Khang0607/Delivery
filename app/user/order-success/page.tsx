@@ -67,7 +67,7 @@ const OrderSuccess = () => {
             </motion.div>
 
 
-            <Link href="/">
+            <Link href="/user/my-orders">
                 <motion.button
                     whileTap={{ scale: 0.95 }}
                     whileHover={{ scale: 0.9 }}

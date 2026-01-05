@@ -90,28 +90,33 @@ const Nav = ({ user }: { user: IUser }) => {
         </>}
 
         {/* Icon menu admin mobile  */}
-        <div className='relative bg-white rounded-full p-2 md:hidden' onClick={() => setSideBar(prev => !prev)}>
-          <Menu className='w-5 h-5 text-green-500' />
-        </div>
+        {user?.role === 'admin' && (
+          <div className='relative bg-white rounded-full p-2 md:hidden' onClick={() => setSideBar(prev => !prev)}>
+            <Menu className='w-5 h-5 text-green-500' />
+          </div>
+        )}
+
 
         {/* Menu admin  */}
-        <div className='hidden md:flex flex-row gap-4 items-center w-full'>
-          {/* Add Category */}
-          <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
-            <Plus className='w-5 h-5 text-green-500' />
-            Add category
-          </Link>
-          {/* View Category */}
-          <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
-            <View className='w-5 h-5 text-green-500' />
-            View category
-          </Link>
-          {/* Manager Orders */}
-          <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
-            <ListOrdered className='w-5 h-5 text-green-500' />
-            Manager orders
-          </Link>
-        </div>
+        {user?.role === 'admin' && (
+          <div className='hidden md:flex flex-row gap-4 items-center w-full'>
+            {/* Add Category */}
+            <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
+              <Plus className='w-5 h-5 text-green-500' />
+              Add category
+            </Link>
+            {/* View Category */}
+            <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
+              <View className='w-5 h-5 text-green-500' />
+              View category
+            </Link>
+            {/* Manager Orders */}
+            <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
+              <ListOrdered className='w-5 h-5 text-green-500' />
+              Manager orders
+            </Link>
+          </div>
+        )}
 
         {/* User Image */}
         <div className='relative min-w-[30px]'>
