@@ -9,6 +9,7 @@ import { signOut } from 'next-auth/react'
 import { useDebouncedCallback } from 'use-debounce'
 import { useSelector } from 'react-redux'
 import { RootState } from '../redux/store'
+import { useRouter } from 'next/navigation'
 
 const Nav = ({ user }: { user: IUser }) => {
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -17,6 +18,7 @@ const Nav = ({ user }: { user: IUser }) => {
   const profileDropDown = useRef<HTMLButtonElement>(null)
   const searchMobileRef = useRef<HTMLFormElement>(null)
   const [sideBar, setSideBar] = useState(false)
+  const router = useRouter()
 
   // State redux - Cart
   const { cartData } = useSelector((state: RootState) => state.cart)
@@ -106,12 +108,12 @@ const Nav = ({ user }: { user: IUser }) => {
               Add category
             </Link>
             {/* View Category */}
-            <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
+            <Link href='admin/view-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
               <View className='w-5 h-5 text-green-500' />
               View category
             </Link>
             {/* Manager Orders */}
-            <Link href='admin/add-grocery' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
+            <Link href='admin/manage-orders' className='flex items-center gap-1.5 bg-white text-green-700 font-semibold p-2 rounded-full hover:bg-green-100 transition-all duration-300 min-w-[100px] text-sm'>
               <ListOrdered className='w-5 h-5 text-green-500' />
               Manager orders
             </Link>
@@ -143,7 +145,7 @@ const Nav = ({ user }: { user: IUser }) => {
                 </div>
               </Link>
               {user?.role === 'user' && <>
-                <button className='flex items-center gap-2 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
+                <button onClick={()=> router.push('/user/my-orders')} className='flex items-center gap-2 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
                   <Package className='w-5 h-5 text-green-500' />
                   <span className='text-black text-sm'>My Orders</span>
                 </button>

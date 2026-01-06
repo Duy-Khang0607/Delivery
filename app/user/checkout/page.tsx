@@ -156,7 +156,6 @@ const Checkout = () => {
             console.log({ res })
             console.log({ paymentMethod })
             window.location.href = res?.data.url
-
         } catch (error) {
             console.error({ error })
         }
