@@ -1,6 +1,6 @@
 'use client'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Box, CardSim, ChevronDown, ChevronUp, LocationEdit, Truck } from 'lucide-react'
+import { Box, CardSim, ChevronDown, ChevronUp, LocationEdit, Phone, Truck, User } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { IOrder } from '../models/orders.model'
@@ -12,8 +12,10 @@ interface AdminOrderProps {
 }
 
 const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
+    console.log({ orders })
     const [expand, setExpand] = useState(false)
     const [isOpenImage, setOpenImage] = useState(false)
+    const statusPayment = ['','','']
 
     return (
         <motion.div
@@ -25,18 +27,36 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                 {/* Order ID */}
                 <div className='flex flex-col gap-2'>
                     <h2 className='text-md md:text-2xl font-bold'>Order <span className='text-green-700 text-sm md:text-lg'>#{orders?._id.toString().slice(-6)}</span></h2>
+                    <div className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'} w-fit`}>
+                        {orders?.isPaid ? 'Paid' : 'Unpaid'}
+                    </div>
                     <p className='text-xs md:text-lg text-gray-500'>{new Date(orders?.createdAt!).toLocaleString()}</p>
                 </div>
 
                 <div className='flex items-center gap-2 font-semibold text-sm md:text-sm'>
-                    <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'}`}>
-                        {orders?.isPaid ? 'Paid' : 'Unpaid'}
-                    </span>
+                    <select required className='w-full p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300'>
+                        <option value=''>Select category</option>
+                        <option value='1'>1</option>
+                        <option value='1'>1</option>
+                        {/* {categories?.map((item, index) => (
+                            <option key={index} value={item}>{item}</option>
+                        ))} */}
+                    </select>
                     <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{orders?.status}</span>
                 </div>
             </div>
 
             <div className='p-4 space-y-5'>
+                <div className='flex items-center gap-2'>
+                    <User className='w-5 h-5 text-green-700' />
+                    <span className='text-sm md:text-lg w-full'>{orders?.address?.fullName}</span>
+                </div>
+
+                <div className='flex items-center gap-2'>
+                    <Phone className='w-5 h-5 text-green-700' />
+                    <span className='text-sm md:text-lg w-full'>{orders?.address?.mobile}</span>
+                </div>
+
                 <div className='flex items-center gap-2'>
                     <CardSim className='w-5 h-5 text-green-700' />
                     <span className='text-sm md:text-lg w-full'>{orders?.paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}</span>
@@ -110,7 +130,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                 <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-2'>
                         <Truck className='w-5 h-5 text-green-700' />
-                        <span className='font-medium text-md md:text-lg'>Delivery</span>
+                        <span className='font-medium text-md md:text-lg'>Delivery: <strong className='text-green-700'>{orders.status}</strong></span>
                     </div>
 
                     <div>

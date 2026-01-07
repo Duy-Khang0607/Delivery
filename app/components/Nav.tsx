@@ -16,6 +16,8 @@ const Nav = ({ user }: { user: IUser }) => {
   const [showSearchMobile, setShowSearchMobile] = useState(false)
   const [search, setSearch] = useState('')
   const profileDropDown = useRef<HTMLButtonElement>(null)
+  const avatarRef = useRef<HTMLDivElement>(null)
+  const iconSearchRef = useRef<HTMLDivElement>(null)
   const searchMobileRef = useRef<HTMLFormElement>(null)
   const [sideBar, setSideBar] = useState(false)
   const router = useRouter()
@@ -35,20 +37,27 @@ const Nav = ({ user }: { user: IUser }) => {
   }
 
   const handleClearSearch = () => {
-    setShowSearchMobile(false)
+    // setShowSearchMobile(false)
     setSearch('')
   }
 
-  // Tắt dropdown Profile khi click ngoài
+  // Tắt dropdown Profile khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node
+
       // Dropdown Profile
-      if (showUserMenu && profileDropDown.current && !profileDropDown.current.contains(event.target as Node)) {
+      const isInsideDropdown = profileDropDown.current?.contains(target)
+      const isInsideAvatar = avatarRef.current?.contains(target)
+
+      if (showUserMenu && !isInsideDropdown && !isInsideAvatar) {
         setShowUserMenu(false)
       }
 
       // Search mobile
-      if (showSearchMobile && searchMobileRef.current && !searchMobileRef.current.contains(event.target as Node)) {
+      const isInsideSearch = searchMobileRef.current?.contains(target)
+      const isInsideIconSearch = iconSearchRef.current?.contains(target)
+      if (showSearchMobile && !isInsideSearch && !isInsideIconSearch) {
         setShowSearchMobile(false)
       }
     }
@@ -78,7 +87,7 @@ const Nav = ({ user }: { user: IUser }) => {
 
         {/* Icon search mobile */}
         {user?.role === 'user' && <>
-          <div className='relative bg-white rounded-full p-2 cursor-pointer md:hidden' onClick={() => setShowSearchMobile((prev) => !prev)}>
+          <div ref={iconSearchRef} className='relative bg-white rounded-full p-2 cursor-pointer md:hidden' onClick={() => setShowSearchMobile((prev) => !prev)}>
             <Search className='w-5 h-5 text-green-500' />
           </div>
         </>}
@@ -121,12 +130,13 @@ const Nav = ({ user }: { user: IUser }) => {
         )}
 
         {/* User Image */}
-        <div className='relative min-w-[30px]'>
-          <Image src={user?.image || ''} alt='User' width={32} height={32} className='w-8 h-8 rounded-full cursor-pointer' onClick={() => setShowUserMenu(prev => !prev)} />
+        <div ref={avatarRef} className='relative min-w-[30px]' onClick={() => setShowUserMenu(prev => !prev)}>
+          <Image src={user?.image || ''} alt='User' width={32} height={32} className='w-8 h-8 rounded-full cursor-pointer'
+          />
         </div>
 
         {/* Dropdown Profile */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {showUserMenu && (
             <motion.div
               key="user-menu"
@@ -145,7 +155,7 @@ const Nav = ({ user }: { user: IUser }) => {
                 </div>
               </Link>
               {user?.role === 'user' && <>
-                <button onClick={()=> router.push('/user/my-orders')} className='flex items-center gap-2 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
+                <button onClick={() => router.push('/user/my-orders')} className='flex items-center gap-2 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
                   <Package className='w-5 h-5 text-green-500' />
                   <span className='text-black text-sm'>My Orders</span>
                 </button>
@@ -172,7 +182,7 @@ const Nav = ({ user }: { user: IUser }) => {
 
               <form className='flex items-center gap-2' ref={searchMobileRef}>
                 <Search className='w-5 h-5 text-green-500' />
-                <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-gray-700 placeholder:text-gray-400 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => handleInputChange(e.target.value)} />
+                <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-white placeholder:text-gray-400 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => handleInputChange(e.target.value)} />
                 <button type='button'>
                   <CircleX className='w-5 h-5 text-red-500 cursor-pointer' onClick={handleClearSearch} />
                 </button>
@@ -183,9 +193,13 @@ const Nav = ({ user }: { user: IUser }) => {
       </div>
 
       {/* Sidebar admin */}
-      {sideBar && <>
-        <AnimatePresence>
-          <motion.div initial={{ x: -100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -100, opacity: 0 }} transition={{ type: "spring", stiffness: 100, damping: 14 }}
+      <AnimatePresence mode='wait'>
+        {sideBar && <>
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -100, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 14 }}
             className='fixed top-0 left-0 text-white h-full w-[50%] mx-auto shadow-xl shadow-black px-4 py-2 z-9999 bg-linear-to-b from-green-800/90 via-green-700/80 to-green-900-90 backdrop-blur-sm flex flex-col'
           >
             {/* Admin Panal */}
@@ -212,13 +226,13 @@ const Nav = ({ user }: { user: IUser }) => {
               </Link>
 
               {/* View */}
-              <Link href={''} className='flex flex-row bg-black/10 rounded-lg hover:bg-white/20 items-center p-2 text-sm gap-2'>
+              <Link href='admin/view-grocery' className='flex flex-row bg-black/10 rounded-lg hover:bg-white/20 items-center p-2 text-sm gap-2'>
                 <View className='text-white w-5 h-5' />
                 View category
               </Link>
 
               {/* Manager */}
-              <Link href={''} className='flex flex-row bg-black/10 rounded-lg hover:bg-white/20 items-center p-2 text-sm gap-2'>
+              <Link href='admin/manage-orders' className='flex flex-row bg-black/10 rounded-lg hover:bg-white/20 items-center p-2 text-sm gap-2'>
                 <ListOrdered className='text-white w-5 h-5' />
                 Manager Orders
               </Link>
@@ -233,8 +247,8 @@ const Nav = ({ user }: { user: IUser }) => {
               Logout
             </div>
           </motion.div>
-        </AnimatePresence>
-      </>}
+        </>}
+      </AnimatePresence>
     </section >
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Calculator, CreditCard, DollarSign, Loader2, LocateFixed, LocationEdit, Lock, MapPin, MapPinHouse, Phone, Search, Send, StickyNote, Truck, User } from 'lucide-react'
+import { ArrowLeft, Calculator, CreditCard, DollarSign, Loader2, LocateFixed, LocationEdit, MapPinHouse, Phone, Search, Send, StickyNote, Truck, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useSelector } from 'react-redux'
@@ -29,6 +29,8 @@ const Checkout = () => {
     const [searchMap, setSearchMap] = useState<string>("")
 
     const [isSearchLoading, setSearchLoading] = useState(false)
+
+    const [isPay, setPay] = useState(false)
 
     const [info, setInfo] = useState({
         name: "",
@@ -93,6 +95,7 @@ const Checkout = () => {
     const handleCod = async () => {
         if (!position) return
 
+        setPay(true)
         try {
             const res = await axios.post('/api/auth/user/order', {
                 userId: userData?._id,
@@ -118,10 +121,14 @@ const Checkout = () => {
                 }
             });
             if (res?.data?.success) router.push('/user/order-success')
+            setPay(false)
             console.log({ res })
-
         } catch (error) {
+            setPay(false)
             console.error({ error })
+        } finally {
+            setPay(false)
+
         }
     }
 
@@ -129,6 +136,7 @@ const Checkout = () => {
     const handleOnline = async () => {
         if (!position) return
 
+        setPay(true)
         try {
             const res = await axios.post('/api/auth/user/payment ', {
                 userId: userData?._id,
@@ -153,16 +161,43 @@ const Checkout = () => {
                     longitude: position[1]
                 }
             });
+            setPay(false)
             console.log({ res })
             console.log({ paymentMethod })
             window.location.href = res?.data.url
         } catch (error) {
             console.error({ error })
+        } finally {
+            setPay(false)
         }
     }
 
+    // Lấy vị trí hiện tại lần đầu load trang
+    useEffect(() => {
+        console.log("Position1")
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const { latitude, longitude } = pos?.coords
+                    setPosition([latitude, longitude])
+                },
+                (error) => {
+                    console.error("Error getting location:", {
+                        code: error.code,
+                        message: error.message,
+                    });
+                }, {
+                // enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 10000,
+            }
+            )
+        }
+    }, [])
+
     // Gọi API khi position có giá trị hoặc thay đổi giá trị
     useEffect(() => {
+        console.log("Position2")
         const fetchAddress = async () => {
             if (!position) return
 
@@ -208,27 +243,7 @@ const Checkout = () => {
         }
     }, [userData])
 
-    // Lấy vị trí hiện tại lần đầu load trang
-    useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const { latitude, longitude } = pos?.coords
-                    setPosition([latitude, longitude])
-                },
-                (error) => {
-                    console.error("Error getting location:", {
-                        code: error.code,
-                        message: error.message,
-                    });
-                }, {
-                // enableHighAccuracy: true,
-                maximumAge: 0,
-                timeout: 10000,
-            }
-            )
-        }
-    }, [])
+
 
     return (
         <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto py-10 relative'>
@@ -434,7 +449,7 @@ const Checkout = () => {
 
                         <motion.button
                             whileTap={{ scale: 0.93 }}
-                            className={`w-full p-2 text-center ${paymentMethod !== '' ? 'bg-green-600 hover:bg-green-500 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'} text-white rounded-2xl mt-4  transition-all duration-300 font-medium`}
+                            className={`w-full p-2 text-center flex justify-center ${paymentMethod !== '' ? 'bg-green-600 hover:bg-green-500 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'} text-white rounded-2xl mt-4  transition-all duration-300 font-medium`}
                             onClick={() => {
                                 if (paymentMethod == 'cod') {
                                     handleCod()
@@ -444,6 +459,7 @@ const Checkout = () => {
                             }}
                         >
                             {paymentMethod === 'cod' ? 'Place order' : paymentMethod === 'online' ? 'Pay & Place order' : 'Please payment option !'}
+                            {/* <Loader2 className="w-5 h-5 animate-spin text-green-700" /> */}
                         </motion.button>
 
                     </div>

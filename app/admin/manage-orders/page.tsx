@@ -4,7 +4,7 @@ import { IOrder } from "@/app/models/orders.model"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { ArrowLeft, Box, Boxes } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from "next/navigation"
 import AdminOrdersCart from "@/app/components/AdminOrdersCart"
 
@@ -12,6 +12,7 @@ import AdminOrdersCart from "@/app/components/AdminOrdersCart"
 const ManageOrders = () => {
     const [orders, setOrder] = useState<IOrder[]>([])
     const [loading, setLoading] = useState(false)
+    const [isLeaving, setIsLeaving] = useState(false)
     const router = useRouter()
 
     const fetchOrder = async () => {
@@ -53,10 +54,24 @@ const ManageOrders = () => {
                     {/* Back && My orders */}
                     <div className='w-full bg-white/70 fixed top-0 left-0 backdrop-blur-xl shadow-md border-b border-gray-300'>
                         <div className='max-w-3xl mx-auto flex flex-row items-center gap-3 py-3'>
-                            <motion.button onClick={() => router.push('/')} whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.06 }} className='bg-white shadow-2xl w-auto rounded-xl text-green-700 text-center flex flex-row gap-2 p-1.5 hover:bg-green-200 cursor-pointer transition-all duration-200 items-center'>
-                                <ArrowLeft className='w-5 h-5' />
-                                <span className='hidden md:flex font-semibold tracking-wide'>Back to home</span>
-                            </motion.button>
+                            <AnimatePresence mode="wait"
+                                onExitComplete={() => {
+                                    router.push("/")
+                                }}
+                            >
+                                {!isLeaving && (
+                                    <motion.button
+                                        onClick={() => setIsLeaving(true)}
+                                        whileTap={{ scale: 0.97 }}
+                                        whileHover={{ scale: 1.06 }}
+                                        exit={{ opacity: 0, x: -50, scale: 0.98 }}
+                                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                                        className='bg-white shadow-2xl w-auto rounded-xl text-green-700 text-center flex flex-row gap-2 p-1.5 hover:bg-green-200 cursor-pointer transition-all duration-200 items-center'>
+                                        <ArrowLeft className='w-5 h-5' />
+                                        <span className='hidden md:flex font-semibold tracking-wide'>Back to home</span>
+                                    </motion.button>
+                                )}
+                            </AnimatePresence>
 
                             <motion.h1 className='font-bold text-lg md:text-2xl'>
                                 My Orders

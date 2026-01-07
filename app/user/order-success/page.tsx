@@ -34,8 +34,6 @@ const OrderSuccess = () => {
                 <CircleCheckBig className='w-15 h-15 text-green-700' />
             </motion.div>
 
-
-
             <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -45,13 +43,11 @@ const OrderSuccess = () => {
                 Order Placed Successfully
             </motion.h1>
 
-
             <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className='text-base w-full max-w-2xl'>Thank you for shopping with us! Your order has been placed and is being processed. You can track its progress in your <strong>My Orders</strong> section</motion.p>
-
+                transition={{ duration: 0.4 }} className='text-base w-full max-w-2xl'>Thank you for shopping with us! Your order has been placed and is being processed. You can track its progress in your <strong>My Orders</strong> section
+            </motion.p>
 
             <motion.div
                 initial={{ y: 40, opacity: 0 }}
@@ -66,16 +62,19 @@ const OrderSuccess = () => {
                 <Box className='w-15 h-15 text-green-700' />
             </motion.div>
 
-
             <Link href="/user/my-orders">
                 <motion.button
                     whileTap={{ scale: 0.95 }}
                     whileHover={{ scale: 0.9 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
                     className='text-white bg-green-700 p-2 rounded-lg w-full hover:bg-green-500 transition-all duration-300 cursor-pointer flex flex-row items-center gap-2 justify-center'
                 >
                     Go to My Orders  <MoveRight className='w-5 h-5' />
                 </motion.button>
             </Link>
+
         </section>
     )
 }
