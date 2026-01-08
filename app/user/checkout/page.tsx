@@ -128,7 +128,6 @@ const Checkout = () => {
             console.error({ error })
         } finally {
             setPay(false)
-
         }
     }
 
@@ -174,7 +173,6 @@ const Checkout = () => {
 
     // Lấy vị trí hiện tại lần đầu load trang
     useEffect(() => {
-        console.log("Position1")
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
@@ -197,7 +195,6 @@ const Checkout = () => {
 
     // Gọi API khi position có giá trị hoặc thay đổi giá trị
     useEffect(() => {
-        console.log("Position2")
         const fetchAddress = async () => {
             if (!position) return
 

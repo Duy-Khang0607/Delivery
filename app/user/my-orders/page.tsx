@@ -19,10 +19,7 @@ const MyOrders = () => {
     setLoading(true)
     try {
       const res = await axios.get('/api/auth/user/my-orders');
-      const sortedOrders = [...res?.data].sort(
-        (a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-      )
-      setOrders(sortedOrders)
+      setOrders(res?.data)
       console.log({ res })
     } catch (error: any) {
       console.log({ error: error?.response?.data })
@@ -36,9 +33,7 @@ const MyOrders = () => {
     fetchOrders()
   }, [])
 
-  console.log({ orders })
   return (
-    // <section className='w- min-h-screen'>
     <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen'>
       {loading ? (
         <motion.div

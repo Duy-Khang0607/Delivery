@@ -7,6 +7,7 @@ import Nav from './components/Nav';
 import UserDashboard from './components/UserDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import DeliveryBoy from './components/DeliveryBoy';
+import GeoUpdater from './components/GeoUpdater';
 
 const Home = async () => {
   await connectDB();
@@ -31,6 +32,7 @@ const Home = async () => {
   return (
     <>
       <Nav user={JsonUser} />
+      <GeoUpdater userId={JsonUser?._id} />
       {JsonUser?.role === 'user' ? <UserDashboard /> : JsonUser?.role === 'admin' ? <AdminDashboard /> : <DeliveryBoy />}
     </>
   )

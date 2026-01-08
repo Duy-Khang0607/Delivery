@@ -25,7 +25,7 @@ export interface IOrder {
         latitude: number,
         longitude: number
     },
-    status: 'pending' | 'out of delivery' | 'delivered',
+    status: 'Pending' | 'Out of delivery' | 'Delivered',
     createdAt?: Date,
     updatedAt?: Date,
     isPaid: Boolean,
@@ -71,8 +71,8 @@ const orderSchema = new mongoose.Schema<IOrder>({
     },
     status: {
         type: String,
-        enum: ['pending', 'out of delivery', 'delivered'],
-        default: 'pending'
+        enum: ['Pending', 'Out of delivery', 'Delivered'],
+        default: 'Pending'
     },
     isPaid: {
         type: Boolean,

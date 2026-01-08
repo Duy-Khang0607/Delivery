@@ -74,7 +74,7 @@ const ManageOrders = () => {
                             </AnimatePresence>
 
                             <motion.h1 className='font-bold text-lg md:text-2xl'>
-                                My Orders
+                                Manager Orders
                             </motion.h1>
                         </div>
                     </div>

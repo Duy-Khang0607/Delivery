@@ -15,7 +15,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
     console.log({ orders })
     const [expand, setExpand] = useState(false)
     const [isOpenImage, setOpenImage] = useState(false)
-    const statusPayment = ['','','']
+    const statusPayment = ['Out of delivery', 'Pending', 'Delivered']
 
     return (
         <motion.div
@@ -34,13 +34,13 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                 </div>
 
                 <div className='flex items-center gap-2 font-semibold text-sm md:text-sm'>
-                    <select required className='w-full p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300'>
-                        <option value=''>Select category</option>
-                        <option value='1'>1</option>
-                        <option value='1'>1</option>
-                        {/* {categories?.map((item, index) => (
+                    <select required className='w-full p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 cursor-pointer'>
+                        <option value='' className='bg-gray-300'>Select Status</option>
+                        {/* <option value='1'>1</option>
+                        <option value='1'>1</option> */}
+                        {statusPayment?.map((item, index) => (
                             <option key={index} value={item}>{item}</option>
-                        ))} */}
+                        ))}
                     </select>
                     <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{orders?.status}</span>
                 </div>
