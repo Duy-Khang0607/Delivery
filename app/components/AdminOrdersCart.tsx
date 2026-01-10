@@ -1,10 +1,11 @@
 'use client'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Box, CardSim, ChevronDown, ChevronUp, LocationEdit, Phone, Truck, User } from 'lucide-react'
+import { Box, CardSim, ChevronDown, ChevronUp, Loader2, LocationEdit, Phone, Truck, User } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { IOrder } from '../models/orders.model'
 import PopupImage from '../HOC/PopupImage'
+import axios from 'axios'
 
 
 interface AdminOrderProps {
@@ -12,10 +13,25 @@ interface AdminOrderProps {
 }
 
 const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
-    console.log({ orders })
     const [expand, setExpand] = useState(false)
     const [isOpenImage, setOpenImage] = useState(false)
     const statusPayment = ['Out of delivery', 'Pending', 'Delivered']
+    const [status, setStatus] = useState<string>(orders?.status || '')
+    const [loading, setLoading] = useState(false)
+
+    const updateOrderStatus = async (orderId: string, status: string) => {
+        setLoading(true)
+        try {
+            const res = await axios.post(`/api/auth/admin/update-order-status/${orderId}`, { status })
+            console.log({ res: res?.data })
+            setStatus(status)
+        } catch (error) {
+            console.log({ error })
+            setLoading(false)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
         <motion.div
@@ -34,15 +50,13 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                 </div>
 
                 <div className='flex items-center gap-2 font-semibold text-sm md:text-sm'>
-                    <select required className='w-full p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 cursor-pointer'>
+                    <select required disabled={loading} className='w-full p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 cursor-pointer' value={status} onChange={(e) => updateOrderStatus(orders?._id.toString(), e.target.value)}>
                         <option value='' className='bg-gray-300'>Select Status</option>
-                        {/* <option value='1'>1</option>
-                        <option value='1'>1</option> */}
                         {statusPayment?.map((item, index) => (
                             <option key={index} value={item}>{item}</option>
                         ))}
                     </select>
-                    <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{orders?.status}</span>
+                    <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{loading ? <Loader2 className='w-5 h-5 text-green-700 animate-spin' /> : status}</span>
                 </div>
             </div>
 
@@ -130,7 +144,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                 <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-2'>
                         <Truck className='w-5 h-5 text-green-700' />
-                        <span className='font-medium text-md md:text-lg'>Delivery: <strong className='text-green-700'>{orders.status}</strong></span>
+                        <span className='font-medium text-md md:text-lg'>Delivery: <strong className='text-green-700'>{status}</strong></span>
                     </div>
 
                     <div>

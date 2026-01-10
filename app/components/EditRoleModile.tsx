@@ -24,7 +24,7 @@ const EditRoleModile = () => {
         icon: <User className='w-7 h-7 md:w-10 md:h-10 font-bold' />
     },
     {
-        id: 'delivery',
+        id: 'deliveryBoy',
         name: 'Delivery Boy',
         icon: <Truck className='w-7 h-7 md:w-10 md:h-10 font-bold' />
     }

@@ -1,5 +1,5 @@
 'use client'
-import { CircleX, ClosedCaption, ClosedCaptionIcon, ListOrdered, LogOut, Menu, Package, Plus, Search, ShoppingCart, User, View, X } from 'lucide-react'
+import { CircleX, ListOrdered, LogOut, Menu, Package, Plus, Search, ShoppingCart, User, View, X } from 'lucide-react'
 import { IUser } from '../models/user.model'
 import Link from 'next/link'
 import Image from 'next/image'
