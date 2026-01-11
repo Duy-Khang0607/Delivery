@@ -1,8 +1,8 @@
 'use client'
 import { ArrowRight, Loader2, Truck, User, UserCog } from 'lucide-react'
 import { motion } from 'framer-motion'
-import {  useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 
@@ -12,23 +12,24 @@ const EditRoleModile = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { update } = useSession();
+    const [roles, setRoles] = useState([
+        {
+            id: 'admin',
+            name: 'Admin',
+            icon: <UserCog className='w-7 h-7 md:w-10 md:h-10 font-bold' />
+        },
+        {
+            id: 'user',
+            name: 'User',
+            icon: <User className='w-7 h-7 md:w-10 md:h-10 font-bold' />
+        },
+        {
+            id: 'deliveryBoy',
+            name: 'Delivery Boy',
+            icon: <Truck className='w-7 h-7 md:w-10 md:h-10 font-bold' />
+        }
+    ])
 
-    const roles = [{
-        id: 'admin',
-        name: 'Admin',
-        icon: <UserCog className='w-7 h-7 md:w-10 md:h-10 font-bold' />
-    },
-    {
-        id: 'user',
-        name: 'User',
-        icon: <User className='w-7 h-7 md:w-10 md:h-10 font-bold' />
-    },
-    {
-        id: 'deliveryBoy',
-        name: 'Delivery Boy',
-        icon: <Truck className='w-7 h-7 md:w-10 md:h-10 font-bold' />
-    }
-    ]
 
     const handleSubmit = async () => {
         try {
@@ -37,9 +38,9 @@ const EditRoleModile = () => {
                 role: selectedRole,
                 mobile
             });
-            console.log({response: response.data});
-            console.log({selectedRole});
-            await update({role: selectedRole});
+            console.log({ response: response.data });
+            console.log({ selectedRole });
+            await update({ role: selectedRole });
             router.push('/');
         } catch (error) {
             console.log(error);
@@ -48,6 +49,22 @@ const EditRoleModile = () => {
         }
     }
 
+    const checkForAdmin = async () => {
+        try {
+            const response = await axios.get('/api/check-for-admin');
+            console.log({response: response.data});
+            if (response.data.adminExists) {
+                setRoles(prev => prev.filter(role => role.id !== 'admin'));
+                // setSelectedRole('admin');
+            }
+        } catch (error) {
+            console.log({ error });
+        }
+    }
+
+    useEffect(() => {
+        checkForAdmin();
+    }, []);
 
     return (
         <motion.div

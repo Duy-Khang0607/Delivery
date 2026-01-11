@@ -39,13 +39,14 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
 
         // Kiểm tra nếu trạng thái là "Out of delivery" (đang giao) VÀ chưa có assignment
         if (status === 'Out of delivery' && !order?.assignment) {
+            const { latitude, longitude } = order.address;
+            
             // Kiểm tra xem order có địa chỉ hợp lệ không
             if (!order?.address || !order?.address?.latitude || !order?.address?.longitude) {
                 return NextResponse.json({ success: false, message: 'Order address is invalid or missing coordinates!' }, { status: 400 });
             }
 
             // Lấy tọa độ (vĩ độ, kinh độ) từ địa chỉ giao hàng
-            const { latitude, longitude } = order.address;
 
             if (isNaN(Number(latitude)) || isNaN(Number(longitude))) {
                 return NextResponse.json({ success: false, message: 'Invalid coordinates!' }, { status: 400 });

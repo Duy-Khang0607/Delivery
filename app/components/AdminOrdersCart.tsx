@@ -50,7 +50,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                 </div>
 
                 <div className='flex items-center gap-2 font-semibold text-sm md:text-sm'>
-                    <select required disabled={loading} className='w-full p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 cursor-pointer' value={status} onChange={(e) => updateOrderStatus(orders?._id.toString(), e.target.value)}>
+                    <select required disabled={loading} className='p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 cursor-pointer' value={status} onChange={(e) => updateOrderStatus(orders?._id.toString(), e.target.value)}>
                         <option value='' className='bg-gray-300'>Select Status</option>
                         {statusPayment?.map((item, index) => (
                             <option key={index} value={item}>{item}</option>
