@@ -55,7 +55,7 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
             // Tìm các shipper (role = 'delivery') gần vị trí giao hàng
             // Sử dụng $near của MongoDB để tìm theo vị trí địa lý
             const nearbyDeliveryBoys = await User.find({
-                role: 'delivery', // CHỈ tìm shipper, không phải tất cả users
+                role: 'deliveryBoy', // CHỈ tìm shipper, không phải tất cả users
                 location: {
                     $near: {
                         // Tạo điểm địa lý với tọa độ [kinh độ, vĩ độ]

@@ -31,7 +31,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // Kiểm tra nếu role không phải là Delivery
-    if (token?.role !== 'delivery' && pathname.startsWith('/delivery')) {
+    if (token?.role !== 'deliveryBoy' && pathname.startsWith('/delivery')) {
         return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
 
