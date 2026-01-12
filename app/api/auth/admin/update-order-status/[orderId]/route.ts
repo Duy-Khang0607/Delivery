@@ -68,6 +68,7 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
 
             // Lấy danh sách ID của các shipper gần đó
             const nearByIds = nearbyDeliveryBoys.map((boy: any) => boy?._id);
+            console.log({ nearByIds });
 
             // Tìm các shipper đang bận (đã được assign hoặc đang giao)
             // Lấy danh sách ID shipper có trạng thái 'brodcasted' hoặc 'assigned'
@@ -84,6 +85,7 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
 
             // Lấy danh sách ID của shipper khả dụng
             const candidates = availableDeliveryBoys?.map(b => b?._id)
+            console.log({ candidates });
 
             // ĐÃ SỬA: Nếu KHÔNG có shipper khả dụng thì return thông báo
             if (!candidates || candidates.length === 0) {

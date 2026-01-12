@@ -25,14 +25,17 @@ const GeoUpdater = ({ userId }: { userId: string }) => {
                 })
             },
             (error) => {
-                console.error("Error getting location:", {
-                    code: error.code,
-                    message: error.message,
-                });
+                // Xử lý các loại lỗi Geolocation
+                const errorMessages: { [key: number]: string } = {
+                    1: 'Người dùng từ chối cấp quyền vị trí. Vui lòng cho phép truy cập vị trí trong cài đặt trình duyệt.',
+                    2: 'Không thể xác định vị trí. Vui lòng kiểm tra GPS/Location services.',
+                    3: 'Hết thời gian chờ lấy vị trí. Vui lòng thử lại.'
+                };
+                console.warn("⚠️ Geolocation error:", errorMessages[error.code] || error.message);
             }, {
-            // enableHighAccuracy: true,
-            maximumAge: 0,
-            timeout: 10000,
+            enableHighAccuracy: false,  // Đổi thành false để nhanh hơn và ít lỗi hơn
+            maximumAge: 30000,          // Cache vị trí trong 30 giây
+            timeout: 15000,             // Tăng timeout lên 15 giây
         }
         )
 

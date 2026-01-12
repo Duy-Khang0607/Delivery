@@ -14,7 +14,7 @@ export interface IDeliveryAssignment {
 const deliverySchema = new mongoose.Schema<IDeliveryAssignment>({
     order: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Order"
+        ref: "Orders"
     },
     brodcastedTo: [{
         type: mongoose.Schema.Types.ObjectId,

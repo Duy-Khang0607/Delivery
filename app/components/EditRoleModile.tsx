@@ -38,8 +38,6 @@ const EditRoleModile = () => {
                 role: selectedRole,
                 mobile
             });
-            console.log({ response: response.data });
-            console.log({ selectedRole });
             await update({ role: selectedRole });
             router.push('/');
         } catch (error) {
