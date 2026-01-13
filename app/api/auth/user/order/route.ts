@@ -1,5 +1,5 @@
-import { auth } from "@/app/auth";
 import connectDB from "@/app/lib/db";
+import { emitEventHandler } from "@/app/lib/emitEventHandler";
 import Orders from "@/app/models/orders.model";
 import User from "@/app/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
@@ -42,6 +42,9 @@ export async function POST(req: NextRequest) {
             totalAmount,
             address
         })
+
+        // Gọi event socket khi order thanh toán thành công
+        await emitEventHandler("new-order", newOrder)
 
         // Trả order thành công
         return NextResponse.json({ success: true, message: 'Create new order successfully', newOrder }, { status: 201 });

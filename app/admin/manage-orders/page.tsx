@@ -7,6 +7,7 @@ import { ArrowLeft, Box, Boxes } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from "next/navigation"
 import AdminOrdersCart from "@/app/components/AdminOrdersCart"
+import { getSocket } from "@/app/lib/socket"
 
 
 const ManageOrders = () => {
@@ -30,6 +31,17 @@ const ManageOrders = () => {
 
     useEffect(() => {
         fetchOrder()
+    }, [])
+
+    useEffect(() => {
+        const socket = getSocket()
+        socket?.on('new-order', (newOrder) => {
+            console.log({newOrder})
+            setOrder((prev) => [newOrder, ...prev!])
+        })
+        return () => {
+            socket.off('new-order')
+        }
     }, [])
 
     return (

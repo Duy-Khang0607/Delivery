@@ -1,5 +1,6 @@
 // Import hàm kết nối database từ thư mục lib
 import connectDB from "@/app/lib/db";
+import { emitEventHandler } from "@/app/lib/emitEventHandler";
 // Import model DeliveryAssignment - quản lý việc phân công giao hàng
 import DeliveryAssignment from "@/app/models/deliveryAssignment";
 // Import model Orders - quản lý đơn hàng
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
         // Kiểm tra nếu trạng thái là "Out of delivery" (đang giao) VÀ chưa có assignment
         if (status === 'Out of delivery' && !order?.assignment) {
             const { latitude, longitude } = order.address;
-            
+
             // Kiểm tra xem order có địa chỉ hợp lệ không
             if (!order?.address || !order?.address?.latitude || !order?.address?.longitude) {
                 return NextResponse.json({ success: false, message: 'Order address is invalid or missing coordinates!' }, { status: 400 });
@@ -85,11 +86,14 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
 
             // Lấy danh sách ID của shipper khả dụng
             const candidates = availableDeliveryBoys?.map(b => b?._id)
-            console.log({ candidates });
 
             // ĐÃ SỬA: Nếu KHÔNG có shipper khả dụng thì return thông báo
             if (!candidates || candidates.length === 0) {
                 await order.save();
+                
+                // Gọi event socket khi cập nhật trạng thái đơn hàng
+                await emitEventHandler("order-status-updated", { orderId: order?._id, status: order?.status })
+
                 return NextResponse.json({ success: true, message: 'There is no available delivery boys!' }, { status: 200 });
             }
 
@@ -120,6 +124,9 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
         await order.save();
         // Populate lại thông tin user
         await order.populate('user');
+
+        // Gọi event socket khi cập nhật trạng thái đơn hàng
+        await emitEventHandler("order-status-updated", { orderId: order?._id, status: order?.status })
 
         // Trả về response thành công với assignment ID và danh sách shipper khả dụng
         return NextResponse.json({ success: true, assigment: order?.assignment?._id, availableDeliveryBoys: deliveryBoysPayload }, { status: 200 });

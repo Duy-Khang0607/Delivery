@@ -1,4 +1,4 @@
-import React from 'react'
+'use client'
 import DeliveryBoyDashboard from './DeliveryBoyDashboard'
 
 const DeliveryBoy = () => {

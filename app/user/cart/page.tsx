@@ -14,7 +14,6 @@ const Cart = () => {
     const { cartData, subTotal, deliveryFee, finalTotal } = useSelector((state: RootState) => state.cart)
 
     const router = useRouter()
-    console.log({ subTotal })
 
     return (
         <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen mt-8 mb-24 relative'>

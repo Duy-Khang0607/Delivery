@@ -2,10 +2,19 @@
 import { Box, CircleCheckBig, MoveRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { clearCart } from '@/app/redux/cartSlice'
 
 
 const OrderSuccess = () => {
+    const dispatch = useDispatch()
+
+    // Clear cart khi vào trang order success
+    useEffect(() => {
+        dispatch(clearCart())
+    }, [dispatch])
+
     return (
         <section className='flex flex-col items-center text-center justify-center min-h-screen gap-2 px-6'>
             <motion.div

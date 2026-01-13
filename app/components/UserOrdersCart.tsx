@@ -2,9 +2,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Box, CardSim, ChevronDown, ChevronUp, LocationEdit, Truck } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IOrder } from '../models/orders.model'
 import PopupImage from '../HOC/PopupImage'
+import { getSocket } from '../lib/socket'
 
 
 interface UserOrderProps {
@@ -14,7 +15,21 @@ interface UserOrderProps {
 const UserOrdersCart = ({ orders }: UserOrderProps) => {
     const [expand, setExpand] = useState(false)
     const [isOpenImage, setOpenImage] = useState(false)
+    const [status, setStatus] = useState<string>(orders?.status || '')
 
+
+    useEffect(() => {
+        const socket = getSocket()
+        socket?.on('order-status-updated', (data) => {
+            console.log({ data })
+            if (data?.orderId?.toString() === orders?._id.toString()) {
+                setStatus((prev) => prev === data?.status ? prev : data?.status)
+            }
+        })
+        return () => {
+            socket.off('order-status-updated')
+        }
+    }, [])
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -32,7 +47,7 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                     <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'}`}>
                         {orders?.isPaid ? 'Paid' : 'Unpaid'}
                     </span>
-                    <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{orders?.status}</span>
+                    <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{status}</span>
                 </div>
             </div>
 

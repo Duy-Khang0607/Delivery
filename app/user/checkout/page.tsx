@@ -161,8 +161,6 @@ const Checkout = () => {
                 }
             });
             setPay(false)
-            console.log({ res })
-            console.log({ paymentMethod })
             window.location.href = res?.data.url
         } catch (error) {
             console.error({ error })
@@ -455,8 +453,7 @@ const Checkout = () => {
                                 }
                             }}
                         >
-                            {paymentMethod === 'cod' ? 'Place order' : paymentMethod === 'online' ? 'Pay & Place order' : 'Please payment option !'}
-                            {/* <Loader2 className="w-5 h-5 animate-spin text-green-700" /> */}
+                            {paymentMethod === 'cod' ? isPay ? <Loader2 className="w-5 h-5 animate-spin text-green-700" /> : 'Place order' : paymentMethod === 'online' ? isPay ? <Loader2 className="w-5 h-5 animate-spin text-green-700" /> : 'Pay & Place order' : 'Please payment option !'}
                         </motion.button>
 
                     </div>

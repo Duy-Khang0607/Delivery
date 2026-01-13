@@ -1,4 +1,5 @@
 import connectDB from "@/app/lib/db";
+import { emitEventHandler } from "@/app/lib/emitEventHandler";
 import Orders from "@/app/models/orders.model";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -15,17 +16,12 @@ export async function POST(req: NextRequest) {
         event = stripe.webhooks.constructEvent(
             rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET!
         )
-        console.log({ event })
-        console.log("✅ EVENT TYPE:", event.type)
 
         if (event.type === "checkout.session.completed") {
             const session = event.data.object as Stripe.Checkout.Session
 
-            console.log("✅ session.metadata:", session.metadata)
-
             const orderId = session?.metadata?.orderId
             if (!orderId) {
-                console.error("❌ Missing orderId in metadata")
                 return NextResponse.json({ error: "Missing orderId" }, { status: 400 })
             }
 
@@ -33,15 +29,16 @@ export async function POST(req: NextRequest) {
 
             const updated = await Orders.findByIdAndUpdate(
                 orderId,
-                { isPaid: true }
+                { isPaid: true },
+                { new: true } // Trả về document sau khi update
             )
 
-            console.log("✅ Updated order:", updated)
-
             if (!updated) {
-                console.error("❌ Order not found:", orderId)
                 return NextResponse.json({ error: "Order not found" }, { status: 404 })
             }
+
+            // Gọi event socket khi order thanh toán thành công
+            await emitEventHandler("new-order", updated)
         }
 
         return NextResponse.json({ received: true }, { status: 200 })

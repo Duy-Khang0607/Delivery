@@ -157,7 +157,7 @@ const Nav = ({ user }: { user: IUser }) => {
               {user?.role === 'user' && <>
                 <button onClick={() => router.push('/user/my-orders')} className='flex items-center gap-2 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
                   <Package className='w-5 h-5 text-green-500' />
-                  <span className='text-black text-sm'>My Orders</span>
+                  <span className='text-black text-sm relative'>My Orders <span className='absolute top-0 -right-6 text-white font-bold text-sm flex items-center justify-center w-5 h-5 bg-red-500 rounded-full'>{cartData?.length > 0 ? cartData?.length : ''}</span></span>
                 </button>
               </>}
               <hr className='border-gray-200' />
