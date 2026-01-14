@@ -1,4 +1,5 @@
 import DeliveryAssignment from "@/app/models/deliveryAssignment";
+import Orders from "@/app/models/orders.model";
 import connectDB from "@/app/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@/app/auth";
@@ -13,12 +14,14 @@ export async function GET() {
             return NextResponse.json({ success: false, message: 'User is not authenticated' }, { status: 400 });
         }
 
-        const assignments = await DeliveryAssignment.find({ brodcastedTo: session?.user?.id, status: 'brodcasted' }).populate('order');
-
-        if (!assignments || assignments.length === 0) {
-            return NextResponse.json({ success: false, message: 'No assignments found' }, { status: 404 });
-        }
-
+        const assignments = await DeliveryAssignment.find({ 
+            brodcastedTo: session?.user?.id, 
+            status: 'brodcasted' 
+        }).populate({
+            path: 'order',
+            model: Orders
+        });
+        
         return NextResponse.json({ success: true, assignments }, { status: 200 });
 
     } catch (error) {

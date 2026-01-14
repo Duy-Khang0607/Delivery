@@ -10,6 +10,8 @@ import { useDebouncedCallback } from 'use-debounce'
 import { useSelector } from 'react-redux'
 import { RootState } from '../redux/store'
 import { useRouter } from 'next/navigation'
+import { IOrder } from '../models/orders.model'
+import axios from 'axios'
 
 const Nav = ({ user }: { user: IUser }) => {
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -21,6 +23,8 @@ const Nav = ({ user }: { user: IUser }) => {
   const searchMobileRef = useRef<HTMLFormElement>(null)
   const [sideBar, setSideBar] = useState(false)
   const router = useRouter()
+  const [orders, setOrders] = useState<IOrder[] | undefined>([])
+
 
   // State redux - Cart
   const { cartData } = useSelector((state: RootState) => state.cart)
@@ -40,6 +44,19 @@ const Nav = ({ user }: { user: IUser }) => {
     // setShowSearchMobile(false)
     setSearch('')
   }
+
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get('/api/auth/user/my-orders');
+      setOrders(res?.data)
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchOrders()
+  }, [])
 
   // Tắt dropdown Profile khi click ra ngoài
   useEffect(() => {
@@ -157,7 +174,7 @@ const Nav = ({ user }: { user: IUser }) => {
               {user?.role === 'user' && <>
                 <button onClick={() => router.push('/user/my-orders')} className='flex items-center gap-2 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
                   <Package className='w-5 h-5 text-green-500' />
-                  <span className='text-black text-sm relative'>My Orders <span className='absolute top-0 -right-6 text-white font-bold text-sm flex items-center justify-center w-5 h-5 bg-red-500 rounded-full'>{cartData?.length > 0 ? cartData?.length : ''}</span></span>
+                  <span className='text-black text-sm relative'>My Orders <span className='absolute top-0 -right-6 text-white font-bold text-sm flex items-center justify-center w-5 h-5 bg-red-500 rounded-full'>{orders?.length && orders?.length > 0 ? orders?.length : 0}</span></span>
                 </button>
               </>}
               <hr className='border-gray-200' />

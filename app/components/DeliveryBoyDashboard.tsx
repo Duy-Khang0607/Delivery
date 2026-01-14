@@ -23,18 +23,17 @@ const DeliveryBoyDashboard = () => {
         }
     }
 
-    const handleAccept = async (orderId: string) => {
-        // try {
-        //     setLoading(true);
-        //     const response = await axios.post('/api/delivery/accept-assignment', { orderId });
-        //     console.log({ response: response?.data });
-        // }
-        // } catch (error) {
-        //     console.error('Error accepting assignment:', error);
-        //     setLoading(false);
-        // } finally {
-        //     setLoading(false);
-        // }
+    const handleAccept = async (id: string) => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`/api/delivery/assignment/${id}/accept-assignment`);
+            console.log({ response: response?.data });
+        } catch (error) {
+            console.error('Error accepting assignment:', error);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const handleReject = async (orderId: string) => {
@@ -77,6 +76,9 @@ const DeliveryBoyDashboard = () => {
                     {assignments?.length > 0 && assignments?.map((orders) => {
                         const { _id, paymentMethod, createdAt, address } = orders?.order
                         const { fullName, mobile } = orders?.order?.address
+
+                        // const { assignment } = orders?.assignment
+                        console.log({ orders })
                         return (
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
@@ -117,7 +119,7 @@ const DeliveryBoyDashboard = () => {
                                     <motion.button
                                         whileTap={{ scale: 0.93 }}
                                         whileHover={{ scale: 1.03 }}
-                                        onClick={() => handleAccept(_id)} className='bg-green-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-green-600 transition-all duration-300'>Accept</motion.button>
+                                        onClick={() => handleAccept(orders?.order?.assignment)} className='bg-green-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-green-600 transition-all duration-300'>Accept</motion.button>
                                     <motion.button
                                         whileTap={{ scale: 0.93 }}
                                         whileHover={{ scale: 1.03 }}
