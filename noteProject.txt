@@ -1,0 +1,20 @@
+PART 3 : 
+==== Thêm socket ở manager order === 
+1/ thêm notify ở socket 3 tham số event, data, socketId
+2/ thêm emitEventHandler ở lib
+3/ gọi emitEventHandler vào api order user
+4/ useEffect lắng nghe sự kiện "new-order" khi gọi bên api order
+
+
+==== Thêm socket khi thay đổi trạng thái === 
+1/ gọi emitEventHandler vào api update-order-status
+2/ useEffect lắng nghe sự kiên "update-order-status" ở component UserOrderCart
+
+
+=== Socket ở màn hình DeliveryDashboard ===
+1/ Tạo api delivery accpect assignment "assignment/id/accpect-assignment" -> assignment/[:id]/accpect-assignment
+2/ gán delivery assignment bên user order cart và manager order cart
+3/ Tạo thêm button "Tracking your order" dưới items order userr và manager
+4/ tạo api current order của delivery boy
+
+

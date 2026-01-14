@@ -90,7 +90,7 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
             // ĐÃ SỬA: Nếu KHÔNG có shipper khả dụng thì return thông báo
             if (!candidates || candidates.length === 0) {
                 await order.save();
-                
+
                 // Gọi event socket khi cập nhật trạng thái đơn hàng
                 await emitEventHandler("order-status-updated", { orderId: order?._id, status: order?.status })
 
@@ -104,6 +104,17 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
                 status: 'brodcasted',              // Trạng thái: đã broadcast
             });
 
+            // Populate thông tin order vào deliveryAssignment
+            await deliveryAssignment.populate('order');
+            
+            // Gọi event socket khi cập nhật trạng thái đơn hàng
+            for (const boyId of candidates) {
+                const boy = await User.findById(boyId);
+                if (boy?.socketId) {
+                    await emitEventHandler("new-assignment", { assignment: deliveryAssignment?._id, order: deliveryAssignment?.order, socketId: boy?.socketId })
+                }
+            }
+
             // Gán assignment ID vào đơn hàng
             order.assignment = deliveryAssignment?._id;
 
@@ -116,8 +127,6 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
                 longitude: b?.location?.coordinates[0],  // Kinh độ (index 0)
             }))
 
-            // Populate thông tin order vào deliveryAssignment
-            await deliveryAssignment.populate('order');
         }
 
         // Lưu đơn hàng đã cập nhật vào database

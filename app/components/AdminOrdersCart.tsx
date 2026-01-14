@@ -2,7 +2,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Box, CardSim, ChevronDown, ChevronUp, Loader2, LocationEdit, Phone, Truck, User } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IOrder } from '../models/orders.model'
 import PopupImage from '../HOC/PopupImage'
 import axios from 'axios'
@@ -16,7 +16,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
     const [expand, setExpand] = useState(false)
     const [isOpenImage, setOpenImage] = useState(false)
     const statusPayment = ['Out of delivery', 'Pending', 'Delivered']
-    const [status, setStatus] = useState<string>(orders?.status || '')
+    const [status, setStatus] = useState<string>('Pending')
     const [loading, setLoading] = useState(false)
 
     const updateOrderStatus = async (orderId: string, status: string) => {
@@ -32,6 +32,10 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        setStatus(orders?.status)
+    }, [orders])
 
     return (
         <motion.div

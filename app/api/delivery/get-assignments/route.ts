@@ -3,8 +3,6 @@ import connectDB from "@/app/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@/app/auth";
 
-
-
 export async function GET() {
     try {
         await connectDB();
@@ -17,8 +15,8 @@ export async function GET() {
 
         const assignments = await DeliveryAssignment.find({ brodcastedTo: session?.user?.id, status: 'brodcasted' }).populate('order');
 
-        if (!assignments) {
-            return NextResponse.json({ success: false, message: 'No assignments found' }, { status: 400 });
+        if (!assignments || assignments.length === 0) {
+            return NextResponse.json({ success: false, message: 'No assignments found' }, { status: 404 });
         }
 
         return NextResponse.json({ success: true, assignments }, { status: 200 });
