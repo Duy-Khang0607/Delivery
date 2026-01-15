@@ -3,14 +3,48 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Box, CardSim, ChevronDown, ChevronUp, Loader2, LocationEdit, Phone, Truck, User } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { IOrder } from '../models/orders.model'
 import PopupImage from '../HOC/PopupImage'
 import axios from 'axios'
+import { IUser } from '../models/user.model'
 
 
 interface AdminOrderProps {
     orders: IOrder
 }
+
+interface IOrder {
+    _id: string,
+    user: string,
+    items: [
+        {
+            grocery: string,
+            name: string,
+            price: string,
+            unit: string,
+            image: string[],
+            quantity: string,
+        }
+    ]
+    totalAmount: number,
+    paymentMethod: 'cod' | 'online',
+    address: {
+        fullName: string,
+        mobile: number,
+        city: string,
+        state: string,
+        pincode: string,
+        fullAddress: string,
+        latitude: number,
+        longitude: number
+    },
+    status: 'Pending' | 'Out of delivery' | 'Delivered',
+    createdAt?: Date,
+    updatedAt?: Date,
+    isPaid: Boolean,
+    assignedDeliveryBoy?: IUser,
+    assignment?: string
+}
+
 
 const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
     const [expand, setExpand] = useState(false)
@@ -18,6 +52,8 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
     const statusPayment = ['Out of delivery', 'Pending', 'Delivered']
     const [status, setStatus] = useState<string>('Pending')
     const [loading, setLoading] = useState(false)
+
+    console.log({ orders })
 
     const updateOrderStatus = async (orderId: string, status: string) => {
         setLoading(true)
@@ -46,7 +82,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
             <div className='flex flex-row justify-between items-center bg-green-100 p-4'>
                 {/* Order ID */}
                 <div className='flex flex-col gap-2'>
-                    <h2 className='text-md md:text-2xl font-bold'>Order <span className='text-green-700 text-sm md:text-lg'>#{orders?._id.toString().slice(-6)}</span></h2>
+                    <h2 className='text-md md:text-2xl font-bold'>Order <span className='text-green-700 text-sm md:text-lg'>#{String(orders?._id).slice(-6)}</span></h2>
                     <div className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'} w-fit`}>
                         {orders?.isPaid ? 'Paid' : 'Unpaid'}
                     </div>
@@ -54,7 +90,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                 </div>
 
                 <div className='flex items-center gap-2 font-semibold text-sm md:text-sm'>
-                    <select required disabled={loading} className='p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 cursor-pointer' value={status} onChange={(e) => updateOrderStatus(orders?._id.toString(), e.target.value)}>
+                    <select required disabled={loading} className='p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 cursor-pointer' value={status} onChange={(e) => updateOrderStatus(String(orders?._id), e.target.value)}>
                         <option value='' disabled className='bg-gray-300'>Select Status</option>
                         {statusPayment?.map((item, index) => (
                             <option key={index} value={item}>{item}</option>
@@ -79,6 +115,20 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                     <CardSim className='w-5 h-5 text-green-700' />
                     <span className='text-sm md:text-lg w-full'>{orders?.paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}</span>
                 </div>
+
+                {orders?.assignedDeliveryBoy && (
+                    <div className='flex flex-row items-center justify-between gap-2 border bg-blue-100 rounded-2xl p-2 border-blue-200 shadow-md hover:shadow-xl transition-all duration-300'>
+                        <div className='flex flex-row  items-center justify-center gap-2'>
+                            <User className='w-5 h-5 text-blue-500' />
+                            <div className='flex flex-col gap-1'>
+                                <span className='text-sm md:text-lg w-full'>Assigned: <span className='text-sm md:text-lg w-full font-semibold'>{orders?.assignedDeliveryBoy?.name}</span></span>
+                                <span className='text-sm md:text-md text-gray-500 font-semibold'>📞 {orders?.assignedDeliveryBoy?.mobile}</span>
+                            </div>
+                        </div>
+
+                        <p className='w-auto h-full bg-blue-200 rounded-2xl p-2 transition-all duration-300 hover:bg-blue-400 cursor-pointer'><a href="tel:+4733378901"><Phone className='w-5 h-5 text-blue-500 hover:text-white' /></a></p>
+                    </div>
+                )}
 
                 <div className='flex items-center gap-2'>
                     <LocationEdit className='w-5 h-5 text-green-700' />

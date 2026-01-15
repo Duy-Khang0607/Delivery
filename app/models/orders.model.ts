@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { IUser } from "./user.model";
 
 export interface IOrder {
     _id: mongoose.Types.ObjectId,
@@ -85,8 +86,8 @@ const orderSchema = new mongoose.Schema<IOrder>({
     },
     assignedDeliveryBoy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }
+        ref: 'User',
+    },
 }, { timestamps: true });
 
 const Orders = mongoose.models.Orders || mongoose.model("Orders", orderSchema);

@@ -1,18 +1,50 @@
 'use client'
 import UserOrdersCart from '@/app/components/UserOrdersCart'
-import { IOrder } from '@/app/models/orders.model'
+import { IUser } from '@/app/models/user.model'
 import axios from 'axios'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Box, Boxes, CardSim, ChevronDown, ChevronUp, LocationEdit, Truck } from 'lucide-react'
+import { ArrowLeft, Box, Boxes } from 'lucide-react'
+import mongoose from 'mongoose'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-
+interface IOrder {
+  _id: mongoose.Types.ObjectId,
+  user: mongoose.Types.ObjectId,
+  items: [
+      {
+          grocery: mongoose.Types.ObjectId,
+          name: string,
+          price: string,
+          unit: string,
+          image: string[],
+          quantity: string,
+      }
+  ]
+  totalAmount: number,
+  paymentMethod: 'cod' | 'online',
+  address: {
+      fullName: string,
+      mobile: number,
+      city: string,
+      state: string,
+      pincode: string,
+      fullAddress: string,
+      latitude: number,
+      longitude: number
+  },
+  status: 'Pending' | 'Out of delivery' | 'Delivered',
+  createdAt?: Date,
+  updatedAt?: Date,
+  isPaid: Boolean,
+  assignedDeliveryBoy?: IUser | null,
+  assignment?: mongoose.Types.ObjectId
+}
 
 const MyOrders = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [orders, setOrders] = useState<IOrder[] | undefined>([])
+  const [orders, setOrders] = useState<IOrder[] | null>([])
 
 
   const fetchOrders = async () => {

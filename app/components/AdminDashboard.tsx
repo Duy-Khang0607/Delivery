@@ -1,23 +1,31 @@
-'use client'
-import React, { useEffect } from 'react'
-import { getSocket } from '../lib/socket'
-import { useSelector } from 'react-redux'
-import { RootState } from '../redux/store'
-import { stat } from 'fs'
+import React from 'react'
+import connectDB from '../lib/db'
+import Grocery, { IGrocery } from '../models/grocery.model'
+import GroceryItemCard from './GroceryItemCard'
 
-const AdminDashboard = () => {
+const AdminDashboard = async () => {
+  // Connect tới DB
+  await connectDB()
 
-  // const { userData } = useSelector((state: RootState) => state.user)
-
-  // useEffect(() => {
-  //   const socket = getSocket()
-  //   socket.emit('identity', userData?._id)
-  //   console.log({ socket })
-  // }, [])
+  // Từ DB lấy ra danh sách "groceries"
+  const groceries = await Grocery?.find({}).lean()
+  const JSONGrocery = JSON.parse(JSON.stringify(groceries))
 
 
   return (
-    <div>AdminDashboard</div>
+    <>
+      {/* Grocery List Items */}
+      <div className='w-[90%] md:w-[80%] mt-10 mx-auto'>
+        {/* Title */}
+        <h1 className='text-green-700 font-extrabold text-3xl tracking-wide text-center'>Popular Grocery Items</h1>
+        {/* Grocery Items */}
+        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-10 w-full'>
+          {JSONGrocery?.map((item: IGrocery) => {
+            return <GroceryItemCard key={item?._id.toString()} groceries={item} />
+          })}
+        </div>
+      </div>
+    </>
   )
 }
 

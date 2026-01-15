@@ -1,15 +1,49 @@
 'use client'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Box, CardSim, ChevronDown, ChevronUp, LocationEdit, Truck } from 'lucide-react'
+import { Box, CardSim, ChevronDown, ChevronUp, LocationEdit, Phone, Truck, User } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { IOrder } from '../models/orders.model'
 import PopupImage from '../HOC/PopupImage'
 import { getSocket } from '../lib/socket'
+import { IUser } from '../models/user.model'
+import mongoose from 'mongoose'
 
 
 interface UserOrderProps {
     orders: IOrder
+}
+
+interface IOrder {
+    _id: mongoose.Types.ObjectId,
+    user: mongoose.Types.ObjectId,
+    items: [
+        {
+            grocery: mongoose.Types.ObjectId,
+            name: string,
+            price: string,
+            unit: string,
+            image: string[],
+            quantity: string,
+        }
+    ]
+    totalAmount: number,
+    paymentMethod: 'cod' | 'online',
+    address: {
+        fullName: string,
+        mobile: number,
+        city: string,
+        state: string,
+        pincode: string,
+        fullAddress: string,
+        latitude: number,
+        longitude: number
+    },
+    status: 'Pending' | 'Out of delivery' | 'Delivered',
+    createdAt?: Date,
+    updatedAt?: Date,
+    isPaid: Boolean,
+    assignedDeliveryBoy?: IUser | null,
+    assignment?: mongoose.Types.ObjectId
 }
 
 const UserOrdersCart = ({ orders }: UserOrderProps) => {
@@ -61,6 +95,20 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                     <LocationEdit className='w-5 h-5 text-green-700' />
                     <span className='text-sm md:text-lg w-full'>{orders?.address?.fullAddress}</span>
                 </div>
+
+                {orders?.assignedDeliveryBoy && (
+                    <div className='flex flex-row items-center justify-between gap-2 border bg-blue-100 rounded-2xl p-2 border-blue-200 shadow-md hover:shadow-xl transition-all duration-300'>
+                        <div className='flex flex-row  items-center justify-center gap-2'>
+                            <User className='w-5 h-5 text-blue-500' />
+                            <div className='flex flex-col gap-1'>
+                                <span className='text-sm md:text-lg w-full'>Assigned: <span className='text-sm md:text-lg w-full font-semibold'>{orders?.assignedDeliveryBoy?.name}</span></span>
+                                <span className='text-sm md:text-md text-gray-500 font-semibold'>📞 {orders?.assignedDeliveryBoy?.mobile}</span>
+                            </div>
+                        </div>
+
+                        <p className='w-auto h-full bg-blue-200 rounded-2xl p-2 transition-all duration-300 hover:bg-blue-400 cursor-pointer'><a href="tel:+4733378901"><Phone className='w-5 h-5 text-blue-500 hover:text-white' /></a></p>
+                    </div>
+                )}
 
                 <div className='border-b border-gray-200'></div>
 
