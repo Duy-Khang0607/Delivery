@@ -16,5 +16,7 @@ PART 3 :
 2/ gán delivery assignment bên user order cart và manager order cart
 3/ Tạo thêm button "Tracking your order" dưới items order userr và manager
 4/ tạo api current order của delivery boy
+5/ Call api current order owr DeliveryBoyDashboard -> tạo 2 state , 1 state cho assignment và 1 state cho userlocation (lat,long)
+6/ useEffect lấy vị trí hiện tại, denpendenci [userData._id] , set state cho deliverylocation và gọi socket "update-location"
 
 
