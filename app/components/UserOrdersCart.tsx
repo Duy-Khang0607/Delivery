@@ -7,6 +7,7 @@ import PopupImage from '../HOC/PopupImage'
 import { getSocket } from '../lib/socket'
 import { IUser } from '../models/user.model'
 import mongoose from 'mongoose'
+import { useRouter } from 'next/navigation'
 
 
 interface UserOrderProps {
@@ -50,6 +51,7 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
     const [expand, setExpand] = useState(false)
     const [isOpenImage, setOpenImage] = useState(false)
     const [status, setStatus] = useState<string>(orders?.status || '')
+    const router = useRouter()
 
 
     useEffect(() => {
@@ -97,17 +99,30 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                 </div>
 
                 {orders?.assignedDeliveryBoy && (
-                    <div className='flex flex-row items-center justify-between gap-2 border bg-blue-100 rounded-2xl p-2 border-blue-200 shadow-md hover:shadow-xl transition-all duration-300'>
-                        <div className='flex flex-row  items-center justify-center gap-2'>
-                            <User className='w-5 h-5 text-blue-500' />
-                            <div className='flex flex-col gap-1'>
-                                <span className='text-sm md:text-lg w-full'>Assigned: <span className='text-sm md:text-lg w-full font-semibold'>{orders?.assignedDeliveryBoy?.name}</span></span>
-                                <span className='text-sm md:text-md text-gray-500 font-semibold'>📞 {orders?.assignedDeliveryBoy?.mobile}</span>
+                    <>
+                        <div className='flex flex-row items-center justify-between gap-2 border bg-blue-100 rounded-2xl p-2 border-blue-200 shadow-md hover:shadow-xl transition-all duration-300'>
+                            <div className='flex flex-row  items-center justify-center gap-2'>
+                                <User className='w-5 h-5 text-blue-500' />
+                                <div className='flex flex-col gap-1'>
+                                    <span className='text-sm md:text-lg w-full'>Assigned: <span className='text-sm md:text-lg w-full font-semibold'>{orders?.assignedDeliveryBoy?.name}</span></span>
+                                    <span className='text-sm md:text-md text-gray-500 font-semibold'>📞 {orders?.assignedDeliveryBoy?.mobile}</span>
+                                </div>
                             </div>
-                        </div>
 
-                        <p className='w-auto h-full bg-blue-200 rounded-2xl p-2 transition-all duration-300 hover:bg-blue-400 cursor-pointer'><a href="tel:+4733378901"><Phone className='w-5 h-5 text-blue-500 hover:text-white' /></a></p>
-                    </div>
+                            <p className='w-auto h-full bg-blue-200 rounded-2xl p-2 transition-all duration-300 hover:bg-blue-400 cursor-pointer'><a href="tel:+4733378901"><Phone className='w-5 h-5 text-blue-500 hover:text-white' /></a></p>
+
+                        </div>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                                router.push(`/user/track-order/${orders?._id.toString()}`)
+                            }}
+                            className='flex flex-row justify-center items-center gap-2 bg-green-600 text-white rounded-2xl p-2 border border-green-200 shadow-md hover:shadow-xl transition-all duration-300 w-full cursor-pointer'>
+                            <Truck className='w-5 h-5' />
+                            Tracking my order
+                        </motion.button>
+                    </>
                 )}
 
                 <div className='border-b border-gray-200'></div>

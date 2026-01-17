@@ -1,20 +1,31 @@
-import Orders from "@/app/models/orders.model"
+import { auth } from "@/app/auth"
+import connectDB from "@/app/lib/db"
+import DeliveryAssignment from "@/app/models/deliveryAssignment"
 import { NextResponse } from "next/server"
 
 
 export async function GET(request: Request) {
     try {
-        const { searchParams } = new URL(request.url)
-        const orderId = searchParams.get('orderId')
-        if (!orderId) {
-            return NextResponse.json({ success: false, message: 'Order ID is required' }, { status: 400 })
+        await connectDB()
+
+        const session = await auth()
+
+        const deliveryBoyId = session?.user?.id
+        console.log({ deliveryBoyId })
+
+        const activeAssignment = await DeliveryAssignment.findOne({ assignedTo: deliveryBoyId, status: 'assigned' }).populate({
+            path: 'order',
+            populate: {
+                path: 'address',
+            }
+        })
+        if (!activeAssignment) {
+            return NextResponse.json({ success: false, message: 'No active assignment found' }, { status: 400 })
         }
-        const order = await Orders.findById(orderId).populate('user items address')
-        if (!order) {
-            return NextResponse.json({ success: false, message: 'Order not found' }, { status: 404 })
-        }
-        return NextResponse.json({ success: true, order }, { status: 200 })
+
+        return NextResponse.json({ success: true, assignment: activeAssignment }, { status: 200 })
+
     } catch (error) {
-        return NextResponse.json({ success: false, message: 'Get current order error' }, { status: 500 })
+        return NextResponse.json({ success: false, message: 'Failed to get current order' }, { status: 500 })
     }
 }

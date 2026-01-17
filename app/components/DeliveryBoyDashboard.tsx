@@ -4,16 +4,33 @@ import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Box, CardSim, LocationEdit, Phone, Timer, User } from 'lucide-react';
 import { getSocket } from '../lib/socket';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+import LiveMap from './LiveMap';
+
+interface IDeliveryLocation {
+    latitude: number;
+    longitude: number;
+}
 
 const DeliveryBoyDashboard = () => {
     const [assignments, setAssignments] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [currentOrder, setCurrentOrder] = useState<any>(null);
+    const [userlocation, setUserlocation] = useState<IDeliveryLocation>({
+        latitude: 0,
+        longitude: 0,
+    });
+    const [deliverylocation, setDeliverylocation] = useState<IDeliveryLocation>({
+        latitude: 0,
+        longitude: 0,
+    });
+    const { userData } = useSelector((state: RootState) => state.user);
 
     const getAssignments = async () => {
         try {
             setLoading(true);
             const response = await axios.get('/api/delivery/get-assignments');
-            console.log({ response: response?.data });
             setAssignments(response?.data?.assignments);
         } catch (error) {
             console.error('Error fetching assignments:', error);
@@ -50,9 +67,56 @@ const DeliveryBoyDashboard = () => {
         // }
     }
 
+    const fetchCurrentOrder = async () => {
+        try {
+            const response = await axios.get('/api/delivery/current-order');
+            console.log({ response: response?.data });
+            setCurrentOrder(response?.data?.assignment);
+            setUserlocation({
+                latitude: response?.data?.assignment?.order?.address?.latitude,
+                longitude: response?.data?.assignment?.order?.address?.longitude,
+            })
+        } catch (error) {
+            console.error('Error fetching current order:', error);
+        }
+    }
+
+    useEffect(() => {
+        if (!userData?._id) return
+        if (!navigator?.geolocation) return
+
+        const watcher = navigator.geolocation.watchPosition(
+            (pos) => {
+                const { latitude, longitude } = pos?.coords
+                setDeliverylocation({
+                    latitude,
+                    longitude
+                })
+            },
+            (error) => {
+                // Xử lý các loại lỗi Geolocation
+                const errorMessages: { [key: number]: string } = {
+                    1: 'Người dùng từ chối cấp quyền vị trí. Vui lòng cho phép truy cập vị trí trong cài đặt trình duyệt.',
+                    2: 'Không thể xác định vị trí. Vui lòng kiểm tra GPS/Location services.',
+                    3: 'Hết thời gian chờ lấy vị trí. Vui lòng thử lại.'
+                };
+                console.warn("⚠️ Geolocation error:", errorMessages[error.code] || error.message);
+            }, {
+            enableHighAccuracy: false,  // Đổi thành false để nhanh hơn và ít lỗi hơn
+            maximumAge: 30000,          // Cache vị trí trong 30 giây
+            timeout: 15000,             // Tăng timeout lên 15 giây
+        }
+        )
+
+        return () => navigator.geolocation.clearWatch(watcher)
+
+    }, [userData?._id])
+
+
     useEffect(() => {
         getAssignments();
-    }, []);
+        fetchCurrentOrder();
+    }, [userData]);
 
     useEffect(() => {
         const socket = getSocket()
@@ -65,10 +129,24 @@ const DeliveryBoyDashboard = () => {
         }
     }, [])
 
+    if (currentOrder && userlocation) {
+        return (
+            <div className='w-[90%] md:w-[80%] mt-24 mx-auto'>
+                <div className='flex flex-col gap-4 border border-gray-300 rounded-md p-4 shadow-md overflow-hidden w-full h-full'>
+                    <h1 className='text-green-700 font-extrabold text-2xl md:text-3xl tracking-wide'>Active order</h1>
+                    <div className='flex flex-col gap-2'>
+                        <p className='mb-4'>Order: #{currentOrder?.order?._id?.slice(-6)}</p>
+                        <LiveMap userLocation={userlocation} deliveryLocation={deliverylocation} />
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
 
     return (
         <div className='w-[90%] md:w-[80%] mt-24 mx-auto'>
-            <h1 className='text-green-700 font-extrabold text-3xl tracking-wide text-center mb-4' > Delivery Boy Dashboard</h1>
+            <h1 className='text-green-700 font-extrabold text-2xl md:text-3xl tracking-wide text-center mb-4'>Delivery Boy Dashboard</h1>
             {loading ? (
                 <motion.div
                     initial={{ y: 40, opacity: 0 }}

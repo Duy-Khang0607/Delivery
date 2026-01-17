@@ -39,7 +39,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         assignment.assignedTo = deliveryBoyId
         assignment.status = 'assigned'
         assignment.accpectedAt = new Date()
-        await assignment.save()
+        await assignment.save() 
 
         const order = await Orders.findById(assignment?.order)
 
