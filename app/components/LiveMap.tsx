@@ -60,9 +60,9 @@ const DeliveryMarker: React.FC<{ position: [number, number] | null }> = ({ posit
     )
 }
 
-
 const isValidLatLng = (lat?: number, lng?: number) =>
     typeof lat === 'number' && Number.isFinite(lat) && typeof lng === 'number' && Number.isFinite(lng)
+
 
 const LiveMap = ({ userLocation, deliveryLocation }: { userLocation: ILocation | null, deliveryLocation: ILocation | null }) => {
     const linePositions = deliveryLocation && userLocation ?
@@ -99,7 +99,7 @@ const LiveMap = ({ userLocation, deliveryLocation }: { userLocation: ILocation |
             />
             <DeliveryMarker position={deliveryPosition} />
             <UserMarker position={userPosition} />
-            <Polyline positions={linePositions as [number, number][]} />
+            <Polyline positions={linePositions as [number, number][]} color="green" weight={5} opacity={0.5} />
         </MapContainer>
     )
 }

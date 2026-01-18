@@ -20,3 +20,8 @@ PART 3 :
 6/ useEffect lấy vị trí hiện tại, denpendenci [userData._id] , set state cho deliverylocation và gọi socket "update-location"
 
 
+=== ChatRoom ===
+1/ Tạo model chat , message
+2/ tạo api chat create/save
+
+

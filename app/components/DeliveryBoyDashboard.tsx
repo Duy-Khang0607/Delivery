@@ -44,7 +44,7 @@ const DeliveryBoyDashboard = () => {
         try {
             setLoading(true);
             const response = await axios.get(`/api/delivery/assignment/${id}/accept-assignment`);
-            console.log({ response: response?.data });
+            console.log({response})
         } catch (error) {
             console.error('Error accepting assignment:', error);
             setLoading(false);
@@ -54,23 +54,12 @@ const DeliveryBoyDashboard = () => {
     }
 
     const handleReject = async (orderId: string) => {
-        // try {
-        //     setLoading(true);
-        //     const response = await axios.post('/api/delivery/reject-assignment', { orderId });
-        //     console.log({ response: response?.data });
-        // }
-        // } catch (error) {
-        //     console.error('Error rejecting assignment:', error);
-        //     setLoading(false);
-        // } finally {
-        //     setLoading(false);
-        // }
+
     }
 
     const fetchCurrentOrder = async () => {
         try {
             const response = await axios.get('/api/delivery/current-order');
-            console.log({ response: response?.data });
             setCurrentOrder(response?.data?.assignment);
             setUserlocation({
                 latitude: response?.data?.assignment?.order?.address?.latitude,
@@ -121,13 +110,15 @@ const DeliveryBoyDashboard = () => {
     useEffect(() => {
         const socket = getSocket()
         socket?.on('new-assignment', (newAssignment) => {
-            console.log({ newAssignment })
             setAssignments((prev) => [...prev, newAssignment])
         })
         return () => {
             socket.off('new-assignment')
         }
     }, [])
+
+    console.log({userData})
+
 
     if (currentOrder && userlocation) {
         return (

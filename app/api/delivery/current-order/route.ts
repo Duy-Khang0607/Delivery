@@ -20,7 +20,7 @@ export async function GET(request: Request) {
             }
         })
         if (!activeAssignment) {
-            return NextResponse.json({ success: false, message: 'No active assignment found' }, { status: 400 })
+            return NextResponse.json({ success: true, assignment: null, message: 'No active assignment found' }, { status: 200 })
         }
 
         return NextResponse.json({ success: true, assignment: activeAssignment }, { status: 200 })
