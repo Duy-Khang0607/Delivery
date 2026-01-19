@@ -7,6 +7,7 @@ import { getSocket } from '../lib/socket';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import LiveMap from './LiveMap';
+import DeliveryChat from './DeliveryChat';
 
 interface IDeliveryLocation {
     latitude: number;
@@ -44,7 +45,6 @@ const DeliveryBoyDashboard = () => {
         try {
             setLoading(true);
             const response = await axios.get(`/api/delivery/assignment/${id}/accept-assignment`);
-            console.log({response})
         } catch (error) {
             console.error('Error accepting assignment:', error);
             setLoading(false);
@@ -117,7 +117,6 @@ const DeliveryBoyDashboard = () => {
         }
     }, [])
 
-    console.log({userData})
 
 
     if (currentOrder && userlocation) {
@@ -130,6 +129,7 @@ const DeliveryBoyDashboard = () => {
                         <LiveMap userLocation={userlocation} deliveryLocation={deliverylocation} />
                     </div>
                 </div>
+                <DeliveryChat orderId={currentOrder?.order?._id!} deliveryBoyId={userData?._id!} />
             </div>
         )
     }

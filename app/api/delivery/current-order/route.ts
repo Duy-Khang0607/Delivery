@@ -1,6 +1,6 @@
 import { auth } from "@/app/auth"
 import connectDB from "@/app/lib/db"
-import DeliveryAssignment from "@/app/models/deliveryAssignment"
+import DeliveryAssignment from "@/app/models/deliveryAssignment.model"
 import { NextResponse } from "next/server"
 
 

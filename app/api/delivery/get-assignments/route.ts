@@ -1,4 +1,4 @@
-import DeliveryAssignment from "@/app/models/deliveryAssignment";
+import DeliveryAssignment from "@/app/models/deliveryAssignment.model";
 import Orders from "@/app/models/orders.model";
 import connectDB from "@/app/lib/db";
 import { NextResponse } from "next/server";

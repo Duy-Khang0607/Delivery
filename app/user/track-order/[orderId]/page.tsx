@@ -11,6 +11,7 @@ import { ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
 import LiveMap from "@/app/components/LiveMap"
 import { getSocket } from "@/app/lib/socket"
+import DeliveryChat from "@/app/components/DeliveryChat"
 
 interface ILocation {
   latitude: number;
@@ -36,7 +37,6 @@ const TrackOrder = () => {
     try {
       setLoading(true)
       const res = await axios.get(`/api/auth/user/get-order/${orderId}`)
-      console.log({ res: res.data })
       setOrder(res?.data?.order)
       setUserLocation({
         latitude: res?.data?.order?.address?.latitude,
@@ -57,7 +57,6 @@ const TrackOrder = () => {
   useEffect(() => {
     const socket = getSocket()
     socket?.on('update-deliveryBoy-location', (data) => {
-      console.log({ data })
       setDeliveryBoyLocation({
         latitude: data?.location?.coordinates?.[1],
         longitude: data?.location?.coordinates?.[0],
@@ -72,7 +71,7 @@ const TrackOrder = () => {
     fetchOrder()
   }, [userData?._id])
   return (
-    <div className='w-[90%] md:w-[80%] mx-auto'>
+    <div className='w-[90%] md:w-[80%] mx-auto mt-5 space-y-5'>
       <div className='flex flex-row items-center justify-start gap-4 border border-gray-300 rounded-md p-4 shadow-md overflow-hidden w-full h-full'>
         <motion.button
           onClick={() => router.back()}
@@ -89,9 +88,14 @@ const TrackOrder = () => {
         </div>
       </div>
 
-      <div className="mt-12 w-full h-full">
+      <div className="w-full h-full">
         <LiveMap userLocation={userLocation} deliveryLocation={deliveryBoyLocation} />
       </div>
+
+      {/* Chat */}
+      {order?._id && userData?._id && (
+        <DeliveryChat orderId={order._id} deliveryBoyId={userData._id} />
+      )}
     </div>
   )
 }

@@ -2,7 +2,7 @@
 import connectDB from "@/app/lib/db";
 import { emitEventHandler } from "@/app/lib/emitEventHandler";
 // Import model DeliveryAssignment - quản lý việc phân công giao hàng
-import DeliveryAssignment from "@/app/models/deliveryAssignment";
+import DeliveryAssignment from "@/app/models/deliveryAssignment.model";
 // Import model Orders - quản lý đơn hàng
 import Orders from "@/app/models/orders.model";
 // Import model User - quản lý người dùng (bao gồm shipper)
