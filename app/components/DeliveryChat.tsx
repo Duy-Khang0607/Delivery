@@ -1,7 +1,7 @@
 'use client'
-import { Box, Loader2, Send } from 'lucide-react';
+import { Bot, Box, Loader2, Send } from 'lucide-react';
 import mongoose from 'mongoose';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getSocket } from '../lib/socket';
 import { IMessage } from '../models/message.model';
 import axios from 'axios';
@@ -18,7 +18,14 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
     const [newMessage, setNewMessage] = useState('');
     const [message, setMessage] = useState<IMessage[]>([]);
     const [loading, setLoading] = useState(false);
+    const messagesRef = useRef<HTMLDivElement>(null);
+    const suggestions = ['Hello', "Hi", "How are you?"]
 
+    useEffect(() => {
+        if (messagesRef.current && !loading) {
+            messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+        }
+    }, [message, loading]);
 
     const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
         try {
@@ -118,7 +125,34 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
                 <>
                     <div className='w-full border border-gray-500 mb-4'></div>
 
-                    <div className='w-full h-full flex flex-row items-center justify-center gap-2'>
+                    {/* AI suggestions */}
+                    <div className='w-full flex flex-row justify-between items-center mb-2'>
+                        <div className='text-sm font-semibold'>Quick replies</div>
+                        <motion.button
+                            className='w-auto text-sm font-semibold flex flex-row items-center justify-center gap-2 text-white rounded-md p-2 cursor-pointer transition-all duration-300 hover:bg-green-800 bg-green-700'
+                            whileTap={{ scale: 0.93 }}
+                            whileHover={{ scale: 1.03 }}
+
+                        >
+                            <Bot className='w-5 h-5' /> Quick replies
+                        </motion.button>
+                    </div>
+
+                    <div className='w-full flex flex-row mb-2 justify-start gap-2'>
+                        {suggestions?.map((suggestion, index) => (
+                            <motion.button
+                                key={index}
+                                className='w-auto text-xs font-semibold flex flex-row items-center justify-center gap-2 text-white rounded-md p-2 cursor-pointer transition-all duration-300 hover:bg-green-800 bg-green-700'
+                                whileTap={{ scale: 0.93 }}
+                                whileHover={{ scale: 1.03 }}
+                                onClick={() => setNewMessage(suggestion)}
+                            >
+                                {suggestion}
+                            </motion.button>
+                        ))}
+                    </div>
+
+                    <div className='w-full h-full flex flex-row items-center justify-center gap-2 mt-3'>
                         <form className='w-full flex flex-row items-center justify-center gap-2' onSubmit={sendMessage}>
                             <input type="text" placeholder='Your message' className='w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
                             <button disabled={newMessage.length === 0} className={`w-auto text-white rounded-md p-2 cursor-pointer transition-all duration-300 hover:bg-green-800 ${newMessage.length > 0 ? 'bg-green-700' : 'bg-gray-500'}`}>
@@ -127,7 +161,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
                         </form>
                     </div>
 
-                    <div className='w-full max-h-[500px] overflow-y-auto mt-2 space-y-3 md:max-h-[200px]'>
+                    <div className='w-full max-h-[500px] overflow-y-auto mt-2 space-y-3 md:max-h-[200px]' ref={messagesRef}>
                         <AnimatePresence mode='wait'>
                             {message?.map((item, index) => (
                                 <motion.div
