@@ -49,7 +49,11 @@ export async function POST(req: NextRequest) {
 
         const response = await data.json();
 
-        return NextResponse.json({ success: true, message: "AI suggestions fetched successfully", response }, { status: 200 });
+        const replyText = response?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        const suggestions = replyText?.split(',').map((suggestion: string) => suggestion.trim());
+
+        return NextResponse.json({ success: true, message: "AI suggestions fetched successfully", suggestions }, { status: 200 });
 
     } catch (error) {
         return NextResponse.json({ success: false, message: "AI suggestions failed to fetch" }, { status: 500 });

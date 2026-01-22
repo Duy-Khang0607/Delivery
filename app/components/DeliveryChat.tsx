@@ -19,7 +19,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
     const [message, setMessage] = useState<IMessage[]>([]);
     const [loading, setLoading] = useState(false);
     const messagesRef = useRef<HTMLDivElement>(null);
-    const suggestions = ['Hello', "Hi", "How are you?"]
+    const [suggestions, setSuggestions] = useState<string[]>([]);
 
     useEffect(() => {
         if (messagesRef.current && !loading) {
@@ -77,6 +77,17 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
         }
     }
 
+    const handleFetchAISuggestions = async () => {
+        try {
+            const res = await axios.post(`/api/chat/ai-suggestions`, { message: message[message.length - 1]?.text, role: 'delivery_boy' })
+            if (res?.data?.success) {
+                setSuggestions(res?.data?.suggestions || [])
+            }
+        } catch (error) {
+            console.error('Error fetching AI suggestions:', error)
+        }
+    }
+
     // Join room & Listen for incoming messages
     useEffect(() => {
         if (!orderId) return;
@@ -123,18 +134,15 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
                 </motion.div>
             ) : (
                 <>
-                    <div className='w-full border border-gray-500 mb-4'></div>
-
                     {/* AI suggestions */}
-                    <div className='w-full flex flex-row justify-between items-center mb-2'>
-                        <div className='text-sm font-semibold'>Quick replies</div>
+                    <div className='w-full flex flex-row justify-end items-center mb-2'>
                         <motion.button
                             className='w-auto text-sm font-semibold flex flex-row items-center justify-center gap-2 text-white rounded-md p-2 cursor-pointer transition-all duration-300 hover:bg-green-800 bg-green-700'
                             whileTap={{ scale: 0.93 }}
                             whileHover={{ scale: 1.03 }}
-
+                            onClick={handleFetchAISuggestions}
                         >
-                            <Bot className='w-5 h-5' /> Quick replies
+                            <Bot className='w-5 h-5' /> AI suggestions
                         </motion.button>
                     </div>
 
@@ -142,7 +150,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
                         {suggestions?.map((suggestion, index) => (
                             <motion.button
                                 key={index}
-                                className='w-auto text-xs font-semibold flex flex-row items-center justify-center gap-2 text-white rounded-md p-2 cursor-pointer transition-all duration-300 hover:bg-green-800 bg-green-700'
+                                className='w-auto text-xs font-semibold flex flex-row items-center justify-center gap-2 text-green-500 rounded-2xl p-2 cursor-pointer transition-all duration-300 hover:bg-green-300 hover:text-green-700 bg-green-200'
                                 whileTap={{ scale: 0.93 }}
                                 whileHover={{ scale: 1.03 }}
                                 onClick={() => setNewMessage(suggestion)}
@@ -150,15 +158,6 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
                                 {suggestion}
                             </motion.button>
                         ))}
-                    </div>
-
-                    <div className='w-full h-full flex flex-row items-center justify-center gap-2 mt-3'>
-                        <form className='w-full flex flex-row items-center justify-center gap-2' onSubmit={sendMessage}>
-                            <input type="text" placeholder='Your message' className='w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
-                            <button disabled={newMessage.length === 0} className={`w-auto text-white rounded-md p-2 cursor-pointer transition-all duration-300 hover:bg-green-800 ${newMessage.length > 0 ? 'bg-green-700' : 'bg-gray-500'}`}>
-                                <Send className='w-5 h-5' />
-                            </button>
-                        </form>
                     </div>
 
                     <div className='w-full max-h-[500px] overflow-y-auto mt-2 space-y-3 md:max-h-[200px]' ref={messagesRef}>
@@ -174,6 +173,18 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
                                 </motion.div>
                             ))}
                         </AnimatePresence>
+                    </div>
+
+                    <div className='w-full border border-gray-500 mb-4'></div>
+
+                    {/* Send message */}
+                    <div className='w-full h-full flex flex-row items-center justify-center gap-2 mt-3'>
+                        <form className='w-full flex flex-row items-center justify-center gap-2' onSubmit={sendMessage}>
+                            <input type="text" placeholder='Your message' className='w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
+                            <button disabled={newMessage.length === 0} className={`w-auto text-white rounded-md p-2 transition-all duration-300 ${newMessage.length > 0 ? 'bg-green-700 hover:bg-green-800 cursor-pointer' : 'bg-gray-500 cursor-not-allowed'}`}>
+                                <Send className='w-5 h-5' />
+                            </button>
+                        </form>
                     </div>
                 </>
             )}
