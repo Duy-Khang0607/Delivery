@@ -1,5 +1,5 @@
 'use client'
-import { Bot, Box, Loader2, Send } from 'lucide-react';
+import { Bot, Box, Loader2, MessageSquare, Send } from 'lucide-react';
 import mongoose from 'mongoose';
 import { useEffect, useRef, useState } from 'react';
 import { getSocket } from '../lib/socket';
@@ -11,13 +11,15 @@ import { AnimatePresence, motion } from 'motion/react';
 type IProps = {
     orderId: mongoose.Types.ObjectId;
     deliveryBoyId: mongoose.Types.ObjectId;
+    role: 'user' | 'delivery_boy';
 }
 
 
-const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
+const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
     const [newMessage, setNewMessage] = useState('');
     const [message, setMessage] = useState<IMessage[]>([]);
     const [loading, setLoading] = useState(false);
+    const [loadingSuggestions, setLoadingSuggestions] = useState(false);
     const messagesRef = useRef<HTMLDivElement>(null);
     const [suggestions, setSuggestions] = useState<string[]>([]);
 
@@ -79,12 +81,16 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
 
     const handleFetchAISuggestions = async () => {
         try {
-            const res = await axios.post(`/api/chat/ai-suggestions`, { message: message[message.length - 1]?.text, role: 'delivery_boy' })
+            setLoadingSuggestions(true);
+            const res = await axios.post(`/api/chat/ai-suggestions`, { message: message[message.length - 1]?.text, role: role })
             if (res?.data?.success) {
                 setSuggestions(res?.data?.suggestions || [])
             }
         } catch (error) {
             console.error('Error fetching AI suggestions:', error)
+            setLoadingSuggestions(false);
+        } finally {
+            setLoadingSuggestions(false);
         }
     }
 
@@ -137,27 +143,53 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
                     {/* AI suggestions */}
                     <div className='w-full flex flex-row justify-end items-center mb-2'>
                         <motion.button
-                            className='w-auto text-sm font-semibold flex flex-row items-center justify-center gap-2 text-white rounded-md p-2 cursor-pointer transition-all duration-300 hover:bg-green-800 bg-green-700'
+                            className={`w-auto text-sm font-semibold flex flex-row items-center justify-center gap-2 text-green-600 rounded-xl p-2 transition-all duration-300 bg-green-500/50 ${loadingSuggestions ? 'cursor-not-allowed' : 'hover:bg-green-500/30 cursor-pointer'}`}
                             whileTap={{ scale: 0.93 }}
                             whileHover={{ scale: 1.03 }}
                             onClick={handleFetchAISuggestions}
+                            disabled={loadingSuggestions}
                         >
-                            <Bot className='w-5 h-5' /> AI suggestions
+                            <MessageSquare className='w-5 h-5' /> Get AI suggestions
                         </motion.button>
                     </div>
 
-                    <div className='w-full flex flex-row mb-2 justify-start gap-2'>
-                        {suggestions?.map((suggestion, index) => (
-                            <motion.button
-                                key={index}
-                                className='w-auto text-xs font-semibold flex flex-row items-center justify-center gap-2 text-green-500 rounded-2xl p-2 cursor-pointer transition-all duration-300 hover:bg-green-300 hover:text-green-700 bg-green-200'
-                                whileTap={{ scale: 0.93 }}
-                                whileHover={{ scale: 1.03 }}
-                                onClick={() => setNewMessage(suggestion)}
-                            >
-                                {suggestion}
-                            </motion.button>
-                        ))}
+                    <div className='w-full flex flex-row mb-2 justify-start items-center gap-2'>
+                        {loadingSuggestions ? (
+                            <>
+                                <div className='flex flex-row items-center justify-center gap-1'>
+                                    {[0, 1, 2].map((_, idx) => (
+                                        <motion.div
+                                            key={idx}
+                                            initial={{ y: 10, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            transition={{
+                                                delay: 0.2 + idx * 0.15,
+                                                duration: 0.5,
+                                                repeat: Infinity,
+                                                repeatType: 'reverse',
+                                                ease: "easeInOut"
+                                            }}
+                                            className='w-2 h-2 bg-gray-500 rounded-full'
+                                            style={{ marginRight: idx < 2 ? 4 : 0 }}
+                                        ></motion.div>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                {suggestions?.map((suggestion, index) => (
+                                    <motion.button
+                                        key={index}
+                                        className='w-auto text-xs font-semibold flex flex-row items-center justify-center gap-2 text-green-500 rounded-2xl p-2 cursor-pointer transition-all duration-300 hover:bg-green-300 hover:text-green-700 bg-green-200'
+                                        whileTap={{ scale: 0.93 }}
+                                        whileHover={{ scale: 1.03 }}
+                                        onClick={() => setNewMessage(suggestion)}
+                                    >
+                                        {suggestion}
+                                    </motion.button>
+                                ))}
+                            </>
+                        )}
                     </div>
 
                     <div className='w-full max-h-[500px] overflow-y-auto mt-2 space-y-3 md:max-h-[200px]' ref={messagesRef}>

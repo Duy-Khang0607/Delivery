@@ -101,7 +101,6 @@ const DeliveryBoyDashboard = () => {
 
     }, [userData?._id])
 
-
     useEffect(() => {
         getAssignments();
         fetchCurrentOrder();
@@ -117,7 +116,20 @@ const DeliveryBoyDashboard = () => {
         }
     }, [])
 
+    // Cập nhật vị trí delivery boy
+    useEffect(() => {
+        const socket = getSocket()
+        socket?.on('update-deliveryBoy-location', (data) => {
+            setDeliverylocation({
+                latitude: data?.location?.coordinates?.[1],
+                longitude: data?.location?.coordinates?.[0],
+            })
+        })
 
+        return () => {
+            socket.off('update-deliveryBoy-location')
+        }
+    }, [])
 
     if (currentOrder && userlocation) {
         return (
@@ -129,7 +141,7 @@ const DeliveryBoyDashboard = () => {
                         <LiveMap userLocation={userlocation} deliveryLocation={deliverylocation} />
                     </div>
                 </div>
-                <DeliveryChat orderId={currentOrder?.order?._id!} deliveryBoyId={userData?._id!} />
+                <DeliveryChat orderId={currentOrder?.order?._id!} deliveryBoyId={userData?._id!} role="delivery_boy" />
             </div>
         )
     }

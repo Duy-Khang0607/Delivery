@@ -113,7 +113,7 @@ const TrackOrder = () => {
           {/* Chat */}
           {
             order?._id && userData?._id && (
-              <DeliveryChat orderId={order._id} deliveryBoyId={userData._id} />
+              <DeliveryChat orderId={order._id} deliveryBoyId={userData._id} role="user" />
             )
           }
         </>
