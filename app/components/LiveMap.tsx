@@ -83,24 +83,26 @@ const LiveMap = ({ userLocation, deliveryLocation }: { userLocation: ILocation |
     const center = (userPosition ?? deliveryPosition ?? [0, 0]) as LatLngExpression
 
     return (
-        <MapContainer
-            key="map"
-            center={center}
-            zoom={13}
-            scrollWheelZoom={true}
-            zoomControl={true}
-            doubleClickZoom={true}
-            dragging={true}
-            touchZoom={true}
-            className='w-full h-[400px] z-9'>
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <DeliveryMarker position={deliveryPosition} />
-            <UserMarker position={userPosition} />
-            <Polyline positions={linePositions as [number, number][]} color="green" weight={5} opacity={0.5} />
-        </MapContainer>
+        <div className='w-full h-[400px] rounded-lg overflow-hidden shadow relative z-2'>
+            <MapContainer
+                key="map"
+                center={center}
+                zoom={13}
+                scrollWheelZoom={true}
+                zoomControl={true}
+                doubleClickZoom={true}
+                dragging={true}
+                touchZoom={true}
+                className='w-full h-[400px] z-9'>
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <DeliveryMarker position={deliveryPosition} />
+                <UserMarker position={userPosition} />
+                <Polyline positions={linePositions as [number, number][]} color="green" weight={5} opacity={0.5} />
+            </MapContainer>
+        </div>
     )
 }
 
