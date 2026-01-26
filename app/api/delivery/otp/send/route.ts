@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
         order.deliveryOTP = otp.toString()
         await order.save()
 
-        await sendEmail(order.user.email, "Your delivery OTP", `<h2>Your delivery OTP is <strong>${otp}</strong></h2>`)
+        await sendEmail(order.user.email, "Your delivery OTP", `<h2> Your delivery OTP is <strong>${otp}</strong></h2>`)
 
         return NextResponse.json({ success: true, message: "OTP sent successfully" }, { status: 200 })
 

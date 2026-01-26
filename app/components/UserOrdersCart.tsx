@@ -83,7 +83,8 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                     <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'}`}>
                         {orders?.isPaid ? 'Paid' : 'Unpaid'}
                     </span>
-                    <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{status}</span>
+                    {/* <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{status}</span> */}
+                    <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${status === 'Delivered' ? 'bg-green-200 text-green-700 hover:bg-green-400' : status === 'Out of delivery' ? 'bg-yellow-200 text-yellow-700 hover:bg-yellow-400' : 'bg-gray-200 text-gray-700 hover:bg-gray-400'}`}>{status}</span>
                 </div>
             </div>
 

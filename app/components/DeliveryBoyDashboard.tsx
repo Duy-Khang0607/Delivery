@@ -2,7 +2,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Box, CardSim, LocationEdit, Phone, Timer, User } from 'lucide-react';
+import { Box, CardSim, Loader2, LocationEdit, Phone, Timer, User } from 'lucide-react';
 import { getSocket } from '../lib/socket';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
@@ -27,6 +27,14 @@ const DeliveryBoyDashboard = () => {
         longitude: 0,
     });
     const { userData } = useSelector((state: RootState) => state.user);
+    // Mark as delivered
+    const [showOTP, setShowOTP] = useState(false);
+    const [loadingMarkAsDelivered, setLoadingMarkAsDelivered] = useState(false);
+
+    // Send OTP
+    const [otp, setOtp] = useState('');
+    const [loadingOTP, setLoadingOTP] = useState(false);
+    const [loadingResendOTP, setLoadingResendOTP] = useState(false);
 
     const getAssignments = async () => {
         try {
@@ -41,10 +49,11 @@ const DeliveryBoyDashboard = () => {
         }
     }
 
-    const handleAccept = async (id: string) => {
+    const handleAccept = async (assignmentId: string) => {
         try {
             setLoading(true);
-            const response = await axios.get(`/api/delivery/assignment/${id}/accept-assignment`);
+            const response = await axios.get(`/api/delivery/assignment/${assignmentId}/accept-assignment`);
+            console.log({ data: response?.data })
         } catch (error) {
             console.error('Error accepting assignment:', error);
             setLoading(false);
@@ -67,6 +76,37 @@ const DeliveryBoyDashboard = () => {
             })
         } catch (error) {
             console.error('Error fetching current order:', error);
+        }
+    }
+
+    const sendOTP = async (orderId: string) => {
+        setLoadingMarkAsDelivered(true);
+        try {
+            const response = await axios.post(`/api/delivery/otp/send`, { orderId });
+            setShowOTP(true);
+            console.log({ data: response?.data })
+        } catch (error) {
+            console.error('Error sending OTP:', error);
+            setShowOTP(false);
+            setLoadingMarkAsDelivered(false);
+        } finally {
+            setLoadingMarkAsDelivered(false);
+
+        }
+    }
+
+    const verifyOTP = async (orderId: string, otp: string) => {
+        setLoadingOTP(true);
+        try {
+            const response = await axios.post(`/api/delivery/otp/verify`, { orderId, otp });
+            console.log({ data: response?.data })
+            setOtp('');
+        } catch (error) {
+            console.error('Error verifying OTP:', error);
+            setLoadingOTP(false);
+        }
+        finally {
+            setLoadingOTP(false);
         }
     }
 
@@ -133,7 +173,8 @@ const DeliveryBoyDashboard = () => {
 
     if (currentOrder && userlocation) {
         return (
-            <div className='w-[90%] md:w-[80%] mt-24 mx-auto'>
+            <div className='w-[90%] md:w-[80%] mt-24 mx-auto space-y-4'>
+                {/* Map */}
                 <div className='flex flex-col gap-4 border border-gray-300 rounded-md p-4 shadow-md overflow-hidden w-full h-full'>
                     <h1 className='text-green-700 font-extrabold text-2xl md:text-3xl tracking-wide'>Active order</h1>
                     <div className='flex flex-col gap-2'>
@@ -141,7 +182,50 @@ const DeliveryBoyDashboard = () => {
                         <LiveMap userLocation={userlocation} deliveryLocation={deliverylocation} />
                     </div>
                 </div>
+                {/* Delivery */}
                 <DeliveryChat orderId={currentOrder?.order?._id!} deliveryBoyId={userData?._id!} role="delivery_boy" />
+
+                {/* OTP */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className='flex flex-col gap-4 border border-gray-300 rounded-md p-4 shadow-md overflow-hidden w-full h-full'
+                >
+                    {!currentOrder?.order?.deliveryOTPVerification && !showOTP && (
+                        <>
+                            {/* Mark as delivered */}
+                            <motion.button
+                                onClick={() => sendOTP(currentOrder?.order?._id!)}
+                                className='bg-green-500 text-white px-4 py-2 rounded-md w-full text-center cursor-pointer hover:bg-green-600 transition-all duration-300 flex items-center justify-center'
+                            >
+                                {loadingMarkAsDelivered ? <Loader2 className='w-5 h-5 text-white animate-spin' /> : 'Mark as Delivered'}
+                            </motion.button>
+                        </>
+                    )}
+
+                    {showOTP && (
+                        <>
+                            {/* Input OTP */}
+                            <div className='flex flex-col gap-2'>
+                                <input type="text" placeholder='Enter OTP' className='w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={otp} onChange={(e) => setOtp(e.target.value)} maxLength={6} />
+                                <motion.button
+                                    onClick={() => verifyOTP(currentOrder?.order?._id!, otp)}
+                                    className={`${otp.length !== 6 ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 cursor-pointer hover:bg-green-600'} text-white px-4 py-2 rounded-md w-full hover:bg-green-600 transition-all duration-300 flex items-center justify-center`}
+                                    disabled={otp.length !== 6}
+                                >
+                                    {loadingOTP ? <Loader2 className='w-5 h-5 text-white animate-spin' /> : 'Verify OTP'}
+                                </motion.button>
+                                <motion.button
+                                    onClick={() => sendOTP(currentOrder?.order?._id!)}
+                                    className={`${loadingResendOTP ? 'bg-gray-500 cursor-not-allowed' : 'bg-red-500 cursor-pointer hover:bg-red-600'} text-white px-4 py-2 rounded-md w-full hover:bg-red-600 transition-all duration-300 flex items-center justify-center`}
+                                >
+                                    {loadingResendOTP ? <Loader2 className='w-5 h-5 text-white animate-spin' /> : 'Resend OTP'}
+                                </motion.button>
+                            </div>
+                        </>
+                    )}
+                </motion.div>
             </div>
         )
     }

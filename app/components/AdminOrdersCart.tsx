@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react'
 import PopupImage from '../HOC/PopupImage'
 import axios from 'axios'
 import { IUser } from '../models/user.model'
+import mongoose from "mongoose";
+
 
 
 interface AdminOrderProps {
@@ -13,11 +15,11 @@ interface AdminOrderProps {
 }
 
 interface IOrder {
-    _id: string,
-    user: string,
+    _id: string | mongoose.Types.ObjectId,
+    user: string | mongoose.Types.ObjectId,
     items: [
         {
-            grocery: string,
+            grocery: string | mongoose.Types.ObjectId,
             name: string,
             price: string,
             unit: string,
@@ -41,8 +43,8 @@ interface IOrder {
     createdAt?: Date,
     updatedAt?: Date,
     isPaid: Boolean,
-    assignedDeliveryBoy?: IUser,
-    assignment?: string
+    assignedDeliveryBoy?: IUser | null | mongoose.Types.ObjectId,
+    assignment?: string | mongoose.Types.ObjectId
 }
 
 
@@ -53,7 +55,6 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
     const [status, setStatus] = useState<string>('Pending')
     const [loading, setLoading] = useState(false)
 
-    console.log({ orders })
 
     const updateOrderStatus = async (orderId: string, status: string) => {
         setLoading(true)
@@ -96,7 +97,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                             <option key={index} value={item}>{item}</option>
                         ))}
                     </select>
-                    <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{loading ? <Loader2 className='w-5 h-5 text-green-700 animate-spin' /> : status}</span>
+                    <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${status === 'Delivered' ? 'bg-green-200 text-green-700 hover:bg-green-400' : status === 'Out of delivery' ? 'bg-yellow-200 text-yellow-700 hover:bg-yellow-400' : 'bg-gray-200 text-gray-700 hover:bg-gray-400'}`}>{loading ? <Loader2 className='w-5 h-5 text-green-700 animate-spin' /> : status}</span>
                 </div>
             </div>
 
@@ -122,8 +123,8 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                             <div className='flex flex-row  items-center justify-center gap-2'>
                                 <User className='w-5 h-5 text-blue-500' />
                                 <div className='flex flex-col gap-1'>
-                                    <span className='text-sm md:text-lg w-full'>Assigned: <span className='text-sm md:text-lg w-full font-semibold'>{orders?.assignedDeliveryBoy?.name}</span></span>
-                                    <span className='text-sm md:text-md text-gray-500 font-semibold'>📞 {orders?.assignedDeliveryBoy?.mobile}</span>
+                                    <span className='text-sm md:text-lg w-full'>Assigned: <span className='text-sm md:text-lg w-full font-semibold'>{(orders?.assignedDeliveryBoy as IUser)?.name}</span></span>
+                                    <span className='text-sm md:text-md text-gray-500 font-semibold'>📞 {(orders?.assignedDeliveryBoy as IUser)?.mobile}</span>
                                 </div>
                             </div>
 
