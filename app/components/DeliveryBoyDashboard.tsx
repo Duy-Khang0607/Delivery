@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import LiveMap from './LiveMap';
 import DeliveryChat from './DeliveryChat';
+import { useRouter } from 'next/navigation';
 
 interface IDeliveryLocation {
     latitude: number;
@@ -27,6 +28,8 @@ const DeliveryBoyDashboard = () => {
         longitude: 0,
     });
     const { userData } = useSelector((state: RootState) => state.user);
+
+
     // Mark as delivered
     const [showOTP, setShowOTP] = useState(false);
     const [loadingMarkAsDelivered, setLoadingMarkAsDelivered] = useState(false);
@@ -84,7 +87,6 @@ const DeliveryBoyDashboard = () => {
         try {
             const response = await axios.post(`/api/delivery/otp/send`, { orderId });
             setShowOTP(true);
-            console.log({ data: response?.data })
         } catch (error) {
             console.error('Error sending OTP:', error);
             setShowOTP(false);
@@ -98,9 +100,10 @@ const DeliveryBoyDashboard = () => {
     const verifyOTP = async (orderId: string, otp: string) => {
         setLoadingOTP(true);
         try {
-            const response = await axios.post(`/api/delivery/otp/verify`, { orderId, otp });
-            console.log({ data: response?.data })
+            await axios.post(`/api/delivery/otp/verify`, { orderId, otp });
             setOtp('');
+            await fetchCurrentOrder();
+            window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (error) {
             console.error('Error verifying OTP:', error);
             setLoadingOTP(false);
@@ -171,6 +174,7 @@ const DeliveryBoyDashboard = () => {
         }
     }, [])
 
+
     if (currentOrder && userlocation) {
         return (
             <div className='w-[90%] md:w-[80%] mt-24 mx-auto space-y-4'>
@@ -211,7 +215,7 @@ const DeliveryBoyDashboard = () => {
                                 <input type="text" placeholder='Enter OTP' className='w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={otp} onChange={(e) => setOtp(e.target.value)} maxLength={6} />
                                 <motion.button
                                     onClick={() => verifyOTP(currentOrder?.order?._id!, otp)}
-                                    className={`${otp.length !== 6 ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 cursor-pointer hover:bg-green-600'} text-white px-4 py-2 rounded-md w-full hover:bg-green-600 transition-all duration-300 flex items-center justify-center`}
+                                    className={`${otp.length !== 6 ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 cursor-pointer hover:bg-green-600'} text-white px-4 py-2 rounded-md w-full **:transition-all duration-300 flex items-center justify-center`}
                                     disabled={otp.length !== 6}
                                 >
                                     {loadingOTP ? <Loader2 className='w-5 h-5 text-white animate-spin' /> : 'Verify OTP'}
@@ -255,6 +259,7 @@ const DeliveryBoyDashboard = () => {
                             const { _id, paymentMethod, createdAt, address, assignment } = orders?.order
                             const { fullName, mobile } = orders?.order?.address
 
+                            console.log({ orders })
                             return (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}

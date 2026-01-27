@@ -39,17 +39,17 @@ const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
       </div>
 
       {/* Title && Button */}
-      <div className='p-3'>
+      <div className='p-3 w-full'>
         {/* Category */}
-        <p className='text-[12px] tracking-wide text-gray-400 md:h-9'>{groceries?.category}</p>
+        <p className='text-xs md:text-lg font-medium text-gray-400 w-full h-10'>{groceries?.category}</p>
 
         {/* Name */}
-        <h1 className='h-10 w-auto font-semibold text-md'>{groceries?.name}</h1>
+        <h1 className='h-10 w-auto font-semibold text-xs md:text-lg'>{groceries?.name}</h1>
 
         {/* Unit & Price */}
         <div className='flex flex-row justify-between items-center'>
-          <span className='w-auto p-1.5 rounded-2xl bg-gray-100 text-center text-[11px] font-normal'>{groceries?.unit}</span>
-          <span className='text-green-700 text-lg font-semibold'>
+          <span className='w-auto p-1.5 rounded-2xl bg-gray-100 text-center text-xs font-normal'>{groceries?.unit}</span>
+          <span className='text-green-700 font-semibold text-xs md:text-lg'>
             ${groceries?.price}
           </span>
         </div>
@@ -65,8 +65,8 @@ const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
             </div>
           </motion.div>
         ) : (
-          <motion.button onClick={() => dispatch(addToCart({ ...groceries, quantity: 1 }))} whileTap={{ scale: 0.96 }} className='w-full bg-green-600 text-white rounded-2xl hover:bg-green-400 cursor-pointer flex flex-row justify-center items-center gap-2 py-1.5 mt-3'>
-            <ShoppingCart className='w-5 h-5' />
+          <motion.button onClick={() => dispatch(addToCart({ ...groceries, quantity: 1 }))} whileTap={{ scale: 0.96 }} className='w-full bg-green-600 text-white rounded-2xl hover:bg-green-400 cursor-pointer flex flex-row justify-center items-center gap-2 py-1.5 mt-3 text-xs md:text-sm'>
+            <ShoppingCart className='w-4 h-4 md:w-5 md:h-5' />
             Add to cart
           </motion.button>
         )}

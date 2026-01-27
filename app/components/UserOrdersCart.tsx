@@ -66,6 +66,7 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
             socket.off('order-status-updated')
         }
     }, [])
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -79,11 +80,10 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                     <p className='text-xs md:text-lg text-gray-500'>{new Date(orders?.createdAt!).toLocaleString()}</p>
                 </div>
 
-                <div className='flex items-center gap-2 font-semibold text-sm md:text-sm'>
+                <div className='flex items-center gap-2 font-semibold text-xs md:text-sm w-full justify-end'>
                     <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'}`}>
                         {orders?.isPaid ? 'Paid' : 'Unpaid'}
                     </span>
-                    {/* <span className='bg-yellow-200 rounded-2xl text-yellow-700 transition-all duration-200 hover:bg-yellow-400 p-2 cursor-pointer'>{status}</span> */}
                     <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${status === 'Delivered' ? 'bg-green-200 text-green-700 hover:bg-green-400' : status === 'Out of delivery' ? 'bg-yellow-200 text-yellow-700 hover:bg-yellow-400' : 'bg-gray-200 text-gray-700 hover:bg-gray-400'}`}>{status}</span>
                 </div>
             </div>
@@ -91,12 +91,12 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
             <div className='p-4 space-y-5'>
                 <div className='flex items-center gap-2'>
                     <CardSim className='w-5 h-5 text-green-700' />
-                    <span className='text-sm md:text-lg w-full'>{orders?.paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}</span>
+                    <span className='text-xs md:text-md w-full'>{orders?.paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}</span>
                 </div>
 
                 <div className='flex items-center gap-2'>
                     <LocationEdit className='w-5 h-5 text-green-700' />
-                    <span className='text-sm md:text-lg w-full'>{orders?.address?.fullAddress}</span>
+                    <span className='text-xs md:text-lg w-full'>{orders?.address?.fullAddress}</span>
                 </div>
 
                 {orders?.assignedDeliveryBoy && (
@@ -105,8 +105,8 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                             <div className='flex flex-row  items-center justify-center gap-2'>
                                 <User className='w-5 h-5 text-blue-500' />
                                 <div className='flex flex-col gap-1'>
-                                    <span className='text-sm md:text-lg w-full'>Assigned: <span className='text-sm md:text-lg w-full font-semibold'>{orders?.assignedDeliveryBoy?.name}</span></span>
-                                    <span className='text-sm md:text-md text-gray-500 font-semibold'>📞 {orders?.assignedDeliveryBoy?.mobile}</span>
+                                    <span className='text-xs md:text-lg w-full'>Assigned: <span className='text-xs md:text-sm w-full font-semibold'>{orders?.assignedDeliveryBoy?.name}</span></span>
+                                    <span className='text-xs md:text-sm text-gray-500 font-semibold'>📞 {orders?.assignedDeliveryBoy?.mobile}</span>
                                 </div>
                             </div>
 
@@ -119,7 +119,7 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                             onClick={() => {
                                 router.push(`/user/track-order/${orders?._id.toString()}`)
                             }}
-                            className='flex flex-row justify-center items-center gap-2 bg-green-600 text-white rounded-2xl p-2 border border-green-200 shadow-md hover:shadow-xl transition-all duration-300 w-full cursor-pointer'>
+                            className='flex flex-row justify-center items-center gap-2 bg-green-600 text-white rounded-2xl p-2 border border-green-200 shadow-md hover:shadow-xl transition-all duration-300 w-full cursor-pointer text-xs md:text-sm'>
                             <Truck className='w-5 h-5' />
                             Tracking my order
                         </motion.button>
@@ -132,7 +132,7 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                 <div className='flex items-center justify-between gap-2 border-b border-gray-100 cursor-pointer' onClick={() => setExpand(!expand)}>
                     <div className='flex items-center gap-2'>
                         <Box className='w-5 h-5 text-green-700' />
-                        <span className='font-medium text-md md:text-lg'>{expand ? 'Hide order items' : `Items (${orders?.items.length})`}</span>
+                        <span className='font-medium text-sm md:text-md'>{expand ? 'Hide order items' : `Items (${orders?.items.length})`}</span>
                     </div>
 
                     <div className='cursor-pointer transition-all duration-200'>
@@ -189,11 +189,11 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                 <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-2'>
                         <Truck className='w-5 h-5 text-green-700' />
-                        <span className='font-medium text-md md:text-lg'>Delivery</span>
+                        <span className='font-medium text-sm md:text-md'>Delivery</span>
                     </div>
 
                     <div>
-                        <p className='font-bold text-md md:text-xl'>Total: <span className='text-green-700 font-bold text-md md:text-xl'>${orders?.totalAmount}</span></p>
+                        <p className='font-bold text-sm md:text-md'>Total: <span className='text-green-700 font-bold text-sm md:text-md'>${orders?.totalAmount}</span></p>
                     </div>
                 </div>
             </div>

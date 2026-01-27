@@ -124,7 +124,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
 
 
     return (
-        <div className='w-full rounded-md shadow-md border border-gray-300 p-4 overflow-hidden min-h-[300px] mt-5 relative'>
+        <div className='w-full rounded-md shadow-md border border-gray-300 p-4 overflow-hidden h-full mt-5 relative'>
             {loading ? (
                 <motion.div
                     initial={{ y: 40, opacity: 0 }}
@@ -140,11 +140,11 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
                     <Loader2 className='w-10 h-10 text-green-700 mb-5 animate-spin' />
                 </motion.div>
             ) : (
-                <>
+                <div className='flex flex-col min-h-[300px]'>
                     {/* Button AI suggestions */}
                     <div className='w-full flex flex-row justify-end items-center mb-2'>
                         <motion.button
-                            className={`w-auto text-sm font-semibold flex flex-row items-center justify-center gap-2 text-green-600 rounded-xl p-2 transition-all duration-300 bg-green-500/50 ${loadingSuggestions ? 'cursor-not-allowed' : 'hover:bg-green-500/30 cursor-pointer'}`}
+                            className={`w-auto text-xs md:text-sm font-semibold flex flex-row items-center justify-center gap-2 text-green-600 rounded-xl p-2 transition-all duration-300 bg-green-500/50 ${loadingSuggestions ? 'cursor-not-allowed' : 'hover:bg-green-500/30 cursor-pointer'}`}
                             whileTap={{ scale: 0.93 }}
                             whileHover={{ scale: 1.03 }}
                             onClick={handleFetchAISuggestions}
@@ -153,11 +153,11 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
 
                             {loadingSuggestions ? (
                                 <span className='flex flex-row items-center justify-center gap-2'>
-                                    <Loader2 className='w-5 h-5 text-green-700 animate-spin' />
+                                    <Loader2 className='w-4 h-4 md:w-5 md:h-5 text-green-700 animate-spin' />
                                 </span>
                             ) : (
                                 <span className='flex flex-row items-center justify-center gap-2'>
-                                    <MessageSquare className='w-5 h-5' /> AI suggestions
+                                    <MessageSquare className='w-4 h-4 md:w-5 md:h-5' /> AI suggestions
                                 </span>
                             )}
                         </motion.button>
@@ -219,10 +219,10 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
                         </AnimatePresence>
                     </div>
 
-                    <div className='w-full border border-gray-500 mb-4'></div>
 
                     {/* Form send message */}
-                    <div className='w-full h-full flex flex-row items-center justify-center gap-2 mt-3'>
+                    <div className='w-full mt-auto flex flex-col gap-4'>
+                        <div className='w-full border border-gray-500'></div>
                         <form className='w-full flex flex-row items-center justify-center gap-2' onSubmit={sendMessage}>
                             <input type="text" placeholder='Your message' className='w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
                             <button disabled={newMessage.length === 0} className={`w-auto text-white rounded-md p-2 transition-all duration-300 ${newMessage.length > 0 ? 'bg-green-700 hover:bg-green-800 cursor-pointer' : 'bg-gray-500 cursor-not-allowed'}`}>
@@ -230,7 +230,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
                             </button>
                         </form>
                     </div>
-                </>
+                </div>
             )}
 
         </div >

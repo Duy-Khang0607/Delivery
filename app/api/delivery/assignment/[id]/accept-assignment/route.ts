@@ -39,7 +39,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         assignment.assignedTo = deliveryBoyId
         assignment.status = 'assigned'
         assignment.accpectedAt = new Date()
-        await assignment.save() 
+        await assignment.save()
 
         const order = await Orders.findById(assignment?.order)
 
@@ -49,6 +49,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
         order.assignedDeliveryBoy = deliveryBoyId
         await order.save()
+
+        // Gọi event socket khi accpect order
+        emitEventHandler('order-assigned', { orderId: order?._id, assignmentDeliveryBoy: order?.assignedDeliveryBoy })
 
         await DeliveryAssignment.updateMany({
             _id: { $ne: assignment?._id },
@@ -60,7 +63,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
             }
         })
 
-        return NextResponse.json({ success: true, assignment,message: "Order accepted successfully" }, { status: 200 })
+        return NextResponse.json({ success: true, assignment, message: "Order accepted successfully" }, { status: 200 })
 
     } catch (error) {
         return NextResponse.json({ success: false, message: "API Accept Assignment Failed" }, { status: 500 })

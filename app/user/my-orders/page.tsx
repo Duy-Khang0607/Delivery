@@ -1,5 +1,6 @@
 'use client'
 import UserOrdersCart from '@/app/components/UserOrdersCart'
+import { getSocket } from '@/app/lib/socket'
 import { IUser } from '@/app/models/user.model'
 import axios from 'axios'
 import { motion } from 'framer-motion'
@@ -12,26 +13,26 @@ interface IOrder {
   _id: mongoose.Types.ObjectId,
   user: mongoose.Types.ObjectId,
   items: [
-      {
-          grocery: mongoose.Types.ObjectId,
-          name: string,
-          price: string,
-          unit: string,
-          image: string[],
-          quantity: string,
-      }
+    {
+      grocery: mongoose.Types.ObjectId,
+      name: string,
+      price: string,
+      unit: string,
+      image: string[],
+      quantity: string,
+    }
   ]
   totalAmount: number,
   paymentMethod: 'cod' | 'online',
   address: {
-      fullName: string,
-      mobile: number,
-      city: string,
-      state: string,
-      pincode: string,
-      fullAddress: string,
-      latitude: number,
-      longitude: number
+    fullName: string,
+    mobile: number,
+    city: string,
+    state: string,
+    pincode: string,
+    fullAddress: string,
+    latitude: number,
+    longitude: number
   },
   status: 'Pending' | 'Out of delivery' | 'Delivered',
   createdAt?: Date,
@@ -52,7 +53,6 @@ const MyOrders = () => {
     try {
       const res = await axios.get('/api/auth/user/my-orders');
       setOrders(res?.data)
-      console.log({ res })
     } catch (error: any) {
       console.log({ error: error?.response?.data })
       setLoading(false)
@@ -63,6 +63,18 @@ const MyOrders = () => {
 
   useEffect(() => {
     fetchOrders()
+  }, [])
+
+  useEffect(() => {
+    const socket = getSocket()
+    socket?.on('order-assigned', (data) => {
+      console.log({ data })
+      const { orderId, assignmentDeliveryBoy } = data
+      setOrders((prev) => prev?.map((o) => o?._id.toString() === orderId?.toString() ? { ...o, assignmentDeliveryBoy } : o) || [])
+    })
+    return () => {
+      socket.off('order-assigned')
+    }
   }, [])
 
   return (
