@@ -1,12 +1,14 @@
 'use client'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Box, CardSim, ChevronDown, ChevronUp, Loader2, LocationEdit, Phone, Truck, User } from 'lucide-react'
+import { Box, CardSim, CheckCircle, ChevronDown, ChevronUp, Loader2, LocationEdit, Phone, Truck, User } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import PopupImage from '../HOC/PopupImage'
 import axios from 'axios'
 import { IUser } from '../models/user.model'
 import mongoose from "mongoose";
+import { useRouter } from 'next/navigation'
+import { getSocket } from '../lib/socket'
 
 
 
@@ -54,6 +56,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
     const statusPayment = ['Out of delivery', 'Pending', 'Delivered']
     const [status, setStatus] = useState<string>('Pending')
     const [loading, setLoading] = useState(false)
+    const router = useRouter()
 
 
     const updateOrderStatus = async (orderId: string, status: string) => {
@@ -73,6 +76,19 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
     useEffect(() => {
         setStatus(orders?.status)
     }, [orders])
+
+    useEffect(() => {
+        const socket = getSocket()
+        socket?.on('order-status-updated', (data) => {
+            console.log("Order-status-updated", data)
+            if (data?.orderId?.toString() === orders?._id.toString()) {
+                setStatus((prev) => prev === data?.status ? prev : data?.status)
+            }
+        })
+        return () => {
+            socket.off('order-status-updated')
+        }
+    }, [])
 
     return (
         <motion.div
@@ -134,12 +150,21 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => {
-                                // router.push(`/delivery/current-order?orderId=${orders?._id}`)
-                                console.log({ orders })
+                                router.push(`/user/track-order/${orders?._id.toString()}`)
                             }}
-                            className='flex flex-row justify-center items-center gap-2 bg-green-600 text-white rounded-2xl p-2 border border-green-200 shadow-md hover:shadow-xl transition-all duration-300 w-full cursor-pointer'>
-                            <Truck className='w-5 h-5' />
-                            Tracking my order
+                            className='flex flex-row justify-center items-center gap-2 bg-green-600 text-white rounded-2xl p-2 border border-green-200 shadow-md hover:shadow-xl transition-all duration-300 w-full cursor-pointer text-sm md:text-lg'>
+
+                            {status === 'Delivered' ? (
+                                <>
+                                    <CheckCircle className='w-5 h-5' />
+                                    Order Delivered
+                                </>
+                            ) : (
+                                <>
+                                    <Truck className='w-5 h-5' />
+                                    Tracking my orders
+                                </>
+                            )}
                         </motion.button>
                     </>
                 )}

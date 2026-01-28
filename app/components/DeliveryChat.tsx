@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from 'motion/react';
 type IProps = {
     orderId: mongoose.Types.ObjectId;
     deliveryBoyId: mongoose.Types.ObjectId;
-    role: 'user' | 'delivery_boy';
+    role: 'user' | 'deliveryBoy' | 'admin';
 }
 
 
@@ -206,16 +206,21 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
                     {/* Render messages */}
                     <div className='w-full max-h-[500px] overflow-y-auto mt-2 space-y-3 md:max-h-[200px]' ref={messagesRef}>
                         <AnimatePresence mode='wait'>
-                            {message?.map((item, index) => (
-                                <motion.div
-                                    key={index} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.4 }}
-                                    className={`flex flex-col mt-2 space-y-2 ${item?.senderId.toString() === deliveryBoyId.toString() ? 'items-end' : 'items-start'}`}>
-                                    <div className={`px-4 py-2 max-w-[80%] ${item?.senderId.toString() === deliveryBoyId.toString() ? 'bg-green-500' : 'bg-gray-500'} rounded-md shadow-md text-left ${item?.senderId.toString() === deliveryBoyId.toString() ? 'text-right' : 'text-left'}`}>
-                                        <p className='text-sm text-white font-semibold'>{item?.text}</p>
-                                    </div>
-                                    <p className='text-xs text-gray-500 text-right'>{item?.time}</p>
-                                </motion.div>
-                            ))}
+                            {message?.map((item, index) => {
+                                console.log({ senderId: item?.senderId })
+                                console.log({ role })
+                                console.log({ deliveryBoyId })
+                                return (
+                                    <motion.div
+                                        key={index} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.4 }}
+                                        className={`flex flex-col mt-2 space-y-2 ${item?.senderId.toString() === deliveryBoyId.toString() ? 'items-end' : 'items-start'}`}>
+                                        <div className={`px-4 py-2 max-w-[80%] ${item?.senderId.toString() === deliveryBoyId.toString() ? 'bg-green-500' : 'bg-gray-500'} rounded-md shadow-md text-left ${item?.senderId.toString() === deliveryBoyId.toString() ? 'text-right' : 'text-left'}`}>
+                                            <p className='text-sm text-white font-semibold'>{item?.text}</p>
+                                        </div>
+                                        <p className='text-xs text-gray-500 text-right'>{item?.time}</p>
+                                    </motion.div>
+                                )
+                            })}
                         </AnimatePresence>
                     </div>
 

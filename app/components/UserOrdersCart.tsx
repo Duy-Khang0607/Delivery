@@ -96,12 +96,12 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
             <div className='p-4 space-y-5'>
                 <div className='flex items-center gap-2'>
                     <CardSim className='w-5 h-5 text-green-700' />
-                    <span className='text-xs md:text-md w-full'>{orders?.paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}</span>
+                    <span className='text-md md:text-lg w-full'>{orders?.paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}</span>
                 </div>
 
                 <div className='flex items-center gap-2'>
                     <LocationEdit className='w-5 h-5 text-green-700' />
-                    <span className='text-xs md:text-lg w-full'>{orders?.address?.fullAddress}</span>
+                    <span className='text-md md:text-lg w-full'>{orders?.address?.fullAddress}</span>
                 </div>
 
                 {orders?.assignedDeliveryBoy && (
@@ -110,8 +110,8 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                             <div className='flex flex-row  items-center justify-center gap-2'>
                                 <User className='w-5 h-5 text-blue-500' />
                                 <div className='flex flex-col gap-1'>
-                                    <span className='text-xs md:text-lg w-full'>Assigned: <span className='text-xs md:text-sm w-full font-semibold'>{orders?.assignedDeliveryBoy?.name}</span></span>
-                                    <span className='text-xs md:text-sm text-gray-500 font-semibold'>📞 {orders?.assignedDeliveryBoy?.mobile}</span>
+                                    <span className='text-sm md:text-lg w-full'>Assigned: <span className='text-sm md:text-lg w-full font-semibold'>{orders?.assignedDeliveryBoy?.name}</span></span>
+                                    <span className='text-sm md:text-md text-gray-500 font-semibold'>📞 {orders?.assignedDeliveryBoy?.mobile}</span>
                                 </div>
                             </div>
 
@@ -124,7 +124,7 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                             onClick={() => {
                                 router.push(`/user/track-order/${orders?._id.toString()}`)
                             }}
-                            className='flex flex-row justify-center items-center gap-2 bg-green-600 text-white rounded-2xl p-2 border border-green-200 shadow-md hover:shadow-xl transition-all duration-300 w-full cursor-pointer text-xs md:text-sm'>
+                            className='flex flex-row justify-center items-center gap-2 bg-green-600 text-white rounded-2xl p-2 border border-green-200 shadow-md hover:shadow-xl transition-all duration-300 w-full cursor-pointer text-sm md:text-lg'>
 
                             {status === 'Delivered' ? (
                                 <>

@@ -11,7 +11,7 @@ import { getSocket } from "@/app/lib/socket"
 
 
 const ManageOrders = () => {
-    const [orders, setOrder] = useState<IOrder[]>([])
+    const [orders, setOrders] = useState<IOrder[]>([])
     const [loading, setLoading] = useState(false)
     const [isLeaving, setIsLeaving] = useState(false)
     const router = useRouter()
@@ -20,7 +20,7 @@ const ManageOrders = () => {
         setLoading(true)
         try {
             const res = await axios.get('/api/auth/admin/get-orders')
-            setOrder(res?.data)
+            setOrders(res?.data)
         } catch (error) {
             console.error({ error })
             setLoading(false)
@@ -36,12 +36,38 @@ const ManageOrders = () => {
     useEffect(() => {
         const socket = getSocket()
         socket?.on('new-order', (newOrder) => {
-            setOrder((prev) => [newOrder, ...prev!])
+            setOrders((prev) => [newOrder, ...prev!])
         })
         return () => {
             socket.off('new-order')
         }
     }, [])
+
+    useEffect(() => {
+        const socket = getSocket()
+    
+        socket?.on('order-assigned', (data) => {
+          console.log({ data })
+          const { orderId, assignmentDeliveryBoy } = data
+    
+          setOrders((prevOrders) => {
+            if (!prevOrders) return prevOrders
+    
+            return prevOrders.map((order) =>
+              order?._id.toString() === orderId?.toString()
+                ? {
+                  ...order,
+                  assignedDeliveryBoy: assignmentDeliveryBoy
+                }
+                : order
+            )
+          })
+        })
+    
+        return () => {
+          socket.off('order-assigned')
+        }
+      }, [])
 
     return (
         <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen'>

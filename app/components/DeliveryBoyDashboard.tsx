@@ -103,6 +103,7 @@ const DeliveryBoyDashboard = () => {
             await axios.post(`/api/delivery/otp/verify`, { orderId, otp });
             setOtp('');
             await fetchCurrentOrder();
+            await getAssignments();
             window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (error) {
             console.error('Error verifying OTP:', error);
@@ -113,6 +114,7 @@ const DeliveryBoyDashboard = () => {
         }
     }
 
+    // Lấy vị trí hiện tại của delivery boy
     useEffect(() => {
         if (!userData?._id) return
         if (!navigator?.geolocation) return
@@ -144,11 +146,13 @@ const DeliveryBoyDashboard = () => {
 
     }, [userData?._id])
 
+    // Call api lấy danh sách tài xế và đơn hàng được phân công
     useEffect(() => {
         getAssignments();
         fetchCurrentOrder();
     }, [userData]);
 
+    // Lắng nghe sự kiện "new-assignment" khi có đơn hàng được phân công
     useEffect(() => {
         const socket = getSocket()
         socket?.on('new-assignment', (newAssignment) => {
@@ -159,7 +163,7 @@ const DeliveryBoyDashboard = () => {
         }
     }, [])
 
-    // Cập nhật vị trí delivery boy
+    // Lắng nghe sự kiện "update-deliveryBoy-location" khi có đơn hàng được phân công
     useEffect(() => {
         const socket = getSocket()
         socket?.on('update-deliveryBoy-location', (data) => {
@@ -175,6 +179,8 @@ const DeliveryBoyDashboard = () => {
     }, [])
 
 
+    console.log({ userData })
+
     if (currentOrder && userlocation) {
         return (
             <div className='w-[90%] md:w-[80%] mt-24 mx-auto space-y-4'>
@@ -187,7 +193,7 @@ const DeliveryBoyDashboard = () => {
                     </div>
                 </div>
                 {/* Delivery */}
-                <DeliveryChat orderId={currentOrder?.order?._id!} deliveryBoyId={userData?._id!} role="delivery_boy" />
+                <DeliveryChat orderId={currentOrder?.order?._id!} deliveryBoyId={userData?._id!} role={userData?.role as 'user' | 'deliveryBoy' | 'admin'} />
 
                 {/* OTP */}
                 <motion.div
