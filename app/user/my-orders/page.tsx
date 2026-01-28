@@ -39,7 +39,10 @@ interface IOrder {
   updatedAt?: Date,
   isPaid: Boolean,
   assignedDeliveryBoy?: IUser | null,
-  assignment?: mongoose.Types.ObjectId
+  assignment?: mongoose.Types.ObjectId,
+  deliveredAt?: Date | null,
+  deliveryOTP?: string | null,
+  deliveryOTPVerification: boolean,
 }
 
 const MyOrders = () => {
@@ -62,19 +65,33 @@ const MyOrders = () => {
   }
 
   useEffect(() => {
-    fetchOrders()
-  }, [])
-
-  useEffect(() => {
     const socket = getSocket()
+
     socket?.on('order-assigned', (data) => {
       console.log({ data })
       const { orderId, assignmentDeliveryBoy } = data
-      setOrders((prev) => prev?.map((o) => o?._id.toString() === orderId?.toString() ? { ...o, assignmentDeliveryBoy } : o) || [])
+
+      setOrders((prevOrders) => {
+        if (!prevOrders) return prevOrders
+
+        return prevOrders.map((order) =>
+          order?._id.toString() === orderId?.toString()
+            ? {
+              ...order,
+              assignedDeliveryBoy: assignmentDeliveryBoy
+            }
+            : order
+        )
+      })
     })
+
     return () => {
       socket.off('order-assigned')
     }
+  }, [])
+
+  useEffect(() => {
+    fetchOrders()
   }, [])
 
   return (

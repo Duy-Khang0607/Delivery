@@ -36,7 +36,6 @@ const ManageOrders = () => {
     useEffect(() => {
         const socket = getSocket()
         socket?.on('new-order', (newOrder) => {
-            console.log({newOrder})
             setOrder((prev) => [newOrder, ...prev!])
         })
         return () => {

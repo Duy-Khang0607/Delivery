@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import LiveMap from './LiveMap';
 import DeliveryChat from './DeliveryChat';
-import { useRouter } from 'next/navigation';
 
 interface IDeliveryLocation {
     latitude: number;
@@ -27,7 +26,7 @@ const DeliveryBoyDashboard = () => {
         latitude: 0,
         longitude: 0,
     });
-    const { userData } = useSelector((state: RootState) => state.user);
+    const { userData } = useSelector((state: RootState) => state?.user);
 
 
     // Mark as delivered
@@ -56,7 +55,8 @@ const DeliveryBoyDashboard = () => {
         try {
             setLoading(true);
             const response = await axios.get(`/api/delivery/assignment/${assignmentId}/accept-assignment`);
-            console.log({ data: response?.data })
+
+            console.log({ response })
         } catch (error) {
             console.error('Error accepting assignment:', error);
             setLoading(false);
@@ -256,10 +256,9 @@ const DeliveryBoyDashboard = () => {
                 <AnimatePresence >
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                         {assignments?.length > 0 && assignments?.map((orders) => {
-                            const { _id, paymentMethod, createdAt, address, assignment } = orders?.order
+                            const { _id, paymentMethod, createdAt, address } = orders?.order
                             const { fullName, mobile } = orders?.order?.address
 
-                            console.log({ orders })
                             return (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
@@ -300,11 +299,24 @@ const DeliveryBoyDashboard = () => {
                                         <motion.button
                                             whileTap={{ scale: 0.93 }}
                                             whileHover={{ scale: 1.03 }}
-                                            onClick={() => handleAccept(assignment)} className='bg-green-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-green-600 transition-all duration-300'>Accept</motion.button>
+                                            onClick={async () => {
+                                                await handleAccept(orders?.assignment);
+                                                // Ngay sau khi accept, cập nhật ngay currentOrder và userlocation trên UI
+                                                setCurrentOrder(orders);
+                                                setUserlocation({
+                                                    latitude: orders?.order?.address?.latitude,
+                                                    longitude: orders?.order?.address?.longitude,
+                                                });
+                                                setShowOTP(false)
+                                            }}
+                                            className='bg-green-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-green-600 transition-all duration-300'>
+                                            Accept
+                                        </motion.button>
                                         <motion.button
                                             whileTap={{ scale: 0.93 }}
                                             whileHover={{ scale: 1.03 }}
-                                            onClick={() => handleReject(_id)} className='bg-red-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-red-600 transition-all duration-300'>Reject</motion.button>
+                                            onClick={() => handleReject(_id)}
+                                            className='bg-red-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-red-600 transition-all duration-300'>Reject</motion.button>
                                     </motion.div>
                                 </motion.div>
                             )

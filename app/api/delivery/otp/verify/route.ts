@@ -1,6 +1,7 @@
 
 
 import connectDB from "@/app/lib/db"
+import { emitEventHandler } from "@/app/lib/emitEventHandler"
 import { sendEmail } from "@/app/lib/mailer"
 import DeliveryAssignment from "@/app/models/deliveryAssignment.model"
 import Orders from "@/app/models/orders.model"
@@ -31,6 +32,8 @@ export async function POST(req: NextRequest) {
         order.deliveryOTPVerification = true
         order.deliveredAt = new Date()
         await order.save()
+
+        await emitEventHandler("order-status-updated", { orderId: order?._id, status: order?.status, assignment: order?.assignment })
 
         await DeliveryAssignment.updateOne(
             { order: orderId },

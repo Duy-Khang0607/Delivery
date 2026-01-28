@@ -50,8 +50,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         order.assignedDeliveryBoy = deliveryBoyId
         await order.save()
 
+        await order.populate('user assignedDeliveryBoy');
         // Gọi event socket khi accpect order
-        emitEventHandler('order-assigned', { orderId: order?._id, assignmentDeliveryBoy: order?.assignedDeliveryBoy })
+        await emitEventHandler('order-assigned', { orderId: order?._id, assignmentDeliveryBoy: order?.assignedDeliveryBoy })
 
         await DeliveryAssignment.updateMany({
             _id: { $ne: assignment?._id },

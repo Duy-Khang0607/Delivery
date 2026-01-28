@@ -1,6 +1,6 @@
 'use client'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Box, CardSim, ChevronDown, ChevronUp, LocationEdit, Phone, Truck, User } from 'lucide-react'
+import { Box, CardSim, CheckCircle, ChevronDown, ChevronUp, LocationEdit, Phone, Truck, User } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import PopupImage from '../HOC/PopupImage'
@@ -45,6 +45,9 @@ interface IOrder {
     isPaid: Boolean,
     assignedDeliveryBoy?: IUser | null,
     assignment?: mongoose.Types.ObjectId
+    deliveredAt?: Date | null,
+    deliveryOTP?: string | null,
+    deliveryOTPVerification: boolean,
 }
 
 const UserOrdersCart = ({ orders }: UserOrderProps) => {
@@ -53,11 +56,12 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
     const [status, setStatus] = useState<string>(orders?.status || '')
     const router = useRouter()
 
+    console.log({ orders })
 
     useEffect(() => {
         const socket = getSocket()
         socket?.on('order-status-updated', (data) => {
-            console.log({ data })
+            console.log("Order-status-updated", data)
             if (data?.orderId?.toString() === orders?._id.toString()) {
                 setStatus((prev) => prev === data?.status ? prev : data?.status)
             }
@@ -66,6 +70,7 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
             socket.off('order-status-updated')
         }
     }, [])
+
 
     return (
         <motion.div
@@ -120,8 +125,18 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                                 router.push(`/user/track-order/${orders?._id.toString()}`)
                             }}
                             className='flex flex-row justify-center items-center gap-2 bg-green-600 text-white rounded-2xl p-2 border border-green-200 shadow-md hover:shadow-xl transition-all duration-300 w-full cursor-pointer text-xs md:text-sm'>
-                            <Truck className='w-5 h-5' />
-                            Tracking my order
+
+                            {status === 'Delivered' ? (
+                                <>
+                                    <CheckCircle className='w-5 h-5' />
+                                    Order Delivered
+                                </>
+                            ) : (
+                                <>
+                                    <Truck className='w-5 h-5' />
+                                    Tracking my orders
+                                </>
+                            )}
                         </motion.button>
                     </>
                 )}

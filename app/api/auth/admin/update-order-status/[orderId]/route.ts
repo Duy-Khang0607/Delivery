@@ -48,7 +48,6 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
             }
 
             // Lấy tọa độ (vĩ độ, kinh độ) từ địa chỉ giao hàng
-
             if (isNaN(Number(latitude)) || isNaN(Number(longitude))) {
                 return NextResponse.json({ success: false, message: 'Invalid coordinates!' }, { status: 400 });
             }
@@ -69,7 +68,6 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
 
             // Lấy danh sách ID của các shipper gần đó
             const nearByIds = nearbyDeliveryBoys.map((boy: any) => boy?._id);
-            console.log({ nearByIds });
 
             // Tìm các shipper đang bận (đã được assign hoặc đang giao)
             // Lấy danh sách ID shipper có trạng thái 'brodcasted' hoặc 'assigned'
