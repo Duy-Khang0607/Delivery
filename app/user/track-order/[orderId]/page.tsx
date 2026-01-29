@@ -20,7 +20,7 @@ interface ILocation {
 
 const TrackOrder = () => {
   const router = useRouter()
-  const { userData } = useSelector((state: RootState) => state.user)
+  const { userData } = useSelector((state: RootState) => state?.user)
   const { orderId } = useParams()
   const [order, setOrder] = useState<IOrder>()
   const [loading, setLoading] = useState(false)
@@ -71,7 +71,7 @@ const TrackOrder = () => {
     fetchOrder()
   }, [userData?._id])
 
-  
+
   return (
     <div className='w-[90%] md:w-[80%] mx-auto mt-5 space-y-5'>
       {loading ? (
@@ -115,7 +115,10 @@ const TrackOrder = () => {
           {/* Chat */}
           {
             order?._id && userData?._id && (
-              <DeliveryChat orderId={order._id} deliveryBoyId={userData._id} role="user" />
+              <DeliveryChat
+                orderId={order._id}
+                deliveryBoyId={userData._id} 
+                role={userData?.role as 'user' | 'deliveryBoy' | 'admin'} />
             )
           }
         </>

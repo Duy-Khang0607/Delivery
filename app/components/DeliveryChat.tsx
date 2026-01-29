@@ -1,5 +1,5 @@
 'use client'
-import { Bot, Box, Loader2, MessageSquare, Send } from 'lucide-react';
+import { Loader2, MessageSquare, Send } from 'lucide-react';
 import mongoose from 'mongoose';
 import { useEffect, useRef, useState } from 'react';
 import { getSocket } from '../lib/socket';
@@ -39,7 +39,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
             const messageData = {
                 roomId: orderId.toString(),
                 text: newMessage,
-                senderId: deliveryBoyId.toString(),
+                senderId: deliveryBoyId?.toString() || '',
                 time: new Date().toLocaleDateString([], {
                     hour: '2-digit',
                     minute: '2-digit',
@@ -164,7 +164,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
                     </div>
 
                     {/* Render AI suggestions */}
-                    <div className='w-full flex flex-row mb-2 justify-start items-center gap-2'>
+                    <div className='w-full flex flex-row mb-2 justify-start items-center gap-2 border-b border-gray-300/50 pb-2'>
                         {loadingSuggestions ? (
                             <>
                                 <div className='flex flex-row items-center justify-center gap-1'>
@@ -210,11 +210,12 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
                                 console.log({ senderId: item?.senderId })
                                 console.log({ role })
                                 console.log({ deliveryBoyId })
+
                                 return (
                                     <motion.div
                                         key={index} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.4 }}
-                                        className={`flex flex-col mt-2 space-y-2 ${item?.senderId.toString() === deliveryBoyId.toString() ? 'items-end' : 'items-start'}`}>
-                                        <div className={`px-4 py-2 max-w-[80%] ${item?.senderId.toString() === deliveryBoyId.toString() ? 'bg-green-500' : 'bg-gray-500'} rounded-md shadow-md text-left ${item?.senderId.toString() === deliveryBoyId.toString() ? 'text-right' : 'text-left'}`}>
+                                        className={`flex flex-col mt-2 space-y-2 ${item?.senderId.toString() === deliveryBoyId?.toString() ? 'items-end' : 'items-start'}`}>
+                                        <div className={`px-4 py-2 max-w-[80%] ${item?.senderId.toString() === deliveryBoyId?.toString() ? 'bg-green-500' : 'bg-gray-500'} rounded-md shadow-md text-left ${item?.senderId.toString() === deliveryBoyId?.toString() ? 'text-right' : 'text-left'}`}>
                                             <p className='text-sm text-white font-semibold'>{item?.text}</p>
                                         </div>
                                         <p className='text-xs text-gray-500 text-right'>{item?.time}</p>
@@ -224,10 +225,9 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
                         </AnimatePresence>
                     </div>
 
-
                     {/* Form send message */}
                     <div className='w-full mt-auto flex flex-col gap-4'>
-                        <div className='w-full border border-gray-500'></div>
+                        <div className='w-full border border-gray-300/50'></div>
                         <form className='w-full flex flex-row items-center justify-center gap-2' onSubmit={sendMessage}>
                             <input type="text" placeholder='Your message' className='w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
                             <button disabled={newMessage.length === 0} className={`w-auto text-white rounded-md p-2 transition-all duration-300 ${newMessage.length > 0 ? 'bg-green-700 hover:bg-green-800 cursor-pointer' : 'bg-gray-500 cursor-not-allowed'}`}>
