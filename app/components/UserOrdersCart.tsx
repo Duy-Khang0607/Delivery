@@ -85,10 +85,13 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                     <p className='text-xs md:text-lg text-gray-500'>{new Date(orders?.createdAt!).toLocaleString()}</p>
                 </div>
 
+
                 <div className='flex items-center gap-2 font-semibold text-xs md:text-sm w-full justify-end'>
-                    <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'}`}>
-                        {orders?.isPaid ? 'Paid' : 'Unpaid'}
-                    </span>
+                    {status !== 'Delivered' && (
+                        <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'}`}>
+                            {orders?.isPaid ? 'Paid' : 'Unpaid'}
+                        </span>
+                    )}
                     <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${status === 'Delivered' ? 'bg-green-200 text-green-700 hover:bg-green-400' : status === 'Out of delivery' ? 'bg-yellow-200 text-yellow-700 hover:bg-yellow-400' : 'bg-gray-200 text-gray-700 hover:bg-gray-400'}`}>{status}</span>
                 </div>
             </div>
@@ -128,12 +131,29 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
 
                             {status === 'Delivered' ? (
                                 <>
-                                    <CheckCircle className='w-5 h-5' />
+                                    <motion.span
+                                        initial={{ opacity: 0, scale: 0.2 }}
+                                        animate={{ opacity: [0.3, 0, 0.9], scale: [1, 0.5, 1] }}
+                                        transition={{
+                                            repeat: Infinity,
+                                            duration: 2,
+                                            ease: "easeIn"
+                                        }}
+                                        className='inline-block' >
+                                        <CheckCircle className='w-5 h-5' />
+                                    </motion.span>
                                     Order Delivered
                                 </>
                             ) : (
                                 <>
-                                    <Truck className='w-5 h-5' />
+                                    <motion.span
+                                        initial={{ x: 0 }}
+                                        animate={{ x: [0, 10, 0] }}
+                                        transition={{ duration: 1, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }}
+                                        className='inline-block'
+                                    >
+                                        <Truck className='w-5 h-5' />
+                                    </motion.span>
                                     Tracking my orders
                                 </>
                             )}
@@ -212,7 +232,7 @@ const UserOrdersCart = ({ orders }: UserOrderProps) => {
                     </div>
                 </div>
             </div>
-        </motion.div>
+        </motion.div >
     )
 }
 

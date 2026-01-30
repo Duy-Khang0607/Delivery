@@ -35,39 +35,64 @@ const ManageOrders = () => {
 
     useEffect(() => {
         const socket = getSocket()
+
+        // Đơn hàng mới được tạo
         socket?.on('new-order', (newOrder) => {
             setOrders((prev) => [newOrder, ...prev!])
         })
+
+
+        // Đơn hàng được phân công cho delivery boy ( khi nhấn Accpect đơn hàng )
+        socket?.on('order-assigned', (data) => {
+            console.log({ data })
+            const { orderId, assignmentDeliveryBoy } = data
+
+            setOrders((prevOrders) => {
+                if (!prevOrders) return prevOrders
+
+                return prevOrders.map((order) =>
+                    order?._id.toString() === orderId?.toString()
+                        ? {
+                            ...order,
+                            assignedDeliveryBoy: assignmentDeliveryBoy
+                        }
+                        : order
+                )
+            })
+        })
+
         return () => {
             socket.off('new-order')
+            socket.off('order-assigned')
         }
+
     }, [])
 
-    useEffect(() => {
-        const socket = getSocket()
-    
-        socket?.on('order-assigned', (data) => {
-          console.log({ data })
-          const { orderId, assignmentDeliveryBoy } = data
-    
-          setOrders((prevOrders) => {
-            if (!prevOrders) return prevOrders
-    
-            return prevOrders.map((order) =>
-              order?._id.toString() === orderId?.toString()
-                ? {
-                  ...order,
-                  assignedDeliveryBoy: assignmentDeliveryBoy
-                }
-                : order
-            )
-          })
-        })
-    
-        return () => {
-          socket.off('order-assigned')
-        }
-      }, [])
+    // useEffect(() => {
+    //     const socket = getSocket()
+
+    //     socket?.on('order-assigned', (data) => {
+    //         console.log({ data })
+    //         const { orderId, assignmentDeliveryBoy } = data
+
+    //         setOrders((prevOrders) => {
+    //             if (!prevOrders) return prevOrders
+
+    //             return prevOrders.map((order) =>
+    //                 order?._id.toString() === orderId?.toString()
+    //                     ? {
+    //                         ...order,
+    //                         assignedDeliveryBoy: assignmentDeliveryBoy
+    //                     }
+    //                     : order
+    //             )
+    //         })
+    //     })
+
+    //     return () => {
+    //         socket.off('order-assigned')
+    //     }
+    // }, [])
 
     return (
         <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen'>

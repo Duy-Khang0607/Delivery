@@ -2,12 +2,13 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Box, CardSim, Loader2, LocationEdit, Phone, Timer, User } from 'lucide-react';
+import { Box, CardSim, Loader2, LocationEdit, Mail, Phone, Timer, User } from 'lucide-react';
 import { getSocket } from '../lib/socket';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import LiveMap from './LiveMap';
 import DeliveryChat from './DeliveryChat';
+import { useToast } from './Toast';
 
 interface IDeliveryLocation {
     latitude: number;
@@ -36,7 +37,7 @@ const DeliveryBoyDashboard = () => {
     // Send OTP
     const [otp, setOtp] = useState('');
     const [loadingOTP, setLoadingOTP] = useState(false);
-    const [loadingResendOTP, setLoadingResendOTP] = useState(false);
+    const { showToast } = useToast();
 
     const getAssignments = async () => {
         try {
@@ -52,6 +53,7 @@ const DeliveryBoyDashboard = () => {
     }
 
     const handleAccept = async (assignmentId: string) => {
+        console.log({ assignmentId })
         try {
             setLoading(true);
             const response = await axios.get(`/api/delivery/assignment/${assignmentId}/accept-assignment`);
@@ -66,7 +68,21 @@ const DeliveryBoyDashboard = () => {
     }
 
     const handleReject = async (orderId: string) => {
-
+        console.log({ orderId })
+        setLoading(true)
+        try {
+            // const response = await axios.post(`/api/delivery/assignment/${orderId}/reject-assignment`, { status: 'rejected' });
+            // console.log({ response })
+            // await fetchCurrentOrder();
+            // await getAssignments();
+            // window.scrollTo({ top: 0, behavior: "smooth" });
+            showToast('Feature development in progress', 'info');
+        } catch (error) {
+            console.error('Error reject assignment:', error);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const fetchCurrentOrder = async () => {
@@ -179,7 +195,6 @@ const DeliveryBoyDashboard = () => {
     }, [])
 
 
-    console.log({ userData })
 
     if (currentOrder && userlocation) {
         return (
@@ -218,19 +233,24 @@ const DeliveryBoyDashboard = () => {
                         <>
                             {/* Input OTP */}
                             <div className='flex flex-col gap-2'>
-                                <input type="text" placeholder='Enter OTP' className='w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={otp} onChange={(e) => setOtp(e.target.value)} maxLength={6} />
+                                <div
+                                    className='relative'
+                                >
+                                    <input type="text" placeholder='Enter OTP' className='w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={otp} onChange={(e) => setOtp(e.target.value)} maxLength={6} />
+                                    <label htmlFor="otp" className='absolute top-1/2 right-0 -translate-y-1/2 text-gray-500 text-sm w-auto px-2 h-full flex items-center justify-center border border-green-500 hover:bg-green-500 hover:text-white transition-all duration-300 cursor-pointer font-semibold'>{loadingMarkAsDelivered ? (
+                                        <Loader2 className='w-5 h-5 text-green-500 animate-spin' />
+                                    ) : (
+                                        <div className='w-full h-full flex items-center justify-center gap-2' onClick={() => sendOTP(currentOrder?.order?._id!)}>
+                                            Resend<Mail className='w-5 h-5' />
+                                        </div>
+                                    )}  </label>
+                                </div>
                                 <motion.button
                                     onClick={() => verifyOTP(currentOrder?.order?._id!, otp)}
                                     className={`${otp.length !== 6 ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 cursor-pointer hover:bg-green-600'} text-white px-4 py-2 rounded-md w-full **:transition-all duration-300 flex items-center justify-center`}
                                     disabled={otp.length !== 6}
                                 >
                                     {loadingOTP ? <Loader2 className='w-5 h-5 text-white animate-spin' /> : 'Verify OTP'}
-                                </motion.button>
-                                <motion.button
-                                    onClick={() => sendOTP(currentOrder?.order?._id!)}
-                                    className={`${loadingResendOTP ? 'bg-gray-500 cursor-not-allowed' : 'bg-red-500 cursor-pointer hover:bg-red-600'} text-white px-4 py-2 rounded-md w-full hover:bg-red-600 transition-all duration-300 flex items-center justify-center`}
-                                >
-                                    {loadingResendOTP ? <Loader2 className='w-5 h-5 text-white animate-spin' /> : 'Resend OTP'}
                                 </motion.button>
                             </div>
                         </>
@@ -261,16 +281,18 @@ const DeliveryBoyDashboard = () => {
             ) : (
                 <AnimatePresence >
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                        {assignments?.length > 0 && assignments?.map((orders) => {
+                        {assignments?.length > 0 && assignments?.map((orders, index) => {
                             const { _id, paymentMethod, createdAt, address } = orders?.order
                             const { fullName, mobile } = orders?.order?.address
+
+                            console.log({ orders })
 
                             return (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.4 }}
-                                    key={_id} className='w-full rounded-md shadow-md border border-gray-300 p-4 space-y-3 hover:shadow-lg transition-all duration-300 overflow-hidden h-full'>
+                                    key={index} className='w-full rounded-md shadow-md border border-gray-300 p-4 space-y-3 hover:shadow-lg transition-all duration-300 overflow-hidden h-full'>
                                     <div className='flex flex-col md:flex-row justify-between md:items-center gap-2 h-auto md:h-[30px] w-full'>
                                         <div className='flex items-center gap-2'>
                                             <User className='w-5 h-5 text-green-700' />
@@ -306,14 +328,19 @@ const DeliveryBoyDashboard = () => {
                                             whileTap={{ scale: 0.93 }}
                                             whileHover={{ scale: 1.03 }}
                                             onClick={async () => {
-                                                await handleAccept(orders?.assignment);
-                                                // Ngay sau khi accept, cập nhật ngay currentOrder và userlocation trên UI
-                                                setCurrentOrder(orders);
-                                                setUserlocation({
-                                                    latitude: orders?.order?.address?.latitude,
-                                                    longitude: orders?.order?.address?.longitude,
-                                                });
-                                                setShowOTP(false)
+                                                try {
+                                                    await handleAccept(orders?.order?.assignment);
+                                                    // Ngay sau khi accept, cập nhật ngay currentOrder và userlocation trên UI
+                                                    setCurrentOrder(orders);
+                                                    setUserlocation({
+                                                        latitude: orders?.order?.address?.latitude,
+                                                        longitude: orders?.order?.address?.longitude,
+                                                    });
+                                                    setShowOTP(false)
+                                                } catch (error) {
+                                                    console.error({ error })
+                                                    return error
+                                                }
                                             }}
                                             className='bg-green-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-green-600 transition-all duration-300'>
                                             Accept
@@ -321,7 +348,7 @@ const DeliveryBoyDashboard = () => {
                                         <motion.button
                                             whileTap={{ scale: 0.93 }}
                                             whileHover={{ scale: 1.03 }}
-                                            onClick={() => handleReject(_id)}
+                                            onClick={() => handleReject(orders?.order?.assignment)}
                                             className='bg-red-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-red-600 transition-all duration-300'>Reject</motion.button>
                                     </motion.div>
                                 </motion.div>

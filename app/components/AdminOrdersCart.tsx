@@ -53,7 +53,7 @@ interface IOrder {
 const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
     const [expand, setExpand] = useState(false)
     const [isOpenImage, setOpenImage] = useState(false)
-    const statusPayment = ['Out of delivery', 'Pending', 'Delivered']
+    const statusPayment = ['Out of delivery', 'Pending']
     const [status, setStatus] = useState<string>('Pending')
     const [loading, setLoading] = useState(false)
     const router = useRouter()
@@ -100,19 +100,23 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                 {/* Order ID */}
                 <div className='flex flex-col gap-2'>
                     <h2 className='text-md md:text-2xl font-bold'>Order <span className='text-green-700 text-sm md:text-lg'>#{String(orders?._id).slice(-6)}</span></h2>
-                    <div className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'} w-fit`}>
-                        {orders?.isPaid ? 'Paid' : 'Unpaid'}
-                    </div>
+                    {status !== 'Delivered' && (
+                        <div className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${orders?.isPaid ? 'bg-green-500 text-white hover:bg-green-400' : 'bg-red-200 text-red-700 hover:bg-red-400'} w-fit`}>
+                            {orders?.isPaid ? 'Paid' : 'Unpaid'}
+                        </div>
+                    )}
                     <p className='text-xs md:text-lg text-gray-500'>{new Date(orders?.createdAt!).toLocaleString()}</p>
                 </div>
 
                 <div className='flex items-center gap-2 font-semibold text-sm md:text-sm'>
-                    <select required disabled={loading} className='p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 cursor-pointer' value={status} onChange={(e) => updateOrderStatus(String(orders?._id), e.target.value)}>
-                        <option value='' disabled className='bg-gray-300'>Select Status</option>
-                        {statusPayment?.map((item, index) => (
-                            <option key={index} value={item}>{item}</option>
-                        ))}
-                    </select>
+                    {status !== 'Delivered' && (
+                        <select required disabled={loading} className='p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 cursor-pointer' value={status} onChange={(e) => updateOrderStatus(String(orders?._id), e.target.value)}>
+                            <option value='' disabled className='bg-gray-300'>Select Status</option>
+                            {statusPayment?.map((item, index) => (
+                                <option key={index} value={item}>{item}</option>
+                            ))}
+                        </select>
+                    )}
                     <span className={`rounded-2xl transition-all duration-200 p-2 cursor-pointer ${status === 'Delivered' ? 'bg-green-200 text-green-700 hover:bg-green-400' : status === 'Out of delivery' ? 'bg-yellow-200 text-yellow-700 hover:bg-yellow-400' : 'bg-gray-200 text-gray-700 hover:bg-gray-400'}`}>{loading ? <Loader2 className='w-5 h-5 text-green-700 animate-spin' /> : status}</span>
                 </div>
             </div>
@@ -149,19 +153,36 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                                router.push(`/user/track-order/${orders?._id.toString()}`)
-                            }}
+                            // onClick={() => {
+                            //     router.push(`/user/track-order/${orders?._id.toString()}`)
+                            // }}
                             className='flex flex-row justify-center items-center gap-2 bg-green-600 text-white rounded-2xl p-2 border border-green-200 shadow-md hover:shadow-xl transition-all duration-300 w-full cursor-pointer text-sm md:text-lg'>
 
                             {status === 'Delivered' ? (
                                 <>
-                                    <CheckCircle className='w-5 h-5' />
+                                    <motion.span
+                                        initial={{ opacity: 0, scale: 0.2 }}
+                                        animate={{ opacity: [0.3, 0, 0.9], scale: [1, 0.5, 1] }}
+                                        transition={{
+                                            repeat: Infinity,
+                                            duration: 2,
+                                            ease: "easeIn"
+                                        }}
+                                        className='inline-block' >
+                                        <CheckCircle className='w-5 h-5' />
+                                    </motion.span>
                                     Order Delivered
                                 </>
                             ) : (
                                 <>
-                                    <Truck className='w-5 h-5' />
+                                    <motion.span
+                                        initial={{ x: 0 }}
+                                        animate={{ x: [0, 10, 0] }}
+                                        transition={{ duration: 1, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }}
+                                        className='inline-block'
+                                    >
+                                        <Truck className='w-5 h-5' />
+                                    </motion.span>
                                     Tracking my orders
                                 </>
                             )}

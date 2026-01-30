@@ -114,7 +114,7 @@ const MyOrders = () => {
         <div
           className='max-w-3xl mx-auto w-full h-full relative pt-20 pb-24 space-y-10'>
           {/* Back && My orders */}
-          <div className='w-full bg-white/70 fixed top-0 left-0 backdrop-blur-xl shadow-md border-b border-gray-300'>
+          <div className='w-full bg-white/70 fixed top-0 left-0 backdrop-blur-xl shadow-md border-b border-gray-300 z-9'>
             <div className='max-w-3xl mx-auto flex flex-row items-center gap-3 py-3'>
               <motion.button onClick={() => router.push('/')} whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.06 }} className='bg-white shadow-2xl w-auto rounded-xl text-green-700 text-center flex flex-row gap-2 p-1.5 hover:bg-green-200 cursor-pointer transition-all duration-200 items-center'>
                 <ArrowLeft className='w-5 h-5' />

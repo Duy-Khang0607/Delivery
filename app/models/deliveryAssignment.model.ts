@@ -26,7 +26,7 @@ const deliverySchema = new mongoose.Schema<IDeliveryAssignment>({
     },
     status: {
         type: String,
-        enum: ['brodcasted', 'assigned', 'completed'],
+        enum: ['brodcasted', 'assigned', 'completed' , 'rejected'],
         default: 'brodcasted'
     },
     accpectedAt: {

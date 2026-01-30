@@ -104,7 +104,7 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
 
             // Populate thông tin order vào deliveryAssignment
             await deliveryAssignment.populate('order');
-            
+
             // Gọi event socket khi cập nhật trạng thái đơn hàng
             for (const boyId of candidates) {
                 const boy = await User.findById(boyId);
