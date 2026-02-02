@@ -1,9 +1,81 @@
 'use client'
 
+import { motion } from "framer-motion"
+import { useState } from "react"
+import { ReactElement } from "react"
+interface IEarning {
+  today: number,
+  sevenDays: number,
+  total: number
+}
 
-const AdminDashboardClient = () => {
+const AdminDashboardClient = ({ earning, stats }: { earning: IEarning, stats: { title: string, value: number, icon: ReactElement }[] }) => {
+  const [filter, setFilter] = useState<"today" | "sevenDays" | "total">("today")
+
+  const { today, sevenDays, total } = earning
+
+  const currentEarning = filter === "today" ? today : filter === "sevenDays" ? sevenDays : total
+
+  const title = filter === "today" ? "Today" : filter === "sevenDays" ? "Last 7 Days" : "Total"
+
+  console.log({ earning })
   return (
-    <div>AdminDashboardClient</div>
+    <div className="pt-28 w-[90%] md:w-[80%] mx-auto">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-10 text-center sm:text-left">
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="text-3xl md:text-4xl font-extrabold text-green-700"
+        >
+          Admin Dashboard
+        </motion.h1>
+
+        <select required className='w-full sm:w-auto p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={filter} onChange={(e) => setFilter(e.target.value as "today" | "sevenDays" | "total")}>
+          <option value="">Select Filter</option>
+          <option value="today">Today</option>
+          <option value="sevenDays">Last 7 Days</option>
+          <option value="total">Total</option>
+        </select>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="w-full rounded-2xl shadow-md border border-green-300 p-4 space-y-3 hover:shadow-lg hover:border-green-400 transition-all duration-300 text-center"
+      >
+        <h1 className="text-2xl md:text-3xl font-bold text-green-700">{title}</h1>
+        <p className="text-2xl md:text-4xl font-extrabold text-green-700">${currentEarning.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="w-full rounded-2xl space-y-3 transition-all duration-300 text-center mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+
+        {stats?.length > 0 && stats?.map((stat, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="w-full rounded-2xl shadow-lg border border-gray-200 hover:border-gray-300 p-4 space-y-3 hover:shadow-2xl cursor-pointer transition-all duration-300"
+          >
+            <div className="flex items-center justify-start gap-4">
+              <span className="text-2xl md:text-3xl font-bold text-green-700 w-10 h-10 flex items-center justify-center rounded-full bg-green-100">
+                {stat.icon}</span>
+              <div className="flex flex-col items-start justify-start">
+                <h2 className="text-xl md:text-xl font-semibold text-gray-700">{stat.title}</h2>
+                <span className="text-xl md:text-2xl font-extrabold text-green-700">{stat.value}</span>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+    </div >
   )
 }
 
