@@ -51,15 +51,15 @@ const AdminDashboardClient = ({ earning, stats, chartData }: propType) => {
         transition={{ duration: 0.4 }}
         className="w-full rounded-2xl shadow-md border border-green-300 p-4 space-y-3 hover:shadow-lg hover:border-green-400 transition-all duration-300 text-center"
       >
-        <h1 className="text-2xl md:text-3xl font-bold text-green-700">{title}</h1>
-        <p className="text-2xl md:text-4xl font-extrabold text-green-700">${currentEarning.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+        <h1 className="text-2xl md:text-xl font-bold text-green-700">{title}</h1>
+        <p className="text-2xl md:text-2xl font-extrabold text-green-700">${currentEarning.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full rounded-2xl space-y-3 transition-all duration-300 text-center mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="w-full h-full rounded-2xl space-y-3 transition-all duration-300 text-center mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
       >
 
         {stats?.length > 0 && stats?.map((stat, index) => (
@@ -68,15 +68,13 @@ const AdminDashboardClient = ({ earning, stats, chartData }: propType) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="w-full rounded-2xl shadow-lg border border-gray-200 hover:border-gray-300 p-4 space-y-3 hover:shadow-2xl cursor-pointer transition-all duration-300 w-full h-full"
+            className="w-full rounded-2xl shadow-lg border border-gray-200 hover:border-gray-300 p-4 hover:shadow-2xl cursor-pointer transition-all duration-300 h-full flex flex-row items-center gap-3"
           >
-            <div className="flex items-center justify-start gap-4">
-              <span className="text-2xl md:text-3xl font-bold text-green-700 w-10 h-10 flex items-center justify-center rounded-full bg-green-100">
-                {stat.icon}</span>
-              <div className="flex flex-col items-start justify-start">
-                <h2 className="text-xl md:text-xl font-semibold text-gray-700">{stat.title}</h2>
-                <span className="text-xl md:text-2xl font-extrabold text-green-700">{stat.value}</span>
-              </div>
+            <span className="text-2xl md:text-3xl font-bold text-green-700 w-10 h-10 flex items-center justify-center rounded-full bg-green-100 shrink-0">
+              {stat.icon}</span>
+            <div className="flex flex-col items-start justify-start text-left w-full h-full">
+              <h2 className="text-md md:text-lg font-semibold text-gray-700 w-full h-full">{stat.title}</h2>
+              <span className="text-lg md:text-md font-extrabold text-green-700 w-full h-full">{stat.value}</span>
             </div>
           </motion.div>
         ))}
@@ -84,7 +82,7 @@ const AdminDashboardClient = ({ earning, stats, chartData }: propType) => {
 
       {/* Chart */}
       <div className="w-full h-full mt-10 bg-white rounded-2xl shadow-md border border-gray-200 p-4 space-y-3 hover:shadow-2xl hover:border-gray-300 transition-all duration-300 overflow-hidden cursor-pointer">
-        <h1 className="text-2xl md:text-3xl font-semibold text-gray-500">Orders Overviews ( Last 7 days )</h1>
+        <h1 className="text-md md:text-xl font-semibold text-gray-500">Orders Overviews ( Last 7 days )</h1>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart
             data={chartData}
@@ -99,6 +97,6 @@ const AdminDashboardClient = ({ earning, stats, chartData }: propType) => {
       </div>
     </div >
   )
-} 
+}
 
 export default AdminDashboardClient

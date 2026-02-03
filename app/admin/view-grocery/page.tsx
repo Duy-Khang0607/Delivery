@@ -15,6 +15,8 @@ const ViewGrocery = () => {
   const [isEdit, setEdit] = useState<boolean>(false)
   const [editItem, setEditItem] = useState<IGrocery | null>(null)
   const router = useRouter()
+  const [search, setSearch] = useState<string>('')
+  const [filter, setFilter] = useState<IGrocery[]>([])
 
 
   const fetchGrocery = async () => {
@@ -22,6 +24,7 @@ const ViewGrocery = () => {
       setLoading(true)
       const res = await axios.get('/api/auth/admin/get-grocery')
       setGrocery(res?.data)
+      setFilter(res?.data)
     } catch (error) {
       console.log({ error })
       setLoading(false)
@@ -33,6 +36,14 @@ const ViewGrocery = () => {
   useEffect(() => {
     fetchGrocery()
   }, [])
+
+  const handleSearchGrocery = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const value = search.toLowerCase()
+
+    setFilter(groceries?.filter((item: IGrocery) => item?.name?.toLowerCase()?.includes(value) || item?.category?.toLowerCase()?.includes(value)))
+  }
+
 
   return (
     <>
@@ -70,35 +81,42 @@ const ViewGrocery = () => {
             </motion.div>
 
             {/* Search */}
-            <motion.div
+            <motion.form
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
               className='w-full h-full flex flex-row justify-center items-center mt-5'
+              onSubmit={handleSearchGrocery}
             >
               <div className='relative w-full max-w-lg'>
                 <input
                   type="text"
+                  id='search'
                   placeholder='Search for a grocery'
                   className='w-full h-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 pr-10'
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                  }}
                 />
                 <motion.button
-                  type='button'
+                  type='submit'
                   whileTap={{ scale: 0.97 }}
                   whileHover={{ scale: 1.06 }}
                   className='absolute right-0 top-0 bg-green-700 text-white rounded-r-md p-2 hover:bg-green-800 cursor-pointer transition-all duration-200 w-auto h-full'
+
                 >
                   <Search className='w-5 h-5' />
                 </motion.button>
               </div>
-            </motion.div>
+            </motion.form>
 
 
-            {groceries?.length > 0 ? (
+            {filter?.length > 0 ? (
               <div
                 className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 mt-10 w-full'
               >
-                {groceries?.map((item: IGrocery, index: number) => {
+                {filter?.map((item: IGrocery, index: number) => {
                   return (
                     <motion.div
                       key={index}
