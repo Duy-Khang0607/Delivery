@@ -1,7 +1,6 @@
 'use client'
 import { ArrowLeft, BadgePlus, Upload, Loader2 } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
-import Link from 'next/link'
 import { ChangeEvent, FormEvent, useState } from 'react'
 import Image from 'next/image'
 import axios from 'axios'
@@ -129,7 +128,6 @@ const AddGrocery = () => {
       </motion.button>
 
       <div className='flex justify-center items-center min-h-screen'>
-        {/* Add Grocery */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{
@@ -138,7 +136,6 @@ const AddGrocery = () => {
           transition={{ duration: 1, delay: 0.2 }}
           className='w-full md:max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl px-3 py-5 border border-green-200 h-fit'>
 
-          {/* Tittle */}
           <div className='flex flex-col items-center text-center gap-3 mb-8'>
             <div className='flex flex-row items-center gap-2 tracking-wide text-xl font-semibold'>
               <BadgePlus className='w-5 h-5 text-green-700' />
@@ -147,18 +144,14 @@ const AddGrocery = () => {
             <p className='text-sm max-w-sm md:max-w-xl'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis id quasi, aspernatur harum quibusdam pariatur ducimus atque culpa cum veniam? Repellat, cupiditate! Maiores autem corrupti quo animi illo, dolorum laborum.</p>
           </div>
 
-          {/* Form */}
           <form className='flex flex-col gap-3' >
 
-            {/* Grocry name */}
             <div className='relative w-full flex flex-col gap-2'>
               <label className='text-base font-semibold'>Grocery Name <span className='text-red-500'>*</span></label>
               <input required type="email" placeholder='Grocery name' className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={name} onChange={(e) => setName(e.target.value)} />
             </div>
 
-            {/* Category - Unit */}
             <div className='relative w-full flex flex-row gap-3 items-center justify-between'>
-              {/* Category */}
               <div className='w-full flex flex-col gap-2'>
                 <label className='text-base font-semibold'>Category <span className='text-red-500'>*</span></label>
                 <select required className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={category} onChange={(e) => setCategory(e.target.value)} >
@@ -168,7 +161,6 @@ const AddGrocery = () => {
                   ))}
                 </select>
               </div>
-              {/* Unit */}
               <div className='w-full flex flex-col gap-2'>
                 <label className='text-base font-semibold'>Unit <span className='text-red-500'>*</span></label>
                 <select required className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={unit} onChange={(e) => setUnit(e.target.value)} >
@@ -180,13 +172,11 @@ const AddGrocery = () => {
               </div>
             </div>
 
-            {/* Price */}
             <div className='relative w-full flex flex-col gap-2'>
               <label className='text-base font-semibold'>Price <span className='text-red-500'>*</span></label>
               <input required type="number" placeholder='$' className='w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300' value={price} onChange={(e) => setPrice(e.target.value)} />
             </div>
 
-            {/* Button upload image */}
             <div className='relative w-full md:max-w-[160px] flex flex-row gap-3 text-green-700 items-center'>
               <Upload className='w-5 h-5 absolute top-3.5 left-2.5' />
               <label
@@ -219,7 +209,6 @@ const AddGrocery = () => {
                 )
               ) : null}
 
-              {/* Popup image */}
               <AnimatePresence>
                 {open && preview && (
                   <PopupImage image={preview} setOpen={setOpen} />
@@ -227,10 +216,11 @@ const AddGrocery = () => {
               </AnimatePresence>
             </div>
 
-            {/* Button Add grocery */}
             <motion.button disabled={!disableAdd || loading} onClick={handleSubmit} type="submit" className={`${disableAdd ? 'bg-green-500 hover:bg-green-400' : 'bg-gray-300'} rounded-md mt-5  cursor-pointer transition-all text-center p-2 text-white flex justify-center`}>{loading ? <Loader2 className='w-5 h-5 animate-spin' /> : 'Add Grocery'}</motion.button>
 
           </form>
+
+
         </motion.div>
       </div>
 

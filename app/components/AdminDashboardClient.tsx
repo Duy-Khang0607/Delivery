@@ -3,13 +3,19 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { ReactElement } from "react"
-interface IEarning {
-  today: number,
-  sevenDays: number,
-  total: number
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+interface propType {
+  earning: {
+    today: number,
+    sevenDays: number,
+    total: number
+  }
+  stats: { title: string, value: number, icon: ReactElement }[]
+  chartData: { day: string, orders: number }[]
+
 }
 
-const AdminDashboardClient = ({ earning, stats }: { earning: IEarning, stats: { title: string, value: number, icon: ReactElement }[] }) => {
+const AdminDashboardClient = ({ earning, stats, chartData }: propType) => {
   const [filter, setFilter] = useState<"today" | "sevenDays" | "total">("today")
 
   const { today, sevenDays, total } = earning
@@ -18,7 +24,7 @@ const AdminDashboardClient = ({ earning, stats }: { earning: IEarning, stats: { 
 
   const title = filter === "today" ? "Today" : filter === "sevenDays" ? "Last 7 Days" : "Total"
 
-  console.log({ earning })
+  console.log({ chartData })
   return (
     <div className="pt-28 w-[90%] md:w-[80%] mx-auto">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-10 text-center sm:text-left">
@@ -62,7 +68,7 @@ const AdminDashboardClient = ({ earning, stats }: { earning: IEarning, stats: { 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="w-full rounded-2xl shadow-lg border border-gray-200 hover:border-gray-300 p-4 space-y-3 hover:shadow-2xl cursor-pointer transition-all duration-300"
+            className="w-full rounded-2xl shadow-lg border border-gray-200 hover:border-gray-300 p-4 space-y-3 hover:shadow-2xl cursor-pointer transition-all duration-300 w-full h-full"
           >
             <div className="flex items-center justify-start gap-4">
               <span className="text-2xl md:text-3xl font-bold text-green-700 w-10 h-10 flex items-center justify-center rounded-full bg-green-100">
@@ -75,8 +81,24 @@ const AdminDashboardClient = ({ earning, stats }: { earning: IEarning, stats: { 
           </motion.div>
         ))}
       </motion.div>
+
+      {/* Chart */}
+      <div className="w-full h-full mt-10 bg-white rounded-2xl shadow-md border border-gray-200 p-4 space-y-3 hover:shadow-2xl hover:border-gray-300 transition-all duration-300 overflow-hidden cursor-pointer">
+        <h1 className="text-2xl md:text-3xl font-semibold text-gray-500">Orders Overviews ( Last 7 days )</h1>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={chartData}
+          >
+            <CartesianGrid stroke="#ccc" strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="day" />
+            <Tooltip />
+            <Bar dataKey="orders" fill="lab(54 -38.75 27.36)" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+
+      </div>
     </div >
   )
-}
+} 
 
 export default AdminDashboardClient

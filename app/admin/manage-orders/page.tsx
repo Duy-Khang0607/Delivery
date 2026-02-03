@@ -68,32 +68,7 @@ const ManageOrders = () => {
 
     }, [])
 
-    // useEffect(() => {
-    //     const socket = getSocket()
-
-    //     socket?.on('order-assigned', (data) => {
-    //         console.log({ data })
-    //         const { orderId, assignmentDeliveryBoy } = data
-
-    //         setOrders((prevOrders) => {
-    //             if (!prevOrders) return prevOrders
-
-    //             return prevOrders.map((order) =>
-    //                 order?._id.toString() === orderId?.toString()
-    //                     ? {
-    //                         ...order,
-    //                         assignedDeliveryBoy: assignmentDeliveryBoy
-    //                     }
-    //                     : order
-    //             )
-    //         })
-    //     })
-
-    //     return () => {
-    //         socket.off('order-assigned')
-    //     }
-    // }, [])
-
+   
     return (
         <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen'>
             {loading ? (

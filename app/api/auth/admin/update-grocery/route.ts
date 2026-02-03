@@ -4,7 +4,7 @@ import connectDB from "@/app/lib/db";
 import Grocery from "@/app/models/grocery.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
     try {
 
         // Connect DB
@@ -12,13 +12,14 @@ export async function POST(req: NextRequest) {
 
         // Check if user is authenticated
         const session = await auth();
-        console.log({session})
+        console.log({ session })
         if (!session || session?.user?.role !== 'admin') {
             return NextResponse.json({ success: false, message: 'Access denied' }, { status: 403 });
         }
 
         // Get body
         const formData = await req.formData();
+        const _id = formData.get('_id') as string | undefined;
         const name = formData.get('name') as string;
         const category = formData.get('category') as string;
         const unit = formData.get('unit') as string;
@@ -26,18 +27,21 @@ export async function POST(req: NextRequest) {
         const file = formData.get('image') as Blob | null;
 
         let imageUrls;
-        if(file){
+        if (file) {
             imageUrls = await uploadOnCloudinary(file);
-            if(!imageUrls){
+            if (!imageUrls) {
                 return NextResponse.json({ success: false, message: 'Failed to upload image' }, { status: 400 });
             }
         }
 
-        // Create grocery
-        const grocery = await Grocery.create({ name, category, price, unit, image: imageUrls });
-
-        return NextResponse.json({ success: true, message: 'Grocery created successfully', grocery }, { status: 200 });
+        // Update grocery
+        const grocery = await Grocery.findByIdAndUpdate(_id?.toString(), { name, category, price, unit, image: imageUrls }, { new: true });
+        if (!grocery) {
+            return NextResponse.json({ success: false, message: 'Grocery not found' }, { status: 404 });
+        }
+        return NextResponse.json({ success: true, message: 'Grocery updated successfully', grocery: grocery }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ success: false, message: 'Add grocery failed' }, { status: 500 });
+        console.error({ error })
+        return NextResponse.json({ success: false, message: 'Update grocery failed' }, { status: 500 });
     }
 }
