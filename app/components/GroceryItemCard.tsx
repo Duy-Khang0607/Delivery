@@ -41,10 +41,10 @@ const GroceyItemCard = ({ groceries }: GroceryItemCardProps) => {
       {/* Title && Button */}
       <div className='p-3 w-full'>
         {/* Category */}
-        <p className='text-xs md:text-lg font-medium text-gray-400 w-full h-10'>{groceries?.category}</p>
+        <p className='text-xs md:text-md font-medium text-gray-400 w-full h-7'>{groceries?.category}</p>
 
         {/* Name */}
-        <h1 className='h-10 w-auto font-semibold text-xs md:text-lg'>{groceries?.name}</h1>
+        <h1 className='h-7 w-auto font-semibold text-xs md:text-md'>{groceries?.name}</h1>
 
         {/* Unit & Price */}
         <div className='flex flex-row justify-between items-center'>

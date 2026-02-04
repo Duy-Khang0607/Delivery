@@ -63,7 +63,6 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
         setLoading(true)
         try {
             const res = await axios.post(`/api/auth/admin/update-order-status/${orderId}`, { status })
-            console.log({ res: res?.data })
             setStatus(status)
         } catch (error) {
             console.log({ error })

@@ -12,7 +12,6 @@ export async function POST(req: NextRequest) {
 
         // Check if user is authenticated
         const session = await auth();
-        console.log({session})
         if (!session || session?.user?.role !== 'admin') {
             return NextResponse.json({ success: false, message: 'Access denied' }, { status: 403 });
         }

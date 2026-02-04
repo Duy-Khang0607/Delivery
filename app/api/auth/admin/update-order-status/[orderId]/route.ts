@@ -127,6 +127,15 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
 
         }
 
+        if (status === 'Pending' && order?.assignment) {
+            // Xóa assignment trong Order
+            order.assignment = null;
+
+            // Xóa DeliveryAssignment liên quan đến order này
+            await DeliveryAssignment.deleteOne({ order: order?._id });
+
+        }
+
         // Lưu đơn hàng đã cập nhật vào database
         await order.save();
         // Populate lại thông tin user
@@ -139,8 +148,6 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
         return NextResponse.json({ success: true, assigment: order?.assignment?._id, availableDeliveryBoys: deliveryBoysPayload }, { status: 200 });
 
     } catch (error) {
-        // Xử lý lỗi - trả về status 500 nếu có exception
-        console.error('Update order status error:', error);
         return NextResponse.json({ success: false, message: 'Update status order failed!', error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }

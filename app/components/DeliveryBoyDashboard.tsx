@@ -9,13 +9,14 @@ import { RootState } from '../redux/store';
 import LiveMap from './LiveMap';
 import DeliveryChat from './DeliveryChat';
 import { useToast } from './Toast';
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface IDeliveryLocation {
     latitude: number;
     longitude: number;
 }
 
-const DeliveryBoyDashboard = () => {
+const DeliveryBoyDashboard = ({ earning }: { earning: number }) => {
     const [assignments, setAssignments] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [currentOrder, setCurrentOrder] = useState<any>(null);
@@ -43,7 +44,9 @@ const DeliveryBoyDashboard = () => {
         try {
             setLoading(true);
             const response = await axios.get('/api/delivery/get-assignments');
-            setAssignments(response?.data?.assignments);
+            const filterData = response?.data?.assignments?.filter((data: any) => data?.order?.status !== 'Pending');
+            console.log({ response })
+            setAssignments(filterData);
         } catch (error) {
             console.error('Error fetching assignments:', error);
             setLoading(false);
@@ -172,7 +175,17 @@ const DeliveryBoyDashboard = () => {
     useEffect(() => {
         const socket = getSocket()
         socket?.on('new-assignment', (newAssignment) => {
-            setAssignments((prev) => [...prev, newAssignment])
+            console.log({ newAssignment })
+            setAssignments((prev) => {
+                // Nếu đã tồn tại order này thì không thêm nữa
+                const alreadyExists = prev.some(
+                    (item: any) =>
+                        item?._id?.toString() === newAssignment?._id?.toString() ||
+                        item?.order?._id?.toString() === newAssignment?.order?._id?.toString()
+                );
+                if (alreadyExists) return prev;
+                return [...prev, newAssignment];
+            });
         })
         return () => {
             socket.off('new-assignment')
@@ -194,7 +207,64 @@ const DeliveryBoyDashboard = () => {
         }
     }, [])
 
+    useEffect(() => {
+        const socket = getSocket()
+        socket?.on('order-status-updated', (data) => {
+            // Không hiển thị nếu status là "Pending", chỉ hiển thị "Out of delivery"
+            if (data?.status === 'Pending') {
+                // Loại bỏ assignment có status là "Pending"
+                setAssignments((prev) => prev?.filter((item: any) => item?.order?._id.toString() !== data?.orderId?.toString()))
+                console.log({ assignments })
+            }
+        })
+        return () => {
+            socket.off('order-status-updated')
+        }
+    }, [])
 
+    const todayEarningData = [
+        { name: "Today", earning, deliveries: earning / 40 }
+    ]
+
+    if (assignments?.length === 0 && !currentOrder) {
+        return (
+            <div className='w-[90%] md:w-[80%] mt-24 mx-auto'>
+                <div className='flex flex-col min-h-screen items-center justify-center'>
+                    <h1 className='text-green-700 font-extrabold text-md md:text-xl tracking-wide text-center'>No Active Delivery</h1>
+                    <p className='text-gray-500 font-semibold text-sm md:text-md text-center mb-4'>You don't have any active delivery</p>
+                    <div className='w-full md:max-w-lg h-full bg-white rounded-md p-4 shadow-md border border-gray-300'>
+                        <h1 className='text-green-700 font-extrabold text-md md:text-xl tracking-wide text-center mb-4'>Today Performance Overview</h1>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <BarChart
+                                data={todayEarningData}
+                                margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+                            >
+                                <CartesianGrid stroke="#ccc" strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="name" />
+                                <YAxis dataKey="earning" tickFormatter={(value) => `${value}$`} />
+                                <Tooltip />
+                                <Bar dataKey="earning" name="Earning" fill="lab(54 -38.75 27.36)" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="deliveries" name="Deliveries" fill="lab(54 -38.75 27.36)" radius={[4, 4, 0, 0]} />
+                                <Legend />
+                            </BarChart>
+                        </ResponsiveContainer>
+
+                        <p className='text-gray-500 font-semibold text-sm md:text-md text-center'>You have earned <span className='text-green-700 font-bold'>{earning}$ Earned today</span> today</p>
+                        <motion.button
+                            whileTap={{ scale: 0.93 }}
+                            whileHover={{ scale: 1.03 }}
+                            onClick={() => {
+                                window.location.reload();
+                            }}
+                            className='bg-green-500 text-white px-4 py-2 rounded-md w-full text-center cursor-pointer hover:bg-green-600 transition-all duration-300 flex items-center justify-center mt-4'
+                        >
+                            Refesh Earnings
+                        </motion.button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     if (currentOrder && userlocation) {
         return (
@@ -260,10 +330,9 @@ const DeliveryBoyDashboard = () => {
         )
     }
 
-
     return (
         <div className='w-[90%] md:w-[80%] mt-24 mx-auto'>
-            <h1 className='text-green-700 font-extrabold text-2xl md:text-3xl tracking-wide text-center mb-4'>Delivery Boy Dashboard</h1>
+            <h1 className='text-green-700 font-extrabold text-xl md:text-2xl tracking-wide text-center mb-4'>Delivery Boy Dashboard</h1>
             {loading ? (
                 <motion.div
                     initial={{ y: 40, opacity: 0 }}
@@ -282,10 +351,9 @@ const DeliveryBoyDashboard = () => {
                 <AnimatePresence >
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                         {assignments?.length > 0 && assignments?.map((orders, index) => {
-                            const { _id, paymentMethod, createdAt, address } = orders?.order
+                            const { _id, paymentMethod, createdAt, address, assignment } = orders?.order
                             const { fullName, mobile } = orders?.order?.address
 
-                            console.log({ orders })
 
                             return (
                                 <motion.div
@@ -296,7 +364,7 @@ const DeliveryBoyDashboard = () => {
                                     <div className='flex flex-col md:flex-row justify-between md:items-center gap-2 h-auto md:h-[30px] w-full'>
                                         <div className='flex items-center gap-2'>
                                             <User className='w-5 h-5 text-green-700' />
-                                            <span className='text-sm md:text-[17px] w-full font-semibold'>{fullName}</span>
+                                            <span className='text-sm md:text-[17px] w-full font-semibold'>{fullName} - <span className='text-green-700 font-bold'>#{_id?.slice(-6)}</span></span>
                                         </div>
                                         <div className='hidden xl:block text-right'>
                                             <p className='text-xs md:text-sm text-gray-500'>{new Date(createdAt!).toLocaleString()}</p>
@@ -329,7 +397,7 @@ const DeliveryBoyDashboard = () => {
                                             whileHover={{ scale: 1.03 }}
                                             onClick={async () => {
                                                 try {
-                                                    await handleAccept(orders?.order?.assignment);
+                                                    await handleAccept(orders?.order?.assignment || assignment);
                                                     // Ngay sau khi accept, cập nhật ngay currentOrder và userlocation trên UI
                                                     setCurrentOrder(orders);
                                                     setUserlocation({
@@ -338,27 +406,21 @@ const DeliveryBoyDashboard = () => {
                                                     });
                                                     setShowOTP(false)
                                                 } catch (error) {
-                                                    console.error({ error })
                                                     return error
                                                 }
                                             }}
-                                            className='bg-green-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-green-600 transition-all duration-300'>
+                                            className='bg-green-500 text-white px-2 py-1 md:px-4 md:py-2 rounded-md w-full cursor-pointer hover:bg-green-600 transition-all duration-300'>
                                             Accept
                                         </motion.button>
                                         <motion.button
                                             whileTap={{ scale: 0.93 }}
                                             whileHover={{ scale: 1.03 }}
                                             onClick={() => handleReject(orders?.order?.assignment)}
-                                            className='bg-red-500 text-white px-4 py-2 rounded-md w-full cursor-pointer hover:bg-red-600 transition-all duration-300'>Reject</motion.button>
+                                            className='bg-red-500 text-white px-2 py-1 md:px-4 md:py-2s rounded-md w-full cursor-pointer hover:bg-red-600 transition-all duration-300'>Reject</motion.button>
                                     </motion.div>
                                 </motion.div>
                             )
                         })}
-                        {assignments?.length === 0 && (
-                            <div className='flex flex-col justify-start h-full'>
-                                <p className='text-gray-500 font-semibold text-lg'>No assignments found</p>
-                            </div>
-                        )}
                     </div>
                 </AnimatePresence>
             )
