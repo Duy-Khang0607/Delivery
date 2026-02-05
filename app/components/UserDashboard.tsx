@@ -1,17 +1,11 @@
 import HeroSection from './HeroSection'
 import CategorySilder from './CategorySilder'
 import GroceryItemCard from './GroceryItemCard'
-import connectDB from '../lib/db'
-import Grocery, { IGrocery } from '../models/grocery.model'
+import { IGrocery } from '../models/grocery.model'
 
-const UserDashboard = async () => {
-  // Connect tới DB
-  await connectDB()
+const UserDashboard = async ({ groceryList }: { groceryList: IGrocery[] }) => {
 
-  // Từ DB lấy ra danh sách "groceries"
-  const groceries = await Grocery?.find({}).lean()
-  const JSONGrocery = JSON.parse(JSON.stringify(groceries))
-
+  const JSONGrocery = JSON.parse(JSON.stringify(groceryList))
 
   return (
     <>

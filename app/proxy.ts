@@ -1,6 +1,6 @@
-import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { auth } from './auth'
 
 
 // Request -> Middleware -> Server
@@ -12,8 +12,8 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next()
     }
 
-    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
-    if (!token) {
+    const session = await auth();
+    if (!session) {
         const loginUrl = new URL('/login', request.url)
         loginUrl.searchParams.set('callbackUrl', request.url)
         return NextResponse.redirect(loginUrl)
@@ -21,17 +21,17 @@ export async function proxy(request: NextRequest) {
 
 
     // Kiểm tra nếu role không phải là User
-    if (token?.role !== 'user' && pathname.startsWith('/user')) {
+    if (session?.user?.role !== 'user' && pathname.startsWith('/user')) {
         return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
 
     // Kiểm tra nếu role không phải là Admin
-    if (token?.role !== 'admin' && pathname.startsWith('/admin')) {
+    if (session?.user?.role !== 'admin' && pathname.startsWith('/admin')) {
         return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
 
     // Kiểm tra nếu role không phải là Delivery
-    if (token?.role !== 'deliveryBoy' && pathname.startsWith('/delivery')) {
+    if (session?.user?.role !== 'deliveryBoy' && pathname.startsWith('/delivery')) {
         return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
 

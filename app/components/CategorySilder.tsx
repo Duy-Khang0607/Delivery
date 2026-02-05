@@ -1,19 +1,32 @@
 'use client'
 import { motion } from 'framer-motion'
-import { Apple, ArrowBigLeft, ArrowBigRight, Beef, Egg, Fish, Leaf, Milk, Salad, Sandwich, ShoppingCart, Soup } from 'lucide-react'
+import { Apple, ArrowBigLeft, ArrowBigRight, Beef, Fish, Leaf, Milk, Sandwich, ShoppingCart, Baby, IceCreamBowl, Droplet, Flame, PawPrint, HeartPulse, Home, SprayCan, User, Cookie, CupSoda, GlassWater, Candy } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react';
 
+
+
 const categories = [
-    { id: 1, name: "Fresh Vegetables", icon: Leaf, color: "bg-green-100 text-green-700" },
-    { id: 2, name: "Fresh Fruits", icon: Apple, color: "bg-red-100 text-red-700" },
-    { id: 3, name: "Fresh Meat", icon: Beef, color: "bg-rose-100 text-rose-700" },
-    { id: 4, name: "Fresh Seafood", icon: Fish, color: "bg-blue-100 text-blue-700" },
-    { id: 5, name: "Fresh Dairy", icon: Milk, color: "bg-yellow-100 text-yellow-700" },
-    { id: 6, name: "Fresh Eggs", icon: Egg, color: "bg-amber-100 text-amber-700" },
-    { id: 7, name: "Fresh Herbs", icon: Salad, color: "bg-emerald-100 text-emerald-700" },
-    { id: 8, name: "Fresh Bread", icon: Sandwich, color: "bg-orange-100 text-orange-700" },
-    { id: 9, name: "Fresh Juices", icon: Apple, color: "bg-orange-100 text-orange-700" },
-    { id: 10, name: "Fresh Ready Meals", icon: Soup, color: "bg-purple-100 text-purple-700" }
+    { id: 1, name: "Fresh Food", icon: Leaf, color: "bg-green-100 text-green-700" },
+    { id: 2, name: "Vegetables", icon: Leaf, color: "bg-green-100 text-green-700" },
+    { id: 3, name: "Fruits", icon: Apple, color: "bg-red-100 text-red-700" },
+    { id: 4, name: "Meat", icon: Beef, color: "bg-rose-100 text-rose-700" },
+    { id: 5, name: "Seafood", icon: Fish, color: "bg-blue-100 text-blue-700" },
+    { id: 6, name: "Eggs & Dairy", icon: Milk, color: "bg-yellow-100 text-yellow-700" },
+    { id: 7, name: "Frozen Food", icon: Sandwich, color: "bg-orange-100 text-orange-700" },
+    { id: 8, name: "Rice & Noodles", icon: IceCreamBowl, color: "bg-purple-100 text-purple-700" },
+    { id: 9, name: "Cooking Oil & Spices", icon: Flame, color: "bg-purple-100 text-purple-700" },
+    { id: 10, name: "Sauces & Condiments", icon: Droplet, color: "bg-purple-100 text-purple-700" },
+    { id: 11, name: "Canned Food", icon: SprayCan, color: "bg-purple-100 text-purple-700" },
+    { id: 12, name: "Snacks", icon: Candy, color: "bg-purple-100 text-purple-700" },
+    { id: 13, name: "Beverages", icon: GlassWater, color: "bg-purple-100 text-purple-700" },
+    { id: 14, name: "Coffee & Tea", icon: CupSoda, color: "bg-purple-100 text-purple-700" },
+    { id: 15, name: "Bakery", icon: Cookie, color: "bg-purple-100 text-purple-700" },
+    { id: 16, name: "Health & Supplements", icon: HeartPulse, color: "bg-purple-100 text-purple-700" },
+    { id: 17, name: "Household Supplies", icon: Home, color: "bg-purple-100 text-purple-700" },
+    { id: 18, name: "Cleaning Products", icon: SprayCan, color: "bg-purple-100 text-purple-700" },
+    { id: 19, name: "Personal Care", icon: User, color: "bg-purple-100 text-purple-700" },
+    { id: 20, name: "Baby Products", icon: Baby, color: "bg-purple-100 text-purple-700" },
+    { id: 21, name: "Pet Supplies", icon: PawPrint, color: "bg-purple-100 text-purple-700" }
 ];
 
 
@@ -26,12 +39,11 @@ const CategorySilder = () => {
 
 
     const easeOutBack = (t: number) => {
-        const c1 = 1.25; // nhẹ vừa (1.1 nhẹ hơn, 1.6 mạnh hơn)
+        const c1 = 1.25;
         const c3 = c1 + 1;
         return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
     };
 
-    // ✅ Update buttons (tránh setState liên tục)
     const updateButtons = () => {
         const el = scrollRef.current;
         if (!el) return;
@@ -45,10 +57,8 @@ const CategorySilder = () => {
         setShowRight((prev) => (prev !== newShowRight ? newShowRight : prev));
     };
 
-    // ✅ Easing function → cảm giác "lướt"
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
-    // ✅ Smooth scroll animation (mượt hơn behavior:"smooth")
     const smoothScrollTo = (target: number, duration = 700) => {
         const el = scrollRef.current;
         if (!el) return;
@@ -58,7 +68,6 @@ const CategorySilder = () => {
         const start = el.scrollLeft;
         const maxScroll = el.scrollWidth - el.clientWidth;
 
-        // ✅ clamp để tránh overshoot quá giới hạn
         target = Math.max(0, Math.min(target, maxScroll));
 
         const distance = target - start;
@@ -82,18 +91,17 @@ const CategorySilder = () => {
         animRef.current = requestAnimationFrame(step);
     };
 
-    // ✅ Click left/right → scroll theo "page"
     const scrollByAmount = (direction: "left" | "right") => {
         const el = scrollRef.current;
         if (!el) return;
 
-        const amount = el.clientWidth * 0.9; // scroll theo gần full page
+        const amount = el.clientWidth * 0.9;
         const target =
             direction === "left"
                 ? el.scrollLeft - amount
                 : el.scrollLeft + amount;
 
-        smoothScrollTo(target, 720); // chậm hơn xíu
+        smoothScrollTo(target, 720);
     };
 
     useEffect(() => {

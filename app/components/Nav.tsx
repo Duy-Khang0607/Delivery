@@ -3,7 +3,7 @@ import { CircleX, ListOrdered, LogOut, Menu, Package, Plus, Search, ShoppingCart
 import { IUser } from '../models/user.model'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { signOut } from 'next-auth/react'
 import { useDebouncedCallback } from 'use-debounce'
@@ -24,25 +24,24 @@ const Nav = ({ user }: { user: IUser }) => {
   const [sideBar, setSideBar] = useState(false)
   const router = useRouter()
   const [orders, setOrders] = useState<IOrder[] | undefined>([])
-
-
-  // State redux - Cart
   const { cartData } = useSelector((state: RootState) => state.cart)
 
-  // Debounce chỉ cho logic tìm kiếm (API call, filter, etc)
-  const debouncedSearch = useDebouncedCallback((value: string) => {
-    console.log({ search: value })
-    // Thêm logic tìm kiếm ở đây (gọi API, filter data, etc)
-  }, 500)
 
-  const handleInputChange = (value: string) => {
-    setSearch(value) // Cập nhật ngay để hiển thị trên input
-    debouncedSearch(value) // Debounce cho logic tìm kiếm
-  }
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      const q = search?.trim();
 
-  const handleClearSearch = () => {
-    // setShowSearchMobile(false)
-    setSearch('')
+      if (!q) {
+        return router.push(`/`)
+      }
+
+      router.push(`/?q=${encodeURIComponent(q)}`)
+
+      setShowSearchMobile(false)
+    } catch (error) {
+      return error
+    }
   }
 
   const fetchOrders = async () => {
@@ -93,9 +92,9 @@ const Nav = ({ user }: { user: IUser }) => {
 
       {/* Search */}
       {user?.role === 'user' && <>
-        <form className='hidden md:flex items-center rounded-md w-1/2 md:w-1/3 bg-white max-w-lg shadow-md'>
+        <form className='hidden md:flex items-center rounded-md w-1/2 md:w-1/3 bg-white max-w-lg shadow-md' onSubmit={handleSearch}>
           <Search className='w-5 h-5 ml-2 text-black' />
-          <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => handleInputChange(e.target.value)} />
+          <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-gray-700 placeholder:text-gray-400 p-3 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => setSearch(e.target.value)} />
         </form>
       </>}
 
@@ -167,20 +166,20 @@ const Nav = ({ user }: { user: IUser }) => {
               <Link href='/profile' className='flex items-center gap-2.5 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
                 <Image src={user?.image || ''} alt='User' width={32} height={32} className='w-8 h-8 rounded-full cursor-pointer' />
                 <div className='flex flex-col gap-1'>
-                  <span className='text-black font-bold text-sm'>{user?.name.toUpperCase()}</span>
-                  <span className='text-green-400 text-xs w-auto font-bold'>{user?.role?.toUpperCase()}</span>
+                  <span className='text-black font-bold text-xs'>{user?.name.toUpperCase()}</span>
+                  <span className='text-green-400 text-xs w-auto font-semibold tracking-wide'>{user?.role?.toUpperCase()}</span>
                 </div>
               </Link>
               {user?.role === 'user' && <>
                 <button onClick={() => router.push('/user/my-orders')} className='flex items-center gap-2 p-2 rounded-md w-full transition-all duration-300 cursor-pointer hover:bg-green-200'>
                   <Package className='w-5 h-5 text-green-500' />
-                  <span className='text-black text-sm relative'>My Orders <span className='absolute top-0 -right-6 text-white font-bold text-sm flex items-center justify-center w-5 h-5 bg-red-500 rounded-full'>{orders?.length && orders?.length > 0 ? orders?.length : 0}</span></span>
+                  <span className='text-black text-sm md:text-md relative'>My Orders <span className='absolute top-0 -right-8 text-white font-bold text-xs flex items-center justify-center w-6 h-6 bg-red-500 rounded-full'>{orders?.length && orders?.length > 0 ? orders?.length : 0}</span></span>
                 </button>
               </>}
               <hr className='border-gray-200' />
               <button ref={profileDropDown} className='flex items-center gap-2 p-2 rounded-md w-full hover:bg-red-200 transition-all duration-300 cursor-pointer mt-1.5' onClick={() => signOut({ callbackUrl: '/login' })}>
                 <LogOut className='w-5 h-5 text-red-500' />
-                <span className='text-black text-sm'>Logout</span>
+                <span className='text-black text-xs md:text-sm'>Logout</span>
               </button>
             </motion.div>
           )}
@@ -197,11 +196,14 @@ const Nav = ({ user }: { user: IUser }) => {
               className='fixed top-22 left-0 right-0 z-99 bg-black/50 backdrop-blur-sm p-2.5 w-[80%] mx-auto rounded-2xl text-black'
             >
 
-              <form className='flex items-center gap-2' ref={searchMobileRef}>
+              <form className='flex items-center gap-2' ref={searchMobileRef} onSubmit={handleSearch}>
                 <Search className='w-5 h-5 text-green-500' />
-                <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-white placeholder:text-gray-400 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => handleInputChange(e.target.value)} />
+                <input type="text" id="search" placeholder='Search for a product' className='w-full outline-none text-white placeholder:text-gray-400 focus:outline-none  focus:ring-green-500' value={search} onChange={(e) => setSearch(e.target.value)} />
                 <button type='button'>
-                  <CircleX className='w-5 h-5 text-red-500 cursor-pointer' onClick={handleClearSearch} />
+                  <CircleX className='w-5 h-5 text-red-500 cursor-pointer' onClick={() => {
+                    setSearch('')
+                    setShowSearchMobile(false)
+                  }} />
                 </button>
               </form>
             </motion.div>
