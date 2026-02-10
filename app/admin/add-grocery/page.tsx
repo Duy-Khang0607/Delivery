@@ -7,6 +7,7 @@ import axios from 'axios'
 import { useToast } from '@/app/components/Toast'
 import PopupImage from '@/app/HOC/PopupImage'
 import { useRouter } from 'next/navigation'
+import ButtonHome from '@/app/components/ButtonHome'
 
 const categories = [
   "Fresh Food",
@@ -117,14 +118,16 @@ const AddGrocery = () => {
   return (
     <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto py-10 relative'>
       {/* <- and Back to home */}
-      <motion.button
+      {/* <motion.button
         onClick={() => router.push('/')}
         whileTap={{ scale: 0.97 }}
         whileHover={{ scale: 1.06 }}
         className='absolute left-0 top-2 flex items-center gap-2 text-green-700 hover:text-green-800 font-semibold cursor-pointer bg-white shadow-lg p-2 rounded-xl'>
         <ArrowLeft className='w-5 h-5' />
         <span className='hidden md:flex font-semibold tracking-wide'>Back to home</span>
-      </motion.button>
+      </motion.button> */}
+
+      <ButtonHome />
 
       <div className='flex justify-center items-center min-h-screen'>
         <motion.div

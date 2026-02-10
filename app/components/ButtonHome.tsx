@@ -1,7 +1,7 @@
 'use client'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 

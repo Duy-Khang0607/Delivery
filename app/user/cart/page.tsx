@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/app/redux/store'
 import { decreaseQuantity, increaseQuantity, removeCart } from '@/app/redux/cartSlice'
 import { useRouter } from 'next/navigation'
+import ButtonHome from '@/app/components/ButtonHome'
 
 const Cart = () => {
     const dispatch = useDispatch()
@@ -18,10 +19,12 @@ const Cart = () => {
     return (
         <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen mt-8 mb-24 relative'>
             {/* Back to home */}
-            <motion.button onClick={() => router.push('/')} whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.06 }} className='bg-white shadow-2xl w-auto rounded-xl text-green-700 text-center absolute -top-2 left-0 flex flex-row gap-2 p-1.5 hover:bg-green-200 cursor-pointer transition-all duration-200 items-center'>
+            {/* <motion.button onClick={() => router.push('/')} whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.06 }} className='bg-white shadow-2xl w-auto rounded-xl text-green-700 text-center absolute -top-2 left-0 flex flex-row gap-2 p-1.5 hover:bg-green-200 cursor-pointer transition-all duration-200 items-center'>
                 <ArrowLeft className='w-5 h-5' />
                 <span className='hidden md:flex font-semibold tracking-wide'>Back to home</span>
-            </motion.button>
+            </motion.button> */}
+
+            <ButtonHome />
 
             {/* Title */}
             <motion.h1
@@ -35,8 +38,8 @@ const Cart = () => {
             </motion.h1>
 
             {/* Items */}
-            <div className='grid grid-cols-1 lg:grid-cols-3 md:gap-8'>
-                <div className='lg:col-span-2 space-y-5 mt-20'>
+            <div className='grid grid-cols-1 lg:grid-cols-3'>
+                <div className='lg:col-span-2 pt-20'>
                     <AnimatePresence>
                         {cartData?.length === 0 ? (
                             <motion.div

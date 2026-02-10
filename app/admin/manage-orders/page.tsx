@@ -70,7 +70,7 @@ const ManageOrders = () => {
 
 
     return (
-        <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto min-h-screen'>
+        <section className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto py-10 relative'>
             {loading ? (
                 <motion.div
                     initial={{ y: 40, opacity: 0 }}

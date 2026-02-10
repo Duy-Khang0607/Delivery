@@ -4,17 +4,16 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { IGrocery } from '@/app/models/grocery.model'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { ArrowLeft, Box, Delete, Edit, Search, Trash, Trash2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { Box, Edit, Search, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import FormEditGrocery from '@/app/components/FormEditGrocery'
+import ButtonHome from '@/app/components/ButtonHome'
 
 const ViewGrocery = () => {
   const [groceries, setGrocery] = useState<IGrocery[]>([])
   const [loading, setLoading] = useState(false)
   const [isEdit, setEdit] = useState<boolean>(false)
   const [editItem, setEditItem] = useState<IGrocery | null>(null)
-  const router = useRouter()
   const [search, setSearch] = useState<string>('')
   const [filter, setFilter] = useState<IGrocery[]>([])
 
@@ -63,10 +62,9 @@ const ViewGrocery = () => {
         </motion.div>
       ) : (
         <>
-          <motion.div className='w-[90%] md:w-[80%] mt-10 mx-auto'>
-
-            {/* Back */}
-            <motion.div
+          <motion.div className='w-[90%] sm:w-[85%] md:w-[80%] mx-auto py-10 relative'>
+            {/* Back to home */}
+            {/* <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
@@ -78,7 +76,8 @@ const ViewGrocery = () => {
               </motion.button>
 
               <motion.h1 className=' text-lg md:text-2xl text-green-700 font-extrabold'>Manage Grocery</motion.h1>
-            </motion.div>
+            </motion.div> */}
+            <ButtonHome />
 
             {/* Search */}
             <motion.form
