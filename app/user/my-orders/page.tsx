@@ -57,7 +57,7 @@ const MyOrders = () => {
       const res = await axios.get('/api/auth/user/my-orders');
       setOrders(res?.data)
     } catch (error: any) {
-      console.log({ error: error?.response?.data })
+      console.error({ error: error?.response?.data })
       setLoading(false)
     } finally {
       setLoading(false);
@@ -68,7 +68,6 @@ const MyOrders = () => {
     const socket = getSocket()
 
     socket?.on('order-assigned', (data) => {
-      console.log({ data })
       const { orderId, assignmentDeliveryBoy } = data
 
       setOrders((prevOrders) => {

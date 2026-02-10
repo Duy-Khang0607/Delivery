@@ -11,7 +11,6 @@ export async function GET(request: Request) {
         const session = await auth()
 
         const deliveryBoyId = session?.user?.id
-        console.log({ deliveryBoyId })
 
         const activeAssignment = await DeliveryAssignment.findOne({ assignedTo: deliveryBoyId, status: 'assigned' }).populate({
             path: 'order',

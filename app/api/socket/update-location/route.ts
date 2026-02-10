@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
             location,
         }, { new: true })
 
-        console.log({ user })
 
         if (!user || !location) {
             return NextResponse.json({ success: false, message: "Missing userId or location" }, { status: 400 })

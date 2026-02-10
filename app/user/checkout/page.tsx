@@ -62,10 +62,8 @@ const Checkout = () => {
                 setPosition([results[0]?.y, results[0]?.x] as [number, number])
             }
 
-            console.log({ results })
-
         } catch (error) {
-            console.log({ error })
+            console.error({ error })
         }
     }
 
@@ -122,7 +120,6 @@ const Checkout = () => {
             });
             if (res?.data?.success) router.push('/user/order-success')
             setPay(false)
-            console.log({ res })
         } catch (error) {
             setPay(false)
             console.error({ error })
@@ -207,7 +204,6 @@ const Checkout = () => {
                         },
                     }
                 )
-                console.log({ res: res?.data?.address })
                 setInfo(prev => ({
                     ...prev,
                     city: res?.data?.address?.city,
@@ -217,8 +213,7 @@ const Checkout = () => {
                 }))
                 setSearchLoading(false)
             } catch (error: any) {
-                console.log({ error })
-                console.log({ error: error?.response?.data || error?.message || error })
+                console.error({ error: error?.response?.data || error?.message || error })
                 setSearchLoading(false)
             } finally {
                 setSearchLoading(false)

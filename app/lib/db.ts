@@ -27,7 +27,6 @@ async function connectDB() {
     };
 
     cached.promise = mongoose.connect(MONGOOSE_CONNECTION as string, opts).then((mongooseInstance) => {
-      console.log('✅ Kết nối MongoDB thành công!');
       return mongooseInstance;
     });
   }

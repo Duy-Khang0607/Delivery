@@ -16,7 +16,7 @@ const useGetMe = () => {
             const user = await axios.get('/api/me');
             dispatch(setUserData(user?.data?.user))
         } catch (error) {
-            console.log({ error })
+            console.error({ error })
             showToast('Get infomation user failed !', "error");
         }
     }

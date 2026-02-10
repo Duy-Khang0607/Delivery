@@ -34,7 +34,6 @@ const FormEditGrocery = ({ isEdit, title, description, setEdit, editItem, fetchG
 
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        console.log({ e: e?.target.files })
         e.preventDefault()
         setLoadingImage(true)
         try {

@@ -32,9 +32,8 @@ const RegisterForm = ({ backStep }: backType) => {
             setLoading(true);
             const response = await axios.post('/api/auth/register', { name, email, password });
             router.push('/');
-            console.log({ response: response.data });
         } catch (error: any) {
-            console.log({ error: error.response.data });
+            console.error({ error: error.response.data });
         } finally {
             setLoading(false);
         }

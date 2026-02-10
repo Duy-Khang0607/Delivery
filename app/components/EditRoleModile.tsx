@@ -41,7 +41,7 @@ const EditRoleModile = () => {
             await update({ role: selectedRole });
             router.push('/');
         } catch (error) {
-            console.log(error);
+            console.error({ error });
         } finally {
             setLoading(false);
         }
@@ -50,13 +50,12 @@ const EditRoleModile = () => {
     const checkForAdmin = async () => {
         try {
             const response = await axios.get('/api/check-for-admin');
-            console.log({response: response.data});
             if (response.data.adminExists) {
                 setRoles(prev => prev.filter(role => role.id !== 'admin'));
                 // setSelectedRole('admin');
             }
         } catch (error) {
-            console.log({ error });
+            console.error({ error });
         }
     }
 

@@ -19,7 +19,6 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(loginUrl)
     }
 
-
     // Kiểm tra nếu role không phải là User
     if (session?.user?.role !== 'user' && pathname.startsWith('/user')) {
         return NextResponse.redirect(new URL('/unauthorized', request.url))

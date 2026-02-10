@@ -56,19 +56,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     // 3. Tìm user trong database theo email
                     const user = await User.findOne({ email });
                     if (!user) {
-                        console.log("❌ User not found:", email);
                         return null; // Return null thay vì throw error
                     }
 
                     // 4. So sánh password với password đã hash trong database
                     const isPasswordCorrect = await bcrypt.compare(password, user.password);
                     if (!isPasswordCorrect) {
-                        console.log("❌ Incorrect password for:", email);
                         return null; // Return null thay vì throw error
                     }
 
                     // 5. Return user nếu đăng nhập thành công
-                    console.log("✅ Login success:", email);
                     return {
                         id: user._id.toString(),
                         name: user.name,
@@ -91,7 +88,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     callbacks: {
         // Signin
         async signIn({ user, account }) {
-            console.log({ user, account });
             if (account?.provider == 'google') {
                 // Connect DB
                 await connectDB();

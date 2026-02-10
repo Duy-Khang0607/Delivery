@@ -24,7 +24,6 @@ const AdminDashboardClient = ({ earning, stats, chartData }: propType) => {
 
   const title = filter === "today" ? "Today" : filter === "sevenDays" ? "Last 7 Days" : "Total"
 
-  console.log({ chartData })
   return (
     <div className="pt-28 w-[90%] md:w-[80%] mx-auto">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-10 text-center sm:text-left">

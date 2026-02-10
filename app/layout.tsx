@@ -7,15 +7,6 @@ import StoreProvider from "./redux/StoreProvider";
 import InitUser from "./InitUser";
 import "leaflet/dist/leaflet.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Delivery App",
@@ -34,9 +25,7 @@ export default function RootLayout({
       >
         <Provider>
           <ToastProvider>
-            {/* Redux toolkit */}
             <StoreProvider>
-              {/* Get initial info user */}
               <InitUser />
               {children}
             </StoreProvider>

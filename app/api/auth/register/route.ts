@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
         // Connect DB
         await connectDB();
 
-        // Check if user already exists
         // Kiểm tra name hoặc email đã tồn tại (trùng) thì trả về 400
         const existUser = await User.findOne({ $or: [{ name }, { email }] });
         if (existUser) {

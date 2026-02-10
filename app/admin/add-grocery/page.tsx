@@ -106,7 +106,6 @@ const AddGrocery = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      console.log({ response: response?.data })
       setLoading(false)
     } catch (error) {
       console.error({ error })

@@ -83,7 +83,6 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
         try {
             setLoadingSuggestions(true);
             const res = await axios.post(`/api/chat/ai-suggestions`, { message: message[message.length - 1]?.text, role: role })
-            console.log({ res })
             if (res?.data?.success) {
                 setSuggestions(res?.data?.suggestions || [])
             }
@@ -207,9 +206,6 @@ const DeliveryChat = ({ orderId, deliveryBoyId, role }: IProps) => {
                     <div className='w-full max-h-[500px] overflow-y-auto mt-2 space-y-3 md:max-h-[200px]' ref={messagesRef}>
                         <AnimatePresence mode='wait'>
                             {message?.map((item, index) => {
-                                console.log({ senderId: item?.senderId })
-                                console.log({ role })
-                                console.log({ deliveryBoyId })
 
                                 return (
                                     <motion.div

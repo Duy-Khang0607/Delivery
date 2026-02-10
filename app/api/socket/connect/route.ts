@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
             isOnline: true
         }, { new: true })
 
-        console.log({ user })
 
         if (!user) {
             return NextResponse.json({ success: false, message: "User not found" }, { status: 400 })

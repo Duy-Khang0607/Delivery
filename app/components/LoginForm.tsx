@@ -28,10 +28,9 @@ const LoginForm = () => {
             setLoading(true);
             const response = await signIn('credentials', { email, password, redirect: false });
             router.push('/');
-            console.log({ response })
 
         } catch (error: any) {
-            console.log({ error: error.response.data });
+            console.error({ error: error.response.data });
         } finally {
             setLoading(false);
         }

@@ -26,7 +26,7 @@ const ViewGrocery = () => {
       setGrocery(res?.data)
       setFilter(res?.data)
     } catch (error) {
-      console.log({ error })
+      console.error({ error })
       setLoading(false)
     } finally {
       setLoading(false)

@@ -65,7 +65,7 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
             const res = await axios.post(`/api/auth/admin/update-order-status/${orderId}`, { status })
             setStatus(status)
         } catch (error) {
-            console.log({ error })
+            console.error({ error })
             setLoading(false)
         } finally {
             setLoading(false)
@@ -79,7 +79,6 @@ const AdminOrdersCart = ({ orders }: AdminOrderProps) => {
     useEffect(() => {
         const socket = getSocket()
         socket?.on('order-status-updated', (data) => {
-            console.log("Order-status-updated", data)
             if (data?.orderId?.toString() === orders?._id.toString()) {
                 setStatus((prev) => prev === data?.status ? prev : data?.status)
             }

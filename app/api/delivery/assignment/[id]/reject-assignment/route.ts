@@ -37,13 +37,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         const deliveryBoyId = session?.user?.id
 
         if (!deliveryBoyId) {
-            console.log("Error: Delivery boy not found");
             return NextResponse.json({ success: false, message: "Delivery boy not found" }, { status: 404 });
         }
 
         const assignment = await DeliveryAssignment.findById(id)
 
-        console.log("Error: assignment boy not found");
 
         if (!assignment) {
             return NextResponse.json({ success: false, message: "Assignment not found" }, { status: 404 })

@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
         })
 
         const response = await data.json();
-        console.log({ response })
 
         if (response?.error) {
             return NextResponse.json({ success: false, message: response?.error?.message }, { status: 500 });
@@ -57,7 +56,6 @@ export async function POST(req: NextRequest) {
         const replyText = response?.candidates?.[0]?.content?.parts?.[0]?.text;
 
         const suggestions = replyText?.split(',').map((suggestion: string) => suggestion.trim());
-        console.log({ suggestions })
 
         return NextResponse.json({ success: true, message: "AI suggestions fetched successfully", suggestions }, { status: 200 });
 

@@ -45,7 +45,6 @@ const DeliveryBoyDashboard = ({ earning }: { earning: number }) => {
             setLoading(true);
             const response = await axios.get('/api/delivery/get-assignments');
             const filterData = response?.data?.assignments?.filter((data: any) => data?.order?.status !== 'Pending');
-            console.log({ response })
             setAssignments(filterData);
         } catch (error) {
             console.error('Error fetching assignments:', error);
@@ -56,12 +55,9 @@ const DeliveryBoyDashboard = ({ earning }: { earning: number }) => {
     }
 
     const handleAccept = async (assignmentId: string) => {
-        console.log({ assignmentId })
         try {
             setLoading(true);
             const response = await axios.get(`/api/delivery/assignment/${assignmentId}/accept-assignment`);
-
-            console.log({ response })
         } catch (error) {
             console.error('Error accepting assignment:', error);
             setLoading(false);
@@ -71,11 +67,9 @@ const DeliveryBoyDashboard = ({ earning }: { earning: number }) => {
     }
 
     const handleReject = async (orderId: string) => {
-        console.log({ orderId })
         setLoading(true)
         try {
             // const response = await axios.post(`/api/delivery/assignment/${orderId}/reject-assignment`, { status: 'rejected' });
-            // console.log({ response })
             // await fetchCurrentOrder();
             // await getAssignments();
             // window.scrollTo({ top: 0, behavior: "smooth" });
@@ -175,7 +169,6 @@ const DeliveryBoyDashboard = ({ earning }: { earning: number }) => {
     useEffect(() => {
         const socket = getSocket()
         socket?.on('new-assignment', (newAssignment) => {
-            console.log({ newAssignment })
             setAssignments((prev) => {
                 // Nếu đã tồn tại order này thì không thêm nữa
                 const alreadyExists = prev.some(
@@ -214,7 +207,6 @@ const DeliveryBoyDashboard = ({ earning }: { earning: number }) => {
             if (data?.status === 'Pending') {
                 // Loại bỏ assignment có status là "Pending"
                 setAssignments((prev) => prev?.filter((item: any) => item?.order?._id.toString() !== data?.orderId?.toString()))
-                console.log({ assignments })
             }
         })
         return () => {

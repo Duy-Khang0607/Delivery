@@ -20,7 +20,6 @@ const Home = async (props: { searchParams: Promise<{ q: string }> }) => {
     redirect('/login');
   }
 
-  // parse json
   const JsonUser = JSON.parse(JSON.stringify(user));
 
   const inComplete = !JsonUser?.mobile || !JsonUser?.role || (!JsonUser?.mobile && JsonUser?.role == 'user')

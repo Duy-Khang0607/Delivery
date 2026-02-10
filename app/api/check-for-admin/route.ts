@@ -9,7 +9,6 @@ export async function GET(req: NextRequest) {
         await connectDB();
 
         const user = await User.find({ role: 'admin' });
-        console.log({ user });
 
         if (!user) {
             return NextResponse.json({ success: false, message: 'No admin found', adminExists: false }, { status: 400 });

@@ -159,7 +159,6 @@ function CurrentLocationButton({ onLocationSelect }: { onLocationSelect?: (lat: 
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords
-                console.log({ latitude, longitude })
                 map.setView([latitude, longitude], 15)
                 onLocationSelect?.(latitude, longitude)
                 setIsLoading(false)

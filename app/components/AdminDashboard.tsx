@@ -56,7 +56,6 @@ const AdminDashboard = async () => {
 
   const chartData = []
   const formatOrdersData = JSON.parse(JSON.stringify(orders))
-  console.log({ formatOrdersData })
 
 
   for (let i = 6; i >= 0; i--) {
